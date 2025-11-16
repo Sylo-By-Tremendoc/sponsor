@@ -1,0 +1,87 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
+
+@import "tailwindcss";
+
+@theme {
+  --font-plus-jakarta: "Plus Jakarta Sans", sans-serif;
+  --color-primary: #03eb0b;
+  --color-primary-active: #294c28;
+  --color-primary-dormant: #346633;
+  --color-secondary: #0a7e32;
+  --color-light-green: #eaffea;
+  --color-lighter-green: #fafffa;
+  --color-charcoal-gray: #4b4b4b;
+  --color-black: #000000;
+  --color-off-black: #0f0f0f;
+  --color-yellow: #f7b11c;
+  --color-warning: #f7b11c;
+  --color-warning-light: #ffedc7;
+  --color-dark-yellow: #6f5f09;
+  --color-light-yellow: #feffd9;
+  --color-info: #0468b1;
+  --color-mid-info: #0468b1;
+  --color-light-info: #cff3ff;
+  --color-danger: #f22424;
+  --color-mid-danger: #c90000;
+  --color-light-danger: #ffeded;
+  --color-grey: #808080;
+  --color-mid-grey: #d9d9d9;
+  --color-deep-grey: #979797;
+  --color-light-grey: #f0f0f0;
+  --color-extra-light-grey: #f4f4f4;
+  --color-feint-grey: #f9fafb;
+  --color-cream: #f9f9f9;
+  --color-tertiary-cream: #f5f5de;
+  --color-accent-green: #eaffea;
+  --color-tertiary-green: #fafffa;
+}
+
+* {
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+:root {
+  --nav-height: 144px;
+  --sidebar-width: 233px;
+  --tablist-height: 32px;
+}
+
+.Toastify__toast {
+  border-radius: 12px !important;
+  padding: 14px !important;
+  font-size: 14px !important;
+  backdrop-filter: blur(5px);
+}
+
+.Toastify__toast--success {
+  background: #e8f9f0 !important;
+  color: #0f5132 !important;
+  border-left: 6px solid #13c57a !important;
+}
+
+.Toastify__toast--error {
+  background: #fdecea !important;
+  color: #842029 !important;
+  border-left: 6px solid #e6372d !important;
+}
+
+.Toastify__toast--warning {
+  background: #fff8e1 !important;
+  color: #8a6d3b !important;
+  border-left: 6px solid #ffb300 !important;
+}
+
+.Toastify__toast--info {
+  background: #e8f4fd !important;
+  color: #084298 !important;
+  border-left: 6px solid #0d6efd !important;
+}
+
+.Toastify__progress-bar {
+  height: 3px !important;
+  border-radius: 10px;
+}
