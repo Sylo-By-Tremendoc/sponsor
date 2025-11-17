@@ -39,8 +39,8 @@ const SideNav = () => {
                   >
                     <div
                       className={cn(
-                        "transition-transform duration-300 group-hover:scale-110 group-hover:translate-x-2",
-                        isActive && "group-translate-x-2"
+                        "transition-transform duration-300 group-hover:scale-110 group-hover:translate-x-2.5",
+                        isActive && "translate-x-2.5"
                       )}
                     >
                       {item.icon(isActive)}
@@ -49,9 +49,9 @@ const SideNav = () => {
                     <Typography
                       variant="smallText"
                       className={cn(
-                        "text-sm text-gray-700 group-hover:text-primary group-hover:translate-x-2 font-medium transition-transform duration-300",
+                        "text-sm text-gray-700 group-hover:text-primary group-hover:translate-x-2.5 font-medium transition-transform duration-300",
                         isActive &&
-                          "group-translate-x-2 group-hover:text-gray-700"
+                          "translate-x-2.5 group-hover:text-gray-700"
                       )}
                     >
                       {item.title}
@@ -80,12 +80,12 @@ const SideNav = () => {
                         "group flex items-center gap-3 px-5 py-3 transition-all duration-300 ease-out transform text-danger hover:text-red-600 hover:bg-red-50 w-full cursor-pointer"
                       )}
                     >
-                      <div className="transition-transform duration-300 group-hover:scale-110 group-hover:translate-x-2">
+                      <div className="transition-transform duration-300 group-hover:scale-110 group-hover:translate-x-2.5">
                         {item.icon(false)}
                       </div>
                       <Typography
                         variant="smallText"
-                        className="text-sm font-medium transition-transform duration-300 group-hover:translate-x-2"
+                        className="text-sm font-medium transition-transform duration-300 group-hover:translate-x-2.5"
                       >
                         {item.title}
                       </Typography>
@@ -108,8 +108,8 @@ const SideNav = () => {
                   >
                     <div
                       className={cn(
-                        "transition-transform duration-300 group-hover:scale-110 group-hover:translate-x-2",
-                        isActive && "group-translate-x-2"
+                        "transition-transform duration-300 group-hover:scale-110 group-hover:translate-x-2.5",
+                        isActive && "translate-x-2.5"
                       )}
                     >
                       {item.icon(isActive)}
@@ -118,9 +118,9 @@ const SideNav = () => {
                     <Typography
                       variant="smallText"
                       className={cn(
-                        "text-sm text-gray-700 group-hover:text-primary group-hover:translate-x-2 font-medium transition-transform duration-300",
+                        "text-sm text-gray-700 group-hover:text-primary group-hover:translate-x-2.5 font-medium transition-transform duration-300",
                         isActive &&
-                          "group-translate-x-2 group-hover:text-gray-700"
+                          "translate-x-2.5 group-hover:text-gray-700"
                       )}
                     >
                       {item.title}

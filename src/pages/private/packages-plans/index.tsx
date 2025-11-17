@@ -1,6 +1,6 @@
 import { Button } from "@/components/common/Button";
 import Typography from "@/components/common/Typography";
-import PaymentCard, { type PaymentCardProps } from "./components/PaymentCard";
+import PaymentCard, { type PaymentCardInfo } from "./components/PaymentCard";
 import LineThrough from "@/components/common/LineThrough";
 import { CustomTable } from "@/components/common/table";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,7 @@ import { convertPrice } from "@/utils/constant";
 
 import DeleteCardModal from "./components/DeleteCardModal";
 import AddCardModal from "./components/AddCardModal";
+import GetStartedModal from "@/pages/public/home/GetStartedModal";
 
 type SubscriptionPlan = {
   id: string;
@@ -31,9 +32,10 @@ const PackagePlans = () => {
   const [, setSearch] = useState("");
 
   const [paymentCardDetails, setPaymentCardDetails] =
-    useState<PaymentCardProps | null>(null);
+    useState<PaymentCardInfo | null>(null);
 
   const [openAddCardDetails, setOpenAddCardDetails] = useState(false);
+  const [showGetStartedModal, setShowGetStartedModal] = useState(false);
   const [openDeleteCardModal, setOpenDeleteCardModal] = useState(false);
 
   const isLoading = false;
@@ -192,17 +194,15 @@ const PackagePlans = () => {
             <Typography className="text-[4rem] font-bold leading-none">
               4
             </Typography>
-            <Button>By New Plan</Button>
+            <Button onClick={() => setShowGetStartedModal(true)}>
+              By New Plan
+            </Button>
           </div>
         </div>
 
         {paymentCardDetails ? (
           <PaymentCard
-            id={"1"}
-            cardHolderName={paymentCardDetails?.cardHolderName}
-            cardNumber={paymentCardDetails?.cardNumber}
-            expiryDate={paymentCardDetails?.expiryDate}
-            cvc={paymentCardDetails?.cvc}
+            cardDetails={paymentCardDetails}
             onDelete={() => setOpenDeleteCardModal(true)}
           />
         ) : (
@@ -241,6 +241,12 @@ const PackagePlans = () => {
         handlePageChange={pagination.handlePageChange}
         // handlePageSizeChange={pagination.handlePageSizeChange}
         onRowClick={(row) => navigate(`/beneficiaries/${row.original?.id}`)}
+      />
+
+      <GetStartedModal
+        showGetStartedModal={showGetStartedModal}
+        setShowGetStartedModal={setShowGetStartedModal}
+        handleContinue={() => navigate("/package-plans/plans")}
       />
 
       <AddCardModal

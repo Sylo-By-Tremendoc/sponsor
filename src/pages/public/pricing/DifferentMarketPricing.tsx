@@ -1,10 +1,16 @@
 import Typography from "@/components/common/Typography";
 import { useState } from "react";
-import { DisplayMarketDropdown, PricePlanCard } from "./components";
+import { DisplayAgeRangeDropdown, DisplayMarketDropdown, PricePlanCard } from "./components";
 import { cn } from "@/utils/class-name";
 import { Section } from "../home/components";
 
-const DifferentMarketPricing = () => {
+const DifferentMarketPricing = ({
+  onClick,
+  className,
+}: {
+  onClick: (val: string) => void;
+  className?: string;
+}) => {
   const PLANS = [
     {
       id: "basic",
@@ -63,7 +69,7 @@ const DifferentMarketPricing = () => {
   const [paymentPlan, setPaymentPlan] = useState("MONTHLY");
   const paymentOptions = ["MONTHLY", "QUARTERLY", "ANNUALLY"];
   return (
-    <Section className="space-y-4 pt-0!">
+    <Section className={cn("space-y-4 pt-0!", className)}>
       <div className="flex flex-col md:flex-row justify-between items-center gap-5">
         <div className="flex items-center p-1 bg-[#F6F5FA] rounded-lg">
           {paymentOptions.map((option) => (
@@ -80,13 +86,23 @@ const DifferentMarketPricing = () => {
             </Typography>
           ))}
         </div>
+        
+        <div className="flex items-center gap-5">
+          <DisplayAgeRangeDropdown />
+                  <DisplayMarketDropdown />
 
-        <DisplayMarketDropdown />
+        </div>
+
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {PLANS.map((plan) => (
-          <PricePlanCard key={plan.id} plans={plan} paymentPlan={paymentPlan} />
+          <PricePlanCard
+            key={plan.id}
+            plan={plan}
+            paymentPlan={paymentPlan}
+            onClick={onClick}
+          />
         ))}
       </div>
     </Section>

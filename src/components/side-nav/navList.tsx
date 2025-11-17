@@ -8,7 +8,7 @@ export const getTopNavList = () => {
       title: "Dashboard",
       path: "/dashboard",
       icon: (isActive: boolean) => (
-        <Icons iconName="dashboard" fill={isActive ? "#335F32" : "white"} />
+        <Icons iconName="dashboard" fill={isActive ? "#03eb0b" : "white"} />
       ),
       canView: true,
     },
@@ -16,7 +16,7 @@ export const getTopNavList = () => {
       title: "Beneficiaries",
       path: "/beneficiaries",
       icon: (isActive: boolean) => (
-        <Icons iconName="beneficiaries" fill={isActive ? "#335F32" : "white"} />
+        <Icons iconName="beneficiaries" fill={isActive ? "#03eb0b" : "white"} />
       ),
       canView: true,
     },
@@ -24,7 +24,7 @@ export const getTopNavList = () => {
       title: "Package/Plans",
       path: "/package-plans",
       icon: (isActive: boolean) => (
-        <Icons iconName="packages" fill={isActive ? "#335F32" : "white"} />
+        <Icons iconName="packages" fill={isActive ? "#03eb0b" : "white"} />
       ),
       canView: true,
     },
@@ -32,7 +32,7 @@ export const getTopNavList = () => {
       title: "Notifications",
       path: "/notifications",
       icon: (isActive: boolean) => (
-        <Icons iconName="notifications" fill={isActive ? "#335F32" : "white"} />
+        <Icons iconName="notifications" fill={isActive ? "#03eb0b" : "white"} />
       ),
       canView: true,
     },
@@ -47,7 +47,7 @@ export const getBottomNavList = () => {
       title: "Support",
       path: "/support",
       icon: (isActive: boolean) => (
-        <Icons iconName="support" fill={isActive ? "#335F32" : "white"} />
+        <Icons iconName="support" fill={isActive ? "#03eb0b" : "white"} />
       ),
       canView: true,
     },
@@ -55,15 +55,15 @@ export const getBottomNavList = () => {
       title: "Settings",
       path: "/settings",
       icon: (isActive: boolean) => (
-        <Icons iconName="settings" fill={isActive ? "#335F32" : "white"} />
+        <Icons iconName="settings" fill={isActive ? "#03eb0b" : "white"} />
       ),
       canView: true,
     },
     {
       title: "Log Out",
       path: "/log-out",
-      icon: (isActive: boolean) => (
-        <Icons iconName="logOut" fill={isActive ? "#335F32" : "white"} />
+      icon: () => (
+        <Icons iconName="logOut" fill={"white"} />
       ),
       canView: true,
     },

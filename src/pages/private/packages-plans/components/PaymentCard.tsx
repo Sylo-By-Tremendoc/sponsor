@@ -1,42 +1,45 @@
 import { FieldLabelText } from "@/components/common/FormHelper";
 import Icons from "@/components/common/Icons";
 import Typography from "@/components/common/Typography";
+import { cn } from "@/utils/class-name";
 import { HiOutlineTrash } from "react-icons/hi";
 
-export type PaymentCardProps = {
+export type PaymentCardInfo = {
   id: string;
   cardHolderName: string;
   cardNumber: string;
   expiryDate: string;
   cvc: string;
-  type?: "default" | "secondary";
-  onDelete?: (val: any) => void;
+  type?: string;
 };
 
 const PaymentCard = ({
-  id,
-  cardHolderName,
-  cardNumber,
-  expiryDate,
-  cvc,
-  type = "default",
+  cardDetails,
   onDelete,
-}: PaymentCardProps) => {
+  className,
+}: {
+  cardDetails: PaymentCardInfo;
+  onDelete?: (val: any) => void;
+  className?: string;
+}) => {
   // Show only last 3 digits
-  const maskedNumber = `XXXX XXXX XXXX ${cardNumber.slice(-3)}`;
+  const maskedNumber = `XXXX XXXX XXXX ${cardDetails?.cardNumber.slice(-3)}`;
 
   return (
     <div
-      className={`flex flex-col justify-between gap-5 p-4 border rounded-2xl min-h-[187px] ${
-        type === "default"
-          ? "bg-white border-mid-grey"
-          : "bg-gray-50 border-gray-200"
-      }`}
+      className={cn(
+        "flex flex-col justify-between gap-5 p-4 border rounded-2xl min-h-[187px] bg-white border-mid-grey",
+        className
+      )}
     >
       <div className="space-y-1">
-        <Typography variant={"mediumTextSemibold"}>{cardHolderName}</Typography>
+        <Typography variant={"mediumTextSemibold"}>
+          {cardDetails?.cardHolderName}
+        </Typography>
         <Typography variant={"xSmallText"} className="text-charcoal-gray">
-          {type === "default" ? "Default Payment Method" : "Secondary Card"}
+          {cardDetails?.type === "default"
+            ? "Default Payment Method"
+            : "Secondary Card"}
         </Typography>
       </div>
 
@@ -51,10 +54,10 @@ const PaymentCard = ({
             <FieldLabelText view label="Expires" />
             <Typography variant={"xSmallTextBold"} className="mt-1">
               {(() => {
-                if (!expiryDate) return "";
-                const date = new Date(expiryDate);
+                if (!cardDetails?.expiryDate) return "";
+                const date = new Date(cardDetails?.expiryDate);
                 const month = (date.getMonth() + 1).toString().padStart(2, "0");
-                const year = date.getFullYear().toString().slice(-2); // last 2 digits
+                const year = date.getFullYear().toString().slice(-2);
                 return `${month}/${year}`;
               })()}
             </Typography>
@@ -62,22 +65,14 @@ const PaymentCard = ({
           <div>
             <FieldLabelText view label="CVC" />
             <Typography variant={"xSmallTextBold"} className="mt-1">
-              {cvc}
+              {cardDetails?.cvc}
             </Typography>
           </div>
         </div>
 
         <button
           className="bg-feint-grey hover:bg-light-danger rounded-lg p-2 cursor-pointer"
-          onClick={() =>
-            onDelete?.({
-              id,
-              cardHolderName,
-              cardNumber,
-              expiryDate,
-              cvc,
-            })
-          }
+          onClick={() => onDelete?.(cardDetails)}
         >
           <HiOutlineTrash className="text-danger" />
         </button>

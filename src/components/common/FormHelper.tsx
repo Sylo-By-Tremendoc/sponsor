@@ -24,7 +24,7 @@ export const FieldLabelText = ({
       <Tooltip>
         <TooltipTrigger>
           <TooltipContent side="right" sideOffset={8} className="bg-white mr-">
-            <Typography variant="subTextSemibold" className="pl-[5px] max-w-60">
+            <Typography variant="subText" className="pl-[5px] max-w-60">
               {infoDescription}
             </Typography>
           </TooltipContent>
@@ -39,7 +39,7 @@ export const FieldLabelText = ({
 
     <Typography
       as={"span"}
-      variant={view ? "xSmallText" : "xSmallTextBold"}
+      variant={view ? "xSmallText" : "xSmallTextSemibold"}
       className={clsx("", view && "text-charcoal-gray", {
         " after:content-['*'] after:ml-0.5 after:text-danger": required,
       })}

@@ -11,12 +11,14 @@ import Location from "./Location";
 import OurPartners from "./OurPartners";
 import TrustedPartners from "./TrustedPartners";
 import WhyThisMatters from "./WhyThisMatters";
+import { useNavigate } from "react-router-dom";
 
 export type SectionParam = {
   setShowGetStartedModal: (val: boolean) => void;
-}
+};
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const sections = [
     { id: "hero", label: "Main Section" },
     { id: "why-this-matters", label: "Why This Matters" },
@@ -63,6 +65,7 @@ const HomePage = () => {
         <GetStartedModal
           showGetStartedModal={showGetStartedModal}
           setShowGetStartedModal={setShowGetStartedModal}
+          handleContinue={() => navigate("/pricing")}
         />
       </div>
 

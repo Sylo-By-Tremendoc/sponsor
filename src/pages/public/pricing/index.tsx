@@ -10,9 +10,11 @@ import Testimonials from "./Testimonials";
 import { useState } from "react";
 import GetStartedModal from "../home/GetStartedModal";
 import DifferentMarketPricing from "./DifferentMarketPricing";
-import NoLocationOrAgeRangeSelected from "./components/NOLocationOrAgeRangeSelected";
+import { useNavigate } from "react-router-dom";
+import NoLocationOrAgeRangeSelected from "./components/NoLocationOrAgeRangeSelected";
 
 const Pricing = () => {
+  const navigate = useNavigate();
   const location = useBeneficiaryStore((state) => state.location);
   const ageRange = useBeneficiaryStore((state) => state.ageRange);
 
@@ -45,7 +47,9 @@ const Pricing = () => {
         ) : (
           <>
             <section id="different-market-pricing">
-              <DifferentMarketPricing />
+              <DifferentMarketPricing
+                onClick={(id) => navigate(`/package-plans/plans/${id}`)}
+              />
             </section>
             <section id="compare-plans">
               <ComparePlans />
@@ -67,6 +71,7 @@ const Pricing = () => {
         <GetStartedModal
           showGetStartedModal={showGetStartedModal}
           setShowGetStartedModal={setShowGetStartedModal}
+          handleContinue={() => setShowGetStartedModal(false)}
         />
       </div>
 

@@ -189,7 +189,15 @@ export const countryData = [
   { id: "ZW", name: "Zimbabwe" },
 ];
 
-export const ageRanges = ["18 - 25", "26 - 35", "36 - 45", "46 - 60", "60+"];
+// export const ageRanges = ["18 - 25", "26 - 35", "36 - 45", "46 - 60", "60+"];
+export const ageRanges = [
+  { id: "18-25", label: "18 - 25 Years" },
+  { id: "26-35", label: "26 - 35 Years" },
+  { id: "36-45", label: "36 - 45 Years" },
+  { id: "46-55", label: "46 - 55 Years" },
+  { id: "56-65", label: "56 - 65 Years" },
+  { id: "65+", label: "65+ Years" },
+];
 
 export const sponsorCountries = [
   {

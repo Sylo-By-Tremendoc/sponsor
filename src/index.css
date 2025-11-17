@@ -85,3 +85,7 @@
   height: 3px !important;
   border-radius: 10px;
 }
+
+button {
+  cursor: pointer;
+}

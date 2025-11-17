@@ -10,6 +10,7 @@ import Typography from "../../../components/common/Typography";
 import { HiChevronDown, HiChevronLeft, HiChevronRight } from "react-icons/hi";
 import SkeletonLoader from "../../../components/common/SkeletonLoader";
 import {
+  ageRanges,
   beneficiaryCountries,
   convertPrice,
   convertToTitleCase,
@@ -20,6 +21,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { TESTIMONIALS } from "./Testimonials";
 import { useBeneficiaryStore } from "@/store/beneficiary-store";
 import type { Country } from "@/types/country";
+import { FiUser } from "react-icons/fi";
 
 export type PlansPricing = {
   id: string;
@@ -217,42 +219,47 @@ export const SelectMarketDropdown = ({
 };
 
 export const PricePlanCard = ({
-  plans,
+  plan,
   paymentPlan,
+  onClick,
 }: {
-  plans: PlansPricing;
+  plan: PlansPricing;
   paymentPlan: string;
+  onClick: (val: string) => void;
 }) => {
   return (
     <div className="flex flex-col justify-between bg-white transition-all duration-300 rounded-2xl p-6 border border-[#E5E5E5] shadow-[0_1px_4px_rgba(0,0,0,0.05)] space-y-5 w-full max-w-sm hover:-translate-y-1 hover:border-[#2BAC0B] hover:shadow-[0_4px_12px_rgba(43,172,11,0.1)] cursor-pointer">
       {/* Header */}
       <div>
         <Typography variant="xSmallTextSemibold" className="mb-1 text-gray-900">
-          {plans.name}
+          {plan?.name}
         </Typography>
         <Typography variant="xxSmallTextSemibold" className="text-gray-600">
           Age:{" "}
           <span className="font-normal text-charcoal-gray">
-            {plans.ageRange}
+            {plan?.ageRange}
           </span>
         </Typography>
       </div>
 
       <div className="flex items-baseline gap-1">
         <Typography variant="xxlargeTextBold" className="text-[#2BAC0B]">
-          {convertPrice(plans.price)}
+          {convertPrice(plan?.price)}
         </Typography>
         <Typography variant="smallText" className="text-gray-500">
-          / {convertToTitleCase(paymentPlan || plans.paymentPlan)}
+          / {convertToTitleCase(paymentPlan || plan?.paymentPlan)}
         </Typography>
       </div>
 
-      <Button className="w-full bg-[#2BAC0B] hover:bg-[#249009] text-white">
+      <Button
+        className="w-full bg-[#2BAC0B] hover:bg-[#249009] text-white"
+        onClick={() => onClick(plan?.id)}
+      >
         Buy Package
       </Button>
 
       <div className="space-y-3 pt-3 border-t border-gray-100">
-        {plans.features.map((feature, index) => (
+        {plan?.features.map((feature, index) => (
           <div key={index} className="flex items-center gap-2">
             <Icons iconName="check" className="w-4 h-4 text-[#2BAC0B]" />
             <Typography variant="xSmallText" className="text-charcoal-gray">
@@ -331,5 +338,181 @@ export const TestimonialCard = () => {
         </motion.div>
       </AnimatePresence>
     </div>
+  );
+};
+
+export const DisplayAgeRangeDropdown = () => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  const ageRange = useBeneficiaryStore((state) => state.ageRange);
+  const setAgeRange = useBeneficiaryStore((state) => state.setAgeRange);
+
+  const selectedAgeRange = ageRanges.find((r) => r.id === ageRange);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return <SkeletonLoader className="h-[35px] w-[140px] rounded-full" />;
+  }
+
+  return (
+    <SelectAgeRangeDropdown
+      selectedAgeRange={selectedAgeRange}
+      setAgeRange={setAgeRange}
+    >
+      <button
+        className="
+          flex items-center justify-between
+          gap-2 h-8.5
+          rounded-lg border border-gray-300
+          bg-white hover:bg-gray-50
+          px-3 text-sm font-medium text-gray-800
+          transition-colors
+        "
+      >
+        <span className="flex items-center gap-2">
+          <FiUser className="text-gray-700 w-4 h-4" />
+
+          <Typography variant="xSmallText">
+            {selectedAgeRange?.label ?? "Select Age Range"}
+          </Typography>
+        </span>
+
+        <HiChevronDown
+          size={14}
+          className="text-gray-700 transition-transform duration-300 group-data-[state=open]:rotate-180"
+        />
+      </button>
+    </SelectAgeRangeDropdown>
+  );
+};
+
+export const SelectAgeRangeDropdown = ({
+  children,
+  sameWidthAsTrigger,
+  selectedAgeRange,
+  setAgeRange,
+}: {
+  children: React.ReactNode;
+  sameWidthAsTrigger?: boolean;
+  selectedAgeRange?: { id: string; label: string } | null;
+  setAgeRange: (range: string) => void;
+}) => {
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const filtered = ageRanges.filter((r) =>
+    r.label.toLowerCase().includes(query.trim().toLowerCase())
+  );
+
+  // focus on search when dropdown opens
+  useEffect(() => {
+    if (!open) return;
+    const t = setTimeout(() => inputRef.current?.focus(), 60);
+    return () => clearTimeout(t);
+  }, [open]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const first = filtered[0];
+      if (first) {
+        setQuery("");
+        setOpen(false);
+        setAgeRange(first.id);
+      }
+    }
+  };
+
+  return (
+    <DropdownMenu open={open} onOpenChange={(v) => setOpen(v)}>
+      <DropdownMenuTrigger asChild className="group">
+        {children}
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent
+        wrapperClassName="rounded-2xl overflow-hidden"
+        className="rounded-xl p-0 bg-white shadow-md w-52"
+        sameWidthAsTrigger={sameWidthAsTrigger}
+        align="end"
+      >
+        {/* Search input */}
+        <div className="px-3 py-2">
+          <div className="flex items-center gap-2 border border-[#E8E8E8] rounded-lg px-3 py-2">
+            <svg
+              className="w-5 h-5 text-gray-400"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden
+            >
+              <path
+                d="M21 21l-4.35-4.35"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <circle
+                cx="11"
+                cy="11"
+                r="6"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+
+            <input
+              ref={inputRef}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Search age range"
+              className="bg-transparent outline-none text-xs w-full placeholder-gray-400"
+              aria-label="Search age range"
+            />
+          </div>
+        </div>
+
+        {/* List */}
+        <div className="max-h-46 overflow-auto px-2 py-1">
+          {filtered.length === 0 ? (
+            <div className="px-3 py-2 text-xs text-gray-500">No results</div>
+          ) : (
+            filtered.map((range) => {
+              const isSelected = selectedAgeRange?.id === range.id;
+
+              return (
+                <DropdownMenuItem
+                  key={range.id}
+                  onClick={() => {
+                    setQuery("");
+                    setOpen(false);
+                    setAgeRange(range.id);
+                  }}
+                  className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg cursor-pointer transition ${
+                    isSelected ? "bg-green-50" : "hover:bg-gray-50"
+                  }`}
+                >
+                  <Typography
+                    variant={"smallText"}
+                    className="text-charcoal-gray"
+                  >
+                    {range.label}
+                  </Typography>
+
+                  {isSelected && (
+                    <BiCheck className="text-green-600" size={18} />
+                  )}
+                </DropdownMenuItem>
+              );
+            })
+          )}
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };

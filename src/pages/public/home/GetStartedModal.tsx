@@ -6,30 +6,29 @@ import worldMapImg from "../../../assets/images/world-map.png";
 import Icons from "@/components/common/Icons";
 import { useBeneficiaryStore } from "@/store/beneficiary-store";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 
 const GetStartedModal = ({
   showGetStartedModal,
   setShowGetStartedModal,
+  handleContinue,
 }: {
   showGetStartedModal: boolean;
   setShowGetStartedModal: (val: boolean) => void;
+  handleContinue: () => void;
 }) => {
-  const navigate = useNavigate();
   const location = useBeneficiaryStore((state) => state.location);
   const ageRange = useBeneficiaryStore((state) => state.ageRange);
   const setLocation = useBeneficiaryStore((state) => state.setLocation);
   const setAgeRange = useBeneficiaryStore((state) => state.setAgeRange);
 
-  const handleContinue = () => {
+  const handleSubmit = () => {
     if (!location)
       return toast.error("Please select the beneficiary's country.");
 
     if (!ageRange)
       return toast.error("Please select the beneficiary's age range.");
 
-    navigate("/pricing");
-    setShowGetStartedModal(false);
+    handleContinue();
   };
 
   return (
@@ -127,17 +126,17 @@ const GetStartedModal = ({
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
             {ageRanges?.map((age) => {
-              const active = ageRange === age;
+              const active = ageRange === age?.id;
 
               return (
                 <button
-                  key={age}
-                  onClick={() => setAgeRange(age)}
+                  key={age?.id}
+                  onClick={() => setAgeRange(age?.id)}
                   className={`px-4 py-3 border rounded-xl text-left transition-all cursor-pointer
                ${active ? "border-primary bg-green-50" : "border-gray-300"}
              `}
                 >
-                  <Typography className="font-medium">{age}</Typography>
+                  <Typography className="font-medium">{age?.id}</Typography>
                 </button>
               );
             })}
@@ -148,7 +147,7 @@ const GetStartedModal = ({
         <DialogFooter className="pt-6">
           <Button
             className="w-full md:w-48 not-odd:text-white"
-            onClick={handleContinue}
+            onClick={handleSubmit}
           >
             Continue
           </Button>

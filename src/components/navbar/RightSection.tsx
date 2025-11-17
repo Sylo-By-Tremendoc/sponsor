@@ -23,7 +23,7 @@ const RightSection = () => {
 
 export default RightSection;
 
-const DisplaySponsorDropdown = () => {
+export const DisplaySponsorDropdown = () => {
   const [isMounted, setIsMounted] = useState(false);
   const sponsor = useSponsorStore((state) => state.sponsor);
   const changeSponsor = useSponsorStore((state) => state.changeSponsor);

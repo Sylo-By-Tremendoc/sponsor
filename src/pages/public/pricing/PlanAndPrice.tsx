@@ -1,10 +1,11 @@
+import { cn } from "@/utils/class-name";
 import Pill from "../../../components/common/Pill";
 import Typography from "../../../components/common/Typography";
 import { Section, TitleText } from "../home/components";
 
-const PlanAndPrice = () => {
+const PlanAndPrice = ({className}: {className?: string}) => {
   return (
-    <Section className="space-y-10 py-10!">
+    <Section className={cn("space-y-10 py-10!", className)}>
       <div className="flex flex-col items-center md:items-start space-y-3">
         <Pill text="PLANS AND PRICING" />
         <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-3 md:gap-8 300 w-full">

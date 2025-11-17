@@ -18,6 +18,8 @@ import Support from "./pages/private/support";
 import SingleBeneficiaryDetails from "./pages/private/beneficiaries/SingleBeneficiaryDetails";
 import PublicLayout from "./pages/public";
 import Profile from "./pages/private/profile";
+import Plans from "./pages/private/packages-plans/plans";
+import PlanPayment from "./pages/private/packages-plans/plans/PlanPayment";
 
 const router = createBrowserRouter(
   [
@@ -63,7 +65,13 @@ const router = createBrowserRouter(
             },
             {
               path: "/package-plans",
-              element: <PackagePlans />,
+              children: [
+                { path: "", element: <PackagePlans /> },
+                {
+                  path: "/package-plans/plans",
+                  element: <Plans />,
+                },
+              ],
             },
             {
               path: "/notifications",
@@ -82,6 +90,10 @@ const router = createBrowserRouter(
               element: <Profile />,
             },
           ],
+        },
+        {
+          path: "/package-plans/plans/:id",
+          element: <PlanPayment />,
         },
       ],
     },
