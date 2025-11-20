@@ -40,7 +40,6 @@ const Location = ({ setShowGetStartedModal }: SectionParam) => {
           flag="https://flagcdn.com/w160/ca.png"
           label="Canada"
           style={{ top: "18%", left: "16%" }} // northern North America
-          glow
         />
         <CountryMarker
           flag="https://flagcdn.com/w160/us.png"
@@ -51,12 +50,12 @@ const Location = ({ setShowGetStartedModal }: SectionParam) => {
           flag="https://flagcdn.com/w160/gb.png"
           label="UK"
           style={{ top: "10%", left: "52%" }} // United Kingdom / Western Europe
-          glow
         />
         <CountryMarker
           flag="https://flagcdn.com/w160/gh.png"
           label="Ghana"
           style={{ top: "47%", left: "42%" }} // West Africa
+          glow
         />
         <CountryMarker
           flag="https://flagcdn.com/w160/ng.png"
@@ -68,12 +67,14 @@ const Location = ({ setShowGetStartedModal }: SectionParam) => {
           flag="https://flagcdn.com/w160/ke.png"
           label="Kenya"
           style={{ top: "52%", left: "56%" }} // East Africa
+          glow
         />
-        <CountryMarker
+        {/* <CountryMarker
           flag="https://flagcdn.com/w160/in.png"
           label="India"
           style={{ top: "42%", left: "78%" }} // India / South Asia
-        />
+          glow
+        /> */}
       </motion.div>
 
       <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

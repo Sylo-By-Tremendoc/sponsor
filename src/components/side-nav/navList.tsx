@@ -5,6 +5,14 @@ import CustomDialog, { DialogFooter } from "../common/modals/Dialog";
 export const getTopNavList = () => {
   const navList = [
     {
+      title: "Notifications",
+      path: "/notifications",
+      icon: (isActive: boolean) => (
+        <Icons iconName="notifications" fill={isActive ? "#03eb0b" : "white"} />
+      ),
+      canView: true,
+    },
+    {
       title: "Dashboard",
       path: "/dashboard",
       icon: (isActive: boolean) => (
@@ -29,10 +37,10 @@ export const getTopNavList = () => {
       canView: true,
     },
     {
-      title: "Notifications",
-      path: "/notifications",
+      title: "Messages",
+      path: "/messages",
       icon: (isActive: boolean) => (
-        <Icons iconName="notifications" fill={isActive ? "#03eb0b" : "white"} />
+        <Icons iconName="messages" fill={isActive ? "#03eb0b" : "white"} />
       ),
       canView: true,
     },
@@ -62,9 +70,7 @@ export const getBottomNavList = () => {
     {
       title: "Log Out",
       path: "/log-out",
-      icon: () => (
-        <Icons iconName="logOut" fill={"white"} />
-      ),
+      icon: () => <Icons iconName="logOut" fill={"white"} />,
       canView: true,
     },
   ];

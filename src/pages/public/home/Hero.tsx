@@ -2,12 +2,18 @@ import { motion } from "motion/react";
 import { Section } from "./components";
 import { beneficiaryCountries, convertPrice } from "../../../utils/constant";
 import type { SectionParam } from ".";
+import heroImg from "../../../assets/images/hero-image.png";
 
 const Hero = ({ setShowGetStartedModal }: SectionParam) => {
   return (
     <div>
       {/* HERO SECTION */}
-      <section className="flex flex-col md:flex-row justify-between md:items-end px-6 md:px-16 py-10 md:pt-48 gap-5 bg-[#0D0D0D] text-white rounded-b-4xl overflow-hidden">
+      <section
+        style={{ backgroundImage: `url(${heroImg})` }}
+        className="relative h-[90vh] flex flex-col md:flex-row justify-between md:items-end px-6 md:px-16 py-10 pt-16 md:pt-6 gap-5 bg-[#0D0D0D] text-white rounded-b-4xl overflow-hidden bg-cover bg-center bg-no-repeat "
+      >
+        <div className="absolute inset-0 bg-black/30"></div>
+
         {/* Active Users */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -15,7 +21,11 @@ const Hero = ({ setShowGetStartedModal }: SectionParam) => {
           transition={{ duration: 0.7 }}
           viewport={{ once: true }}
         >
-          <div className="flex items-center bg-[#111] border border-gray-700 rounded-2xl p-5 space-x-3 shadow-lg hover:scale-[1.02] transition-transform duration-300">
+          <div
+            className="flex items-center bg-white/10 backdrop-blur-xs border border-white/20
+    rounded-2xl p-5 space-x-3 shadow-lg"
+          >
+            {" "}
             <div className="flex -space-x-2">
               {[
                 "https://randomuser.me/api/portraits/women/1.jpg",
@@ -32,7 +42,6 @@ const Hero = ({ setShowGetStartedModal }: SectionParam) => {
                 />
               ))}
             </div>
-
             <div>
               <p className="text-2xl text-white font-semibold">12K+</p>
               <p className="text-gray-400 text-xs">• Active users worldwide</p>
@@ -46,7 +55,7 @@ const Hero = ({ setShowGetStartedModal }: SectionParam) => {
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="md:w-1/2"
+          className="relative md:w-1/2"
         >
           <h1 className="text-5xl font-semibold leading-tight mb-8 bg-linear-to-r from-white via-white/90 to-primary bg-clip-text text-transparent">
             Send Healthcare <br /> Home, Just Like you <br /> Send Money.

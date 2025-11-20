@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import partnersImg from "../../../assets/images/partners.png";
+import partnersVideo from "../../../assets/images/partners-video.mp4";
 import { Button } from "../../../components/common/Button";
 import Pill from "../../../components/common/Pill";
 import { Section, TitleText } from "./components";
@@ -74,12 +74,15 @@ const TrustedPartners = ({ setShowGetStartedModal }: SectionParam) => {
         whileInView={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6 }}
       >
-        <img
-          src={partnersImg}
-          alt="Consultation"
+        <video
+          src={partnersVideo}
           width={1200}
           height={600}
           className="object-cover w-full h-[400px]"
+          autoPlay
+          loop
+          muted
+          playsInline
         />
       </motion.div>
 

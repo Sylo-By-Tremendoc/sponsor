@@ -20,6 +20,9 @@ import PublicLayout from "./pages/public";
 import Profile from "./pages/private/profile";
 import Plans from "./pages/private/packages-plans/plans";
 import PlanPayment from "./pages/private/packages-plans/plans/PlanPayment";
+import Messages from "./pages/private/messages";
+import SecuritySettings from "./pages/private/settings/security";
+import NotificationSettings from "./pages/private/settings/notification";
 
 const router = createBrowserRouter(
   [
@@ -78,12 +81,23 @@ const router = createBrowserRouter(
               element: <Notifications />,
             },
             {
+              path: "/messages",
+              element: <Messages />,
+            },
+            {
               path: "/support",
               element: <Support />,
             },
             {
               path: "/settings",
-              element: <Settings />,
+              children: [
+                { path: "", element: <Settings /> },
+                { path: "/settings/security", element: <SecuritySettings /> },
+                {
+                  path: "/settings/notification",
+                  element: <NotificationSettings />,
+                },
+              ],
             },
             {
               path: "/profile",

@@ -14,7 +14,7 @@ import useAuth from "@/hooks/use-auth";
 
 const RightSection = () => {
   return (
-    <div className="hidden xl:flex items-center gap-6">
+    <div className="hidden xl:flex items-center gap-4">
       <DisplaySponsorDropdown />
       <DisplayUserDropdown />
     </div>
@@ -98,7 +98,7 @@ const DisplayUserDropdown = () => {
   ) : (
     <Link
       to={"/account/login"}
-      className={cn(buttonVariants({ variant: "filled" }), "text-white")}
+      className={cn(buttonVariants({ variant: "filled" }), "px-4 py-1 h-8 text-xs text-white")}
     >
       <BiLogIn size={18} />
       Login

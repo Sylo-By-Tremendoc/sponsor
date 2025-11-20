@@ -50,8 +50,7 @@ const SideNav = () => {
                       variant="smallText"
                       className={cn(
                         "text-sm text-gray-700 group-hover:text-primary group-hover:translate-x-2.5 font-medium transition-transform duration-300",
-                        isActive &&
-                          "translate-x-2.5 group-hover:text-gray-700"
+                        isActive && "translate-x-2.5 group-hover:text-gray-700"
                       )}
                     >
                       {item.title}
@@ -119,8 +118,7 @@ const SideNav = () => {
                       variant="smallText"
                       className={cn(
                         "text-sm text-gray-700 group-hover:text-primary group-hover:translate-x-2.5 font-medium transition-transform duration-300",
-                        isActive &&
-                          "translate-x-2.5 group-hover:text-gray-700"
+                        isActive && "translate-x-2.5 group-hover:text-gray-700"
                       )}
                     >
                       {item.title}

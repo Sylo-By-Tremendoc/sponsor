@@ -2,6 +2,8 @@ import { useState } from "react";
 import { cn } from "../../utils/class-name";
 import RightSection from "./RightSection";
 import { Link } from "react-router-dom";
+import Icons from "../common/Icons";
+import Typography from "../common/Typography";
 
 const Navbar = ({ className }: { className?: string }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -19,17 +21,14 @@ const Navbar = ({ className }: { className?: string }) => {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 bg-[#0D0D0D] text-white py-4 px-6 md:px-16 flex justify-between items-center border-b border-gray-800",
+        "sticky top-0 z-50 text-white py-4 px-6 md:px-16 flex justify-between items-center",
         className
       )}
     >
       {/* Logo */}
-      <div className="flex items-center space-x-2">
-        <div className="flex items-center gap-1">
-          <span className="bg-primary w-4 h-4 rounded-full inline-block"></span>
-          <span className="text-primary font-semibold text-lg">sylo</span>
-        </div>
-        <span className="text-sm">By Tremendoc</span>
+      <div className="flex items-center gap-1">
+        <Icons iconName="logo" />
+        <Typography variant={"xSmallText"}>By Tremendoc</Typography>
       </div>
 
       {/* Desktop Nav */}
