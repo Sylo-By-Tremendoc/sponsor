@@ -4,20 +4,27 @@ import ConversationsList from "./components/ConversationsList";
 import ChatWindow from "./components/ChartWindow";
 import type { Conversation, Message } from "@/types/message";
 import { mockConversations } from "@/mockData";
+import Container from "@/components/common/Container";
+import MobileChatDrawer from "./components/MobileChatDrawer";
+import { useMediaQuery } from "react-responsive";
 
 const Messages = () => {
+  const isMobile = useMediaQuery({ query: "(max-width: 600px)" });
   const [conversations, setConversations] =
     useState<Conversation[]>(mockConversations);
 
-  const [activeConvId, setActiveConvId] = useState(conversations[0]?.id);
-  const activeConversation = useMemo(
-    () => conversations?.find((c) => c?.id === activeConvId) ?? conversations[0],
-    [conversations, activeConvId]
-  );
+  // const [activeConvId, setActiveConvId] = useState(conversations[0]?.id);
+  const [activeConvId, setActiveConvId] = useState("");
+
+  const activeConversation = useMemo(() => {
+    return conversations?.find((c) => c.id === activeConvId) || null;
+  }, [conversations, activeConvId]);
 
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
+  const [isOpenMobileChatDrawer, setIsOpenMobileChatDrawer] = useState(false);
+
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const messageListRef = useRef<HTMLDivElement | null>(null);
 
@@ -26,7 +33,7 @@ const Messages = () => {
     if (!messageListRef.current) return;
     const el = messageListRef.current;
     el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-  }, [activeConversation.messages.length, activeConvId]);
+  }, [activeConversation?.messages.length, activeConvId]);
 
   // Simulate remote typing for demo
   useEffect(() => {
@@ -97,7 +104,7 @@ const Messages = () => {
   };
 
   return (
-    <div className="space-y-4 h-full">
+    <Container className="space-y-4 h-full">
       <Typography variant="largeTextBold">Messages</Typography>
 
       <div className="flex rounded-2xl overflow-hidden h-[96%]">
@@ -106,20 +113,39 @@ const Messages = () => {
           activeId={activeConvId}
           query={query}
           setQuery={setQuery}
-          onSelect={setActiveConvId}
+          onSelect={(id) => {
+            setActiveConvId(id);
+
+            if (isMobile) {
+              setIsOpenMobileChatDrawer(true);
+            }
+          }}
         />
 
         <ChatWindow
-          conversation={activeConversation}
+          conversation={activeConversation!}
           draft={draft}
           setDraft={setDraft}
           onSend={handleSend}
           onAttach={handleAttach}
           attached={attachedFile}
           sending={sending}
+          isMobile={false}
         />
       </div>
-    </div>
+
+      <MobileChatDrawer
+        conversation={activeConversation!}
+        draft={draft}
+        setDraft={setDraft}
+        onSend={handleSend}
+        onAttach={handleAttach}
+        attached={attachedFile}
+        sending={sending}
+        isOpen={isOpenMobileChatDrawer}
+        setIsOpen={setIsOpenMobileChatDrawer}
+      />
+    </Container>
   );
 };
 

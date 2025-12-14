@@ -15,6 +15,7 @@ import salesImg from "../../../assets/images/sales-questions.png";
 import usageGuideImg from "../../../assets/images/usage-guide.png";
 import informationImg from "../../../assets/images/information.png";
 import LineThrough from "@/components/common/LineThrough";
+import Container from "@/components/common/Container";
 
 const Support = () => {
   const categories = [
@@ -58,11 +59,11 @@ const Support = () => {
   const [selected, setSelected] = useState(categories[1]);
 
   return (
-    <div className="space-y-5">
+    <Container className="space-y-5">
       <Typography variant={"largeTextBold"}>Support & Help Center</Typography>
 
       <div className="w-full p-5 bg-white rounded-2xl">
-        <h2 className="text-xl font-semibold">Welcome to Tremendoc Support</h2>
+        <Typography variant={"mediumTextSemibold"}>Welcome to Tremendoc Support</Typography>
 
         {/* Search Bar */}
         <div className="flex items-center gap-2 mt-4 w-full md:w-[50%]">
@@ -79,10 +80,10 @@ const Support = () => {
         </div>
 
         <div className="mt-7">
-          <p className="font-semibold">Need help? We’ve got your back</p>
-          <p className="text-sm">
+          <Typography variant={"smallTextSemibold"} className="font-semibold">Need help? We’ve got your back</Typography>
+          <Typography variant={"xSmallText"}>
             Perhaps you can find the answers in our collections
-          </p>
+          </Typography>
         </div>
 
         <div className="grid sm:grid-cols-3 md:grid-cols-5 gap-4 mt-6">
@@ -109,7 +110,7 @@ const Support = () => {
         <div>
           <div className="flex items-center gap-2 text-xl font-semibold">
             <img src={selected.icon} className="w-[30px] h-[30px]" />
-            <h2>{selected.title}</h2>
+            <Typography variant={"mediumText"}>{selected.title}</Typography>
           </div>
           <Typography
             variant={"smallText"}
@@ -148,7 +149,7 @@ const Support = () => {
           </div>
         </div>
       </div>
-    </div>
+    </Container>
   );
 };
 

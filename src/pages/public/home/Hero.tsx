@@ -3,6 +3,7 @@ import { Section } from "./components";
 import { beneficiaryCountries, convertPrice } from "../../../utils/constant";
 import type { SectionParam } from ".";
 import heroImg from "../../../assets/images/hero-image.png";
+import Typography from "@/components/common/Typography";
 
 const Hero = ({ setShowGetStartedModal }: SectionParam) => {
   return (
@@ -10,7 +11,7 @@ const Hero = ({ setShowGetStartedModal }: SectionParam) => {
       {/* HERO SECTION */}
       <section
         style={{ backgroundImage: `url(${heroImg})` }}
-        className="relative h-[90vh] flex flex-col md:flex-row justify-between md:items-end px-6 md:px-16 py-10 pt-16 md:pt-6 gap-5 bg-[#0D0D0D] text-white rounded-b-4xl overflow-hidden bg-cover bg-center bg-no-repeat "
+        className="relative h-[90vh] flex flex-col md:flex-row justify-between md:items-end px-6 md:px-16 py-10 pt-16 md:pt-6 gap-5 bg-[#0D0D0D] text-white rounded-b-4xl overflow-hidden bg-cover bg-center bg-no-repeat"
       >
         <div className="absolute inset-0 bg-black/30"></div>
 
@@ -57,9 +58,13 @@ const Hero = ({ setShowGetStartedModal }: SectionParam) => {
           viewport={{ once: true }}
           className="relative md:w-1/2"
         >
-          <h1 className="text-5xl font-semibold leading-tight mb-8 bg-linear-to-r from-white via-white/90 to-primary bg-clip-text text-transparent">
+          <Typography
+            as="h1"
+            variant={"heading1Semibold"}
+            className="leading-tight mb-8 bg-gradient-to-r from-white via-white/90 to-primary bg-clip-text text-transparent"
+          >
             Send Healthcare <br /> Home, Just Like you <br /> Send Money.
-          </h1>
+          </Typography>
 
           <div className="flex flex-col md:flex-row md:items-center gap-4">
             <motion.button

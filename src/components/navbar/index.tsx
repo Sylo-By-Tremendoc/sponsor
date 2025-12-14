@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { cn } from "../../utils/class-name";
-import RightSection from "./RightSection";
+import RightSection from "./components/RightSection";
 import { Link } from "react-router-dom";
 import Icons from "../common/Icons";
 import Typography from "../common/Typography";

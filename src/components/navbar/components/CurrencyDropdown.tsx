@@ -4,33 +4,33 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../common/DropdownMenu";
+} from "../../common/DropdownMenu";
 import { useEffect, useRef, useState } from "react";
-import { sponsorCountries } from "@/utils/constant";
+import { CURRENCIES } from "@/utils/constant";
 
-export type SponsorDropdownParams = {
+export type CurrencyDropdownParams = {
   id: string;
   label: string;
   symbol: string;
   flag: string;
 };
 
-export const SponsorDropdown = ({
+export const CurrencyDropdown = ({
   children,
   sameWidthAsTrigger,
-  selectedSponsor,
-  changeSponsor,
+  selectedCurrency,
+  changeCurrency,
 }: {
   children: React.ReactNode;
   sameWidthAsTrigger?: boolean;
-  selectedSponsor?: SponsorDropdownParams;
-  changeSponsor?: (sponsor: SponsorDropdownParams) => void;
+  selectedCurrency?: CurrencyDropdownParams;
+  changeCurrency?: (currency: CurrencyDropdownParams) => void;
 }) => {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const filtered = sponsorCountries.filter((c) =>
+  const filtered = CURRENCIES.filter((c) =>
     c.label.toLowerCase().includes(query.trim().toLowerCase())
   );
 
@@ -38,7 +38,7 @@ export const SponsorDropdown = ({
     if (e.key === "Enter") {
       const first = filtered[0];
       if (first) {
-        changeSponsor?.(first);
+        changeCurrency?.(first);
         setOpen(false);
       }
     }
@@ -95,22 +95,22 @@ export const SponsorDropdown = ({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Search Sponsor"
+              placeholder="Search Currency"
               className="bg-transparent outline-none text-xs w-full placeholder-gray-400"
-              aria-label="Search Sponsor"
+              aria-label="Search Currency"
             />
           </div>
         </div>
 
         {/* List */}
         <div className="max-h-46 overflow-auto">
-          {filtered?.map((sponsor) => {
-            const isSelected = sponsor.id === selectedSponsor?.id;
+          {filtered?.map((currency) => {
+            const isSelected = currency.id === selectedCurrency?.id;
             return (
               <DropdownMenuItem
-                key={sponsor.id}
+                key={currency.id}
                 onClick={() => {
-                  changeSponsor?.(sponsor);
+                  changeCurrency?.(currency);
                   setOpen(false);
                   setQuery("");
                 }}
@@ -120,13 +120,18 @@ export const SponsorDropdown = ({
               >
                 <div className="flex items-center gap-3">
                   <img
-                    src={sponsor.flag}
-                    alt={sponsor.label}
+                    src={currency.flag}
+                    alt={currency.label}
                     className="w-6 h-6 rounded-full object-cover"
                   />
-                  <span className="text-xs font-medium text-charcoal-gray">
-                    {sponsor.label}
-                  </span>
+                  <p className="space-x-1">
+                    <span className="text-xs font-bold text-charcoal-gray">
+                      {currency.id}
+                    </span>
+                    <span className="text-[11px] text-charcoal-gray">
+                      {currency.label}
+                    </span>
+                  </p>
                 </div>
 
                 {isSelected ? (
@@ -141,56 +146,4 @@ export const SponsorDropdown = ({
   );
 };
 
-export default SponsorDropdown;
-
-export const CURRENCIES = [
-  {
-    id: "NGN",
-    flag: "https://flagcdn.com/w160/ng.png",
-    symbol: "₦",
-    label: "NGN",
-    name: "Nigerian Naira",
-  },
-  {
-    id: "GHS",
-    flag: "https://flagcdn.com/w160/gh.png",
-    symbol: "₵",
-    label: "GHS",
-    name: "Ghanaian Cedi",
-  },
-  {
-    id: "KES",
-    flag: "https://flagcdn.com/w160/ke.png",
-    symbol: "KSh",
-    label: "KES",
-    name: "Kenyan Shilling",
-  },
-  {
-    id: "CAD",
-    flag: "https://flagcdn.com/w160/ca.png",
-    symbol: "C$",
-    label: "CAD",
-    name: "Canadian Dollar",
-  },
-  {
-    id: "USD",
-    flag: "https://flagcdn.com/w160/us.png",
-    symbol: "$",
-    label: "USD",
-    name: "United States Dollar",
-  },
-  {
-    id: "GBP",
-    flag: "https://flagcdn.com/w160/gb.png",
-    symbol: "£",
-    label: "GBP",
-    name: "British Pound Sterling",
-  },
-  {
-    id: "INR",
-    flag: "https://flagcdn.com/w160/in.png",
-    symbol: "₹",
-    label: "INR",
-    name: "Indian Rupee",
-  },
-];
+export default CurrencyDropdown;

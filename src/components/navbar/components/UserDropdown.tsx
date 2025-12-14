@@ -4,10 +4,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../common/DropdownMenu";
+} from "../../common/DropdownMenu";
 import { BsEye } from "react-icons/bs";
 import { HiOutlineLogout } from "react-icons/hi";
-import Typography from "../common/Typography";
+import Typography from "../../common/Typography";
 
 const UserDropdown = ({
   children,
@@ -27,21 +27,21 @@ const UserDropdown = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent
         wrapperClassName=" rounded-2xl min-w-[150px]"
-        className=" rounded-[14px] p-1 bg-white shadow-md"
+        className=" rounded-[14px] p-0 bg-white shadow-md overflow-hidden"
         sameWidthAsTrigger={sameWidthAsTrigger}
         align="end"
       >
         <DropdownMenuItem asChild>
           <Link
             to={"/profile"}
-            className=" flex items-center space-x-2 text-xs hover:bg-primary! hover:text-white rounded-xl px-3"
+            className=" flex items-center space-x-2 text-xs hover:bg-light-grey  py-2 px-3"
           >
             <BsEye size={18} />
             <Typography variant={"xSmallText"}>View Profile</Typography>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem
-          className="flex items-center space-x-2 text-danger text-xs hover:text-red-600 hover:bg-red-50! rounded-xl px-3"
+          className="flex items-center space-x-2 text-danger text-xs hover:text-red-600 hover:bg-red-50 rounded-none py-2 px-3"
           onClick={handleLogOut}
         >
           <HiOutlineLogout size={18} />

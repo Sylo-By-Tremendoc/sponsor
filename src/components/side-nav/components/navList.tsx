@@ -1,6 +1,8 @@
-import { Button } from "../common/Button";
-import Icons from "../common/Icons";
-import CustomDialog, { DialogFooter } from "../common/modals/Dialog";
+import useAuth from "@/hooks/use-auth";
+import { Button } from "../../common/Button";
+import Icons from "../../common/Icons";
+import CustomDialog, { DialogFooter } from "../../common/modals/Dialog";
+import { useNavigate } from "react-router-dom";
 
 export const getTopNavList = () => {
   const navList = [
@@ -81,16 +83,24 @@ export const getBottomNavList = () => {
 export const ShowLogoutModal = ({
   showLogoutModal,
   setShowLogoutModal,
-  handleLogOut,
 }: {
   showLogoutModal: boolean;
   setShowLogoutModal: (val: boolean) => void;
-  handleLogOut: () => void;
 }) => {
+  const { setAuthUser } = useAuth();
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setAuthUser(null);
+    localStorage.clear();
+    navigate("/");
+  };
+
   return (
     <CustomDialog
       title={"Log out"}
-      description="Are you sure you want to log out? You will need to sign in again to continue."
+      description="Are you sure you want to log out? You will need to log in again to continue."
       openModal={showLogoutModal}
       onClose={() => setShowLogoutModal(false)}
       className="w-100"
@@ -107,10 +117,7 @@ export const ShowLogoutModal = ({
 
         <Button
           className="bg-danger text-white w-full"
-          onClick={() => {
-            handleLogOut();
-            setShowLogoutModal(false);
-          }}
+          onClick={handleLogout}
           aria-label="Confirm logout"
         >
           Log out

@@ -9,14 +9,7 @@ import {
 import Typography from "../../../components/common/Typography";
 import { HiChevronDown, HiChevronLeft, HiChevronRight } from "react-icons/hi";
 import SkeletonLoader from "../../../components/common/SkeletonLoader";
-import {
-  ageRanges,
-  beneficiaryCountries,
-  convertPrice,
-  convertToTitleCase,
-} from "../../../utils/constant";
-import { Button } from "../../../components/common/Button";
-import Icons from "../../../components/common/Icons";
+import { ageRanges, beneficiaryCountries } from "../../../utils/constant";
 import { motion, AnimatePresence } from "framer-motion";
 import { TESTIMONIALS } from "./Testimonials";
 import { useBeneficiaryStore } from "@/store/beneficiary-store";
@@ -54,7 +47,7 @@ export const DisplayMarketDropdown = () => {
       <button
         className="
           flex items-center justify-between
-          gap-2 h-8.5
+          gap-2 h-8
           rounded-lg border border-gray-300
           bg-white hover:bg-gray-50
           px-3 text-sm font-medium text-gray-800
@@ -218,60 +211,6 @@ export const SelectMarketDropdown = ({
   );
 };
 
-export const PricePlanCard = ({
-  plan,
-  paymentPlan,
-  onClick,
-}: {
-  plan: PlansPricing;
-  paymentPlan: string;
-  onClick: (val: string) => void;
-}) => {
-  return (
-    <div className="flex flex-col justify-between bg-white transition-all duration-300 rounded-2xl p-6 border border-[#E5E5E5] shadow-[0_1px_4px_rgba(0,0,0,0.05)] space-y-5 w-full max-w-sm hover:-translate-y-1 hover:border-[#2BAC0B] hover:shadow-[0_4px_12px_rgba(43,172,11,0.1)] cursor-pointer">
-      {/* Header */}
-      <div>
-        <Typography variant="xSmallTextSemibold" className="mb-1 text-gray-900">
-          {plan?.name}
-        </Typography>
-        <Typography variant="xxSmallTextSemibold" className="text-gray-600">
-          Age:{" "}
-          <span className="font-normal text-charcoal-gray">
-            {plan?.ageRange}
-          </span>
-        </Typography>
-      </div>
-
-      <div className="flex items-baseline gap-1">
-        <Typography variant="xxlargeTextBold" className="text-[#2BAC0B]">
-          {convertPrice(plan?.price)}
-        </Typography>
-        <Typography variant="smallText" className="text-gray-500">
-          / {convertToTitleCase(paymentPlan || plan?.paymentPlan)}
-        </Typography>
-      </div>
-
-      <Button
-        className="w-full bg-[#2BAC0B] hover:bg-[#249009] text-white"
-        onClick={() => onClick(plan?.id)}
-      >
-        Buy Package
-      </Button>
-
-      <div className="space-y-3 pt-3 border-t border-gray-100">
-        {plan?.features.map((feature, index) => (
-          <div key={index} className="flex items-center gap-2">
-            <Icons iconName="check" className="w-4 h-4 text-[#2BAC0B]" />
-            <Typography variant="xSmallText" className="text-charcoal-gray">
-              {feature}
-            </Typography>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 export const TestimonialCard = () => {
   const [index, setIndex] = useState(0);
   const testimonial = TESTIMONIALS[index];
@@ -365,7 +304,7 @@ export const DisplayAgeRangeDropdown = () => {
       <button
         className="
           flex items-center justify-between
-          gap-2 h-8.5
+          gap-2 h-8
           rounded-lg border border-gray-300
           bg-white hover:bg-gray-50
           px-3 text-sm font-medium text-gray-800

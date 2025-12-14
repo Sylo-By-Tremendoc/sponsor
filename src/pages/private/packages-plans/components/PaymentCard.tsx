@@ -11,6 +11,7 @@ export type PaymentCardInfo = {
   expiryDate: string;
   cvc: string;
   type?: string;
+  saveCard?: boolean;
 };
 
 const PaymentCard = ({

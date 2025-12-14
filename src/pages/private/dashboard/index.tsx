@@ -8,66 +8,69 @@ import { useNavigate } from "react-router-dom";
 import LineThrough from "@/components/common/LineThrough";
 import DashboardCard from "./DashboardCard";
 import Typography from "@/components/common/Typography";
-
-type Beneficiary = {
-  id: string;
-  name: string;
-  avatarUrl?: string;
-  relationship: string;
-  dateAdded: string;
-  packageName: string;
-  packageDuration: string;
-  status: "Active" | "Inactive";
-};
+import useAuth from "@/hooks/use-auth";
+import useGetAllBeneficiaries from "../beneficiaries/hooks/use-get-all-beneficiaries";
+import NetworkError from "@/pages/error/NetworkError";
+import type { BeneficiariesParams } from "@/types/beneficiary";
+import Container from "@/components/common/Container";
 
 const Dashboard = () => {
+  const { authUser } = useAuth();
   const navigate = useNavigate();
   const pagination = useSetPagination();
-  const [, setSearch] = useState("");
+  const [search, setSearch] = useState("");
 
-   const isLoading = false;
+  const { data, isLoading, isFetching, refetch, error } =
+    useGetAllBeneficiaries({
+      enabled: true,
+      pageNumber: pagination?.pageNumber,
+      pageSize: pagination?.pageSize,
+      search,
+    });
 
- const data: Beneficiary[] = [
-    {
-      id: "1",
-      name: "Lina Kabenski",
-      avatarUrl: "https://randomuser.me/api/portraits/men/2.jpg",
-      relationship: "Brother",
-      dateAdded: "16 Aug, 2024 - 10:00AM",
-      packageName: "Easy Care (Individual)",
-      packageDuration: "1 Month",
-      status: "Active",
-    },
-    {
-      id: "2",
-      name: "Gregory Henry",
-      relationship: "Child",
-      dateAdded: "16 Aug, 2024 - 10:00AM",
-      packageName: "Easy Care (Individual)",
-      packageDuration: "1 Month",
-      status: "Inactive",
-    },
+  // const isLoading = false;
 
-    {
-      id: "1",
-      name: "Lina Kabenski",
-      avatarUrl: "https://randomuser.me/api/portraits/men/2.jpg",
-      relationship: "Brother",
-      dateAdded: "16 Aug, 2024 - 10:00AM",
-      packageName: "Easy Care (Individual)",
-      packageDuration: "1 Month",
-      status: "Active",
-    },
-    {
-      id: "2",
-      name: "Gregory Henry",
-      relationship: "Child",
-      dateAdded: "16 Aug, 2024 - 10:00AM",
-      packageName: "Easy Care (Individual)",
-      packageDuration: "1 Month",
-      status: "Inactive",
-    },
-  ];
+  // const data: Beneficiary[] = [
+  //   {
+  //     id: "1",
+  //     name: "Lina Kabenski",
+  //     avatarUrl: "https://randomuser.me/api/portraits/men/2.jpg",
+  //     relationship: "Brother",
+  //     dateAdded: "16 Aug, 2024 - 10:00AM",
+  //     packageName: "Easy Care (Individual)",
+  //     packageDuration: "1 Month",
+  //     status: "Active",
+  //   },
+  //   {
+  //     id: "2",
+  //     name: "Gregory Henry",
+  //     relationship: "Child",
+  //     dateAdded: "16 Aug, 2024 - 10:00AM",
+  //     packageName: "Easy Care (Individual)",
+  //     packageDuration: "1 Month",
+  //     status: "Inactive",
+  //   },
+
+  //   {
+  //     id: "1",
+  //     name: "Lina Kabenski",
+  //     avatarUrl: "https://randomuser.me/api/portraits/men/2.jpg",
+  //     relationship: "Brother",
+  //     dateAdded: "16 Aug, 2024 - 10:00AM",
+  //     packageName: "Easy Care (Individual)",
+  //     packageDuration: "1 Month",
+  //     status: "Active",
+  //   },
+  //   {
+  //     id: "2",
+  //     name: "Gregory Henry",
+  //     relationship: "Child",
+  //     dateAdded: "16 Aug, 2024 - 10:00AM",
+  //     packageName: "Easy Care (Individual)",
+  //     packageDuration: "1 Month",
+  //     status: "Inactive",
+  //   },
+  // ];
 
   const analytics = [
     {
@@ -88,8 +91,7 @@ const Dashboard = () => {
     },
   ];
 
-
-  const columns: ColumnDef<Beneficiary>[] = [
+  const columns: ColumnDef<BeneficiariesParams>[] = [
     {
       header: "Beneficial",
       accessorKey: "name",
@@ -157,11 +159,15 @@ const Dashboard = () => {
       ),
     },
   ];
-  
+
+  if (error) return <NetworkError onClick={() => refetch()} />;
+
   return (
-    <div className="space-y-5">
+    <Container className="space-y-5">
       <div>
-        <Typography variant={"largeTextBold"}>Hi, Peter Omiwole</Typography>
+        <Typography variant={"largeTextBold"}>
+          Hi, {authUser?.user?.first_name} {authUser?.user?.last_name}
+        </Typography>
         <Typography variant={"smallText"} className="text-charcoal-gray pt-1">
           Check the latest update on your account
         </Typography>
@@ -185,18 +191,19 @@ const Dashboard = () => {
       <LineThrough className="py-3" />
 
       <CustomTable
-        data={data}
+        data={data || []}
         columns={columns}
-        isLoading={isLoading}
-        totalEntries={data?.length}
+        isLoading={isLoading || isFetching}
+        totalEntries={data?.length || 0}
         pageSize={pagination.pageSize}
         pageNumber={pagination.pageNumber || 1}
         onSearch={(search) => setSearch(search)}
         handlePageChange={pagination.handlePageChange}
         // handlePageSizeChange={pagination.handlePageSizeChange}
         onRowClick={(row) => navigate(`/beneficiaries/${row.original?.id}`)}
+        emptyText="No Beneficiary at the moment"
       />
-    </div>
+    </Container>
   );
 };
 

@@ -1,13 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import Typography from "../../../components/common/Typography";
 import { Button } from "@/components/common/Button";
+import useVerifySignupOTP from "./hooks/use-verify-otp";
+import { useSearchParams } from "react-router-dom";
+import { replaceEmptyStringsWithNull } from "@/utils/constant";
+import FullScreenLoader from "@/components/common/Loader";
+import { toast } from "react-toastify";
 
 const EnterOTP = ({ handleNext }: { handleNext: () => void }) => {
+ const [searchParams] = useSearchParams();
+  const email = searchParams.get("email");
+
   const otpLength = 6;
   const DURATION = 8 * 60; // 8 Minutes
   const [timeLeft, setTimeLeft] = useState(DURATION);
   const [canResend, setCanResend] = useState(false);
   const [isResending] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const verifySignupOTP = useVerifySignupOTP();
 
   // Format time as MM:SS
   const formatTime = (seconds: number) => {
@@ -94,10 +105,25 @@ const EnterOTP = ({ handleNext }: { handleNext: () => void }) => {
   const otp = digits.join("");
   const isValid = otp.length === otpLength;
 
-  const handleConfirm = () => {
+  const handleVerifyOTP = () => {
     if (!isValid) return;
-    // onVerify(otp);
-    handleNext();
+
+    const newData = {
+      email: email ?? "",
+      otp: otp ?? "",
+    };
+
+    const submittedData = replaceEmptyStringsWithNull(newData);
+
+    verifySignupOTP?.mutate(submittedData, {
+      onSuccess: () => setIsSuccess(true),
+      onError: (error: any) => {
+        const message =
+          error?.response?.data?.message ||
+          "Error validating OTP, please try again";
+        toast.error(message);
+      },
+    });
   };
 
   // Countdown timer effect
@@ -141,7 +167,7 @@ const EnterOTP = ({ handleNext }: { handleNext: () => void }) => {
         <h2 className="text-2xl font-semibold pt-3 pb-1">Enter OTP</h2>
         <p className="text-sm text-gray-500">
           We have sent a reset code to your email <br />{" "}
-          <strong>peter.omiwole@gmail.com</strong>
+          <strong>{email}</strong>
         </p>
       </div>
 
@@ -170,7 +196,7 @@ const EnterOTP = ({ handleNext }: { handleNext: () => void }) => {
         <Button
           type="submit"
           className="w-full text-white rounded-full py-2.5 font-medium transition-all"
-          onClick={handleConfirm}
+          onClick={handleVerifyOTP}
           disabled={!isValid}
         >
           Continue
@@ -194,6 +220,12 @@ const EnterOTP = ({ handleNext }: { handleNext: () => void }) => {
           </button>
         )}
       </div>
+
+      <FullScreenLoader
+        loading={verifySignupOTP?.isPending}
+        isSuccess={isSuccess}
+        onSuccess={() => handleNext()}
+      />
     </div>
   );
 };

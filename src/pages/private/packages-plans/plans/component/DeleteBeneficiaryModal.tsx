@@ -4,6 +4,7 @@ import type { BeneficiaryInfo } from "./BeneficiaryInformationCard";
 
 const DeleteBeneficiaryModal = ({
   selectedBeneficiary,
+  setSelectedBeneficiary,
   showDeleteBeneficiaryModal,
   setShowDeleteBeneficiaryModal,
   handleDelete,
@@ -11,6 +12,7 @@ const DeleteBeneficiaryModal = ({
   selectedBeneficiary: BeneficiaryInfo;
   showDeleteBeneficiaryModal: boolean;
   setShowDeleteBeneficiaryModal: (val: boolean) => void;
+  setSelectedBeneficiary: (val: BeneficiaryInfo | null) => void;
   handleDelete: () => void;
 }) => {
   return (
@@ -18,7 +20,10 @@ const DeleteBeneficiaryModal = ({
       title={"Delete Beneficiary"}
       description={`Are you sure you want to delete ${selectedBeneficiary?.fullName} as your beneficiary.`}
       openModal={showDeleteBeneficiaryModal}
-      onClose={() => setShowDeleteBeneficiaryModal(false)}
+      onClose={() => {
+        setSelectedBeneficiary(null);
+        setShowDeleteBeneficiaryModal(false);
+      }}
       className="w-100"
     >
       <DialogFooter className="pt-5">

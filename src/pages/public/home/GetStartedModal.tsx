@@ -35,30 +35,30 @@ const GetStartedModal = ({
     <CustomDialog
       openModal={showGetStartedModal}
       onClose={() => setShowGetStartedModal(false)}
-      className="w-full md:max-w-200"
+      className="w-full md:max-w-[40rem] px-12"
     >
       <div className="space-y- px-2">
-        {/* HEADER */}
-        <div className="flex-1 sticky top-0 z-20 space-y-2">
-          <Typography variant="heading4" className="text-center font-semibold">
+        <div className="flex-1 sticky top-0 z-20 space-y-1">
+          <Typography variant="largeText" className="text-center">
             In which country is your beneficiary located?
           </Typography>
 
-          <Typography variant="smallText" className="text-center text-gray-500">
+          <Typography
+            variant="xSmallText"
+            className="text-center text-charcoal-gray"
+          >
             To help us tailor the best package for you, please select your
-            beneficiary country and age range.
+            beneficiary country.
           </Typography>
         </div>
 
-        {/* MAP */}
         <div className="relative flex justify-center">
           <img
             src={worldMapImg}
             alt="world map"
-            className="w-full max-w-[420px] opacity-80"
+            className="w-[340px] h-[190px] opacity-80"
           />
 
-          {/* Highlight selected country (+ small overlay) */}
           {location === "NG" && (
             <div className="absolute top-[55%] left-[47%]">
               <Icons iconName="nigeriaMap" />
@@ -85,15 +85,14 @@ const GetStartedModal = ({
         </div>
 
         <section className="space-y-3 py-5">
-          <Typography variant="mediumTextSemibold">Country</Typography>
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
             {beneficiaryCountries.map((c) => {
               const active = location === c.id;
               return (
                 <button
                   key={c.id}
                   onClick={() => setLocation(c.id)}
-                  className={`flex items-center justify-between px-4 py-3 border rounded-xl transition-all cursor-pointer
+                  className={`flex items-center justify-between px-4 py-3 border rounded-md transition-all cursor-pointer
               ${active ? "border-primary bg-green-50" : "border-gray-300"}
               `}
                 >
@@ -106,7 +105,7 @@ const GetStartedModal = ({
                       className=""
                     />
 
-                    <Typography className="font-medium">{c.label}</Typography>
+                    <Typography variant={"xSmallTextSemibold"}>{c.label}</Typography>
                   </div>
 
                   {active ? (
@@ -122,9 +121,11 @@ const GetStartedModal = ({
 
         {/* AGE SELECT */}
         <section className="space-y-3">
-          <Typography variant="mediumTextSemibold">Age range</Typography>
+          <Typography variant="mediumText">
+            Choose your beneficiary age range
+          </Typography>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
             {ageRanges?.map((age) => {
               const active = ageRange === age?.id;
 
@@ -132,11 +133,11 @@ const GetStartedModal = ({
                 <button
                   key={age?.id}
                   onClick={() => setAgeRange(age?.id)}
-                  className={`px-4 py-3 border rounded-xl text-left transition-all cursor-pointer
+                  className={`px-3 py-2 border rounded-md text-left transition-all cursor-pointer
                ${active ? "border-primary bg-green-50" : "border-gray-300"}
              `}
                 >
-                  <Typography className="font-medium">{age?.id}</Typography>
+                  <Typography variant={"xSmallText"}>{age?.id}</Typography>
                 </button>
               );
             })}

@@ -1,16 +1,16 @@
 import { createStore } from "zustand/vanilla";
 import { persist } from "zustand/middleware";
 import { useStore } from "zustand";
-import type { SponsorDropdownParams } from "@/components/navbar/SponsorDropdown";
+import type { SponsorLocationDropdownParams } from "@/components/navbar/components/SponsorLocationDropdown";
 
 export type SponsorState = {
   search: string;
-  sponsor: SponsorDropdownParams;
+  sponsor: SponsorLocationDropdownParams;
 };
 
 export type SponsorStore = SponsorState & {
   setSearch: (search: string) => void;
-  changeSponsor: (sponsor: SponsorDropdownParams) => void;
+  changeSponsor: (sponsor: SponsorLocationDropdownParams) => void;
 };
 
 export const defaultInitState: SponsorState = {
@@ -61,10 +61,11 @@ export const sponsorStore = createSponsorStore();
 // --- React Hook Wrapper -----------------------------------------
 
 /**
- * useSponsorStore - React-friendly hook version of the vanilla store
+ * useSponsorLocationStore - React-friendly hook version of the vanilla store
  *
  * Example usage:
- * const { Sponsor, changeSponsor } = useSponsorStore();
+ * const { Sponsor, changeSponsor } = useSponsorLocationStore();
  */
-export const useSponsorStore = <T>(selector: (state: SponsorStore) => T): T =>
-  useStore(sponsorStore, selector);
+export const useSponsorLocationStore = <T>(
+  selector: (state: SponsorStore) => T
+): T => useStore(sponsorStore, selector);

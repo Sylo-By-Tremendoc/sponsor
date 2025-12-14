@@ -1,13 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import useAuth from "./use-auth";
-import baseAxios from "@/api/baseAxios";
 import { useCallback, useEffect } from "react";
 import { toast } from "react-toastify";
 import type { AxiosResponse } from "axios";
+import { authAxios, publicAxios } from "@/api/baseAxios";
 
 const useAxiosBase = () => {
-  const { authUser, setAuthUser } = useAuth();
+  const { authUser, setAuthUser, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  // choose which axios instance to use
+  const axiosInstance = isAuthenticated ? authAxios : publicAxios;
 
   const handleErrorResponse = useCallback(
     (status: number, message?: string) => {
@@ -24,7 +27,7 @@ const useAxiosBase = () => {
 
   const getRequest = async (url: string, params?: object) => {
     try {
-      const response: AxiosResponse<any> = await baseAxios.get(url, params);
+      const response: AxiosResponse<any> = await axiosInstance.get(url, params);
 
       if ([401, 403].includes(response.status)) {
         return handleErrorResponse(response.status);
@@ -43,7 +46,7 @@ const useAxiosBase = () => {
 
   const postRequest = async (url: string, data: any, params?: any) => {
     try {
-      const response: AxiosResponse = await baseAxios.post(url, data, {
+      const response: AxiosResponse = await axiosInstance.post(url, data, {
         params,
       });
       return response.data;
@@ -60,7 +63,7 @@ const useAxiosBase = () => {
 
   const putRequest = async (url: string, data: any, params?: any) => {
     try {
-      const response: AxiosResponse = await baseAxios.put(url, data, {
+      const response: AxiosResponse = await axiosInstance.put(url, data, {
         params,
       });
       return response;
@@ -71,7 +74,7 @@ const useAxiosBase = () => {
 
   const deleteRequest = async (url: string, data?: any) => {
     try {
-      const response: AxiosResponse = await baseAxios.delete(url, { data });
+      const response: AxiosResponse = await axiosInstance.delete(url, { data });
       return response;
     } catch (error: any) {
       throw new Error(error.response?.data?.value?.message || error.message);
@@ -79,9 +82,9 @@ const useAxiosBase = () => {
   };
 
   useEffect(() => {
-    const requestInterceptor = baseAxios.interceptors.request.use(
+    const requestInterceptor = axiosInstance.interceptors.request.use(
       (config) => {
-        if (!config.headers["Authorization"]) {
+        if (isAuthenticated && !config.headers["Authorization"]) {
           config.headers["Authorization"] = `Bearer ${authUser?.token}`;
         }
         return config;
@@ -89,15 +92,11 @@ const useAxiosBase = () => {
       (error) => Promise.reject(error)
     );
 
-    const responseInterceptor = baseAxios.interceptors.response.use(
-      (response) => {
-        return response;
-      },
+    const responseInterceptor = axiosInstance.interceptors.response.use(
+      (response) => response,
       (error) => {
-        // if ([401, 403].includes(error?.response?.status))
-        //   return handleErrorResponse(error.response.status);
-        // return error;
         const status = error?.response?.status;
+
         if ([401, 403].includes(status)) {
           return handleErrorResponse(
             status,
@@ -109,8 +108,8 @@ const useAxiosBase = () => {
     );
 
     return () => {
-      baseAxios.interceptors.request.eject(requestInterceptor);
-      baseAxios.interceptors.response.eject(responseInterceptor);
+      axiosInstance.interceptors.request.eject(requestInterceptor);
+      axiosInstance.interceptors.response.eject(responseInterceptor);
     };
   }, [authUser, handleErrorResponse]);
 

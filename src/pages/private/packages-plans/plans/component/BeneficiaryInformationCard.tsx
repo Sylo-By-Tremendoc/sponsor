@@ -1,6 +1,4 @@
-import { FieldLabelText } from "@/components/common/FormHelper";
-import Typography from "@/components/common/Typography";
-import { HiOutlineTrash } from "react-icons/hi";
+import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 
 export type BeneficiaryInfo = {
   id: string;
@@ -16,35 +14,39 @@ export type BeneficiaryInfo = {
 
 const BeneficiaryInformationCard = ({
   beneficiary,
-  onClick,
+  handleEdit,
   handleDelete,
 }: {
   beneficiary: BeneficiaryInfo;
-  onClick: (val: BeneficiaryInfo) => void;
+  handleEdit: (val: BeneficiaryInfo) => void;
   handleDelete: (val: BeneficiaryInfo) => void;
 }) => {
-  const {
-    fullName,
-    relationship,
-    email,
-    phoneNumber,
-    country,
-    state,
-    address,
-  } = beneficiary;
-
   return (
-    <div
-      className="cursor-pointer rounded-xl bg-white shadow-sm p-4 border border-mid-grey hover:shadow-md transition-all duration-200 grid md:grid-cols-3 gap-3"
-      onClick={() => onClick(beneficiary)}
-    >
-      <div className="flex justify-between items-center gap-5 md:col-span-3 pb-2">
-        <Typography variant="largeText">{relationship}</Typography>
+    <div className="flex justify-between items-center border rounded-lg p-3 bg-gray-50">
+      <div>
+        <p className="font-semibold">{beneficiary?.fullName}</p>
+        <p className="text-xs text-gray-600">
+          {beneficiary?.relationship} — {beneficiary?.email}
+        </p>
+      </div>
+
+      <div className="flex items-center gap-1">
+        <button
+          type="button"
+          className="bg-feint-grey hover:bg-mid-grey rounded-lg p-2 cursor-pointer"
+          aria-label={`Edit ${beneficiary}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleEdit(beneficiary);
+          }}
+        >
+          <HiOutlinePencil className="text" />
+        </button>
 
         <button
           type="button"
           className="bg-feint-grey hover:bg-light-danger rounded-lg p-2 cursor-pointer"
-          aria-label={`Delete ${relationship}`}
+          aria-label={`Delete ${beneficiary}`}
           onClick={(e) => {
             e.stopPropagation();
             handleDelete(beneficiary);
@@ -52,56 +54,6 @@ const BeneficiaryInformationCard = ({
         >
           <HiOutlineTrash className="text-danger" />
         </button>
-      </div>
-
-      <div>
-        <FieldLabelText view label="Full Name" />
-        <Typography variant="xSmallTextSemibold" className="mt-1">
-          {fullName}
-        </Typography>
-      </div>
-
-      <div>
-        <FieldLabelText view label="Email Address" />
-        <Typography
-          as="a"
-          href={`mailto:${email}`}
-          variant="xSmallText"
-          className="mt-1 text-primary hover:underline cursor-pointer"
-        >
-          {email}
-        </Typography>
-      </div>
-
-      <div>
-        <FieldLabelText view label="Phone Number" />
-        <Typography variant="xSmallTextSemibold" className="mt-1">
-          {phoneNumber}
-        </Typography>
-      </div>
-
-      <div>
-        <FieldLabelText view label="Country" />
-        <Typography variant="xSmallTextSemibold" className="mt-1">
-          {country}
-        </Typography>
-      </div>
-
-      <div>
-        <FieldLabelText view label="State" />
-        <Typography variant="xSmallTextSemibold" className="mt-1">
-          {state}
-        </Typography>
-      </div>
-
-      <div>
-        <FieldLabelText view label="Full Address" />
-        <Typography
-          variant="xSmallTextSemibold"
-          className="mt-1 truncate max-w-[250px]"
-        >
-          {address}
-        </Typography>
       </div>
     </div>
   );

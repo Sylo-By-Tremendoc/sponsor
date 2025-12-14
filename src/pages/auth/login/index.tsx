@@ -7,9 +7,13 @@ import Typography from "../../../components/common/Typography";
 import { Button } from "../../../components/common/Button";
 import useLogin from "./hooks/use-login";
 import { replaceEmptyStringsWithNull } from "@/utils/constant";
+import FullScreenLoader from "@/components/common/Loader";
+import { useState } from "react";
 
 const Login = () => {
   const login = useLogin();
+
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const {
     register,
@@ -26,7 +30,9 @@ const Login = () => {
 
     const submittedData = replaceEmptyStringsWithNull(newData);
 
-    login?.mutate(submittedData);
+    login?.mutate(submittedData, {
+      onSuccess: () => setIsSuccess(true),
+    });
   };
 
   return (
@@ -72,7 +78,7 @@ const Login = () => {
           </div>
 
           {/* Form */}
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
             <TextInput
               label="Email"
               placeholder="Enter email"
@@ -107,9 +113,9 @@ const Login = () => {
               className="w-full text-white"
               isLoading={login?.isPending}
               disabled={login?.isPending}
-              onClick={handleSubmit(onSubmit)}
+              type="submit"
             >
-              Login
+              {login?.isPending ? "Logging in..." : "Login"}
             </Button>
 
             <p className="text-center text-sm mt-4 text-gray-600">
@@ -124,6 +130,8 @@ const Login = () => {
           </form>
         </div>
       </div>
+
+      <FullScreenLoader loading={login?.isPending} isSuccess={isSuccess} />
     </div>
   );
 };

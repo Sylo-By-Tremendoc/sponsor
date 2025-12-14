@@ -7,9 +7,9 @@ const PrivateLayout = () => {
     <div className="flex overflow-hidden relative">
       <SideNav />
 
-      <div className="flex-1 flex flex-col gap-3 overflow-hidden px-4 md:px-6 pt-3 bg-[#F7F7F7] h-screen">
+      <div className="flex-1 flex flex-col gap-3 overflow-hidden px-5 pt-3 bg-[#F7F7F7] h-screen">
         <TopNav />
-        <Wrapper className="flex-1 w-full h-full overflow-auto relative pt-2 pb-10">
+        <Wrapper className="flex-1 w-full h-full overflow-auto relative">
           <Outlet />
         </Wrapper>
       </div>

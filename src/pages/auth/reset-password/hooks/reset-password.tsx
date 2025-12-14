@@ -7,7 +7,7 @@ const useResetPassword = () => {
 
   const resetPassword = useMutation({
     mutationKey: ["RESET_PASSWORD"],
-    mutationFn: (data) => postRequest("/auth/password/email", data),
+    mutationFn: (data) => postRequest("/auth/password/reset", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["RESET_PASSWORD"] });
     },

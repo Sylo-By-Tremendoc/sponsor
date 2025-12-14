@@ -2,7 +2,6 @@ import { createBrowserRouter } from "react-router-dom";
 import { RedirectAuthUserGuard, RequireAuth } from "./require-auth";
 import Error404 from "./pages/error404";
 import Login from "./pages/auth/login";
-import ResetPassword from "./pages/auth/reset-password";
 import Signup from "./pages/auth/signup";
 import ForgotPassword from "./pages/auth/forgot-password";
 import HomePage from "./pages/public/home";
@@ -23,6 +22,7 @@ import PlanPayment from "./pages/private/packages-plans/plans/PlanPayment";
 import Messages from "./pages/private/messages";
 import SecuritySettings from "./pages/private/settings/security";
 import NotificationSettings from "./pages/private/settings/notification";
+import ResetPassword from "./pages/auth/reset-password";
 
 const router = createBrowserRouter(
   [

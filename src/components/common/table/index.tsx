@@ -33,6 +33,7 @@ interface CustomTableProps<TData, TValue> {
   totalEntries: number;
   isLoading?: boolean;
   enableRowSelection?: boolean;
+  emptyText?: string;
   className?: string;
   searchPlaceholder?: string;
   onSearch?: (searchText: string) => void;
@@ -50,6 +51,7 @@ export function CustomTable<TData, TValue>({
   isLoading = false,
   enableRowSelection = true,
   searchPlaceholder,
+  emptyText,
   className,
   onRowClick,
   handlePageChange,
@@ -308,7 +310,7 @@ export function CustomTable<TData, TValue>({
                       colSpan={tableColumns.length}
                       className="h-24 text-center"
                     >
-                      <Typography variant="xSmallText">No results.</Typography>
+                      <Typography variant="xSmallText">{emptyText ?? "No results."}</Typography>
                     </TableCell>
                   </TableRow>
                 )}

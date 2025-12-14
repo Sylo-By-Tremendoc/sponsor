@@ -17,7 +17,7 @@ const NotificationSettings = () => {
   return (
     <div ref={containerRef} className="space-y-4">
       <div className="border-b border-mid-grey pb-3">
-        <Typography variant="largeTextBold">Notification Settings</Typography>
+        <Typography variant="mediumTextSemibold">Notification Settings</Typography>
         <Typography variant={"smallText"} className="text-charcoal-gray mt-1">
           We may still send you important notifications about your accounts
           outside your notification settings.
@@ -79,8 +79,8 @@ const NotificationSettings = () => {
           <div className="flex items-center gap-2">
             <HiOutlineViewGridAdd size={20} />
             <div>
-              <Typography variant="mediumTextBold">Advance Filters</Typography>
-              <Typography variant={"smallText"} className="text-charcoal-gray">
+              <Typography variant="smallTextSemibold">Advance Filters</Typography>
+              <Typography variant={"xSmallText"} className="text-charcoal-gray">
                 Fine-tune the notifications you like to see – and those you
                 don’t.
               </Typography>

@@ -34,19 +34,16 @@ const Signup = () => {
         </div>
       </div>
 
-      {/* Right Section (scrollable) */}
       {/* Right Section */}
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
-          key={process} // trigger animation only for 1,2,3
+          key={process}
           variants={smoothSlideVariant["forward"]}
           initial="initial"
           animate="animate"
           exit="exit"
           transition={{ duration: 0.3 }}
-          className={
-            "bg-white flex flex-col items-center px-5 md:px-8 py-10 overflow-y-auto h-screen"
-          }
+          className="bg-white flex flex-col items-center px-5 md:px-8 py-10 h-screen overflow-y-auto"
         >
           {process === "CREATE" ? (
             <CreateAccount handleNext={() => setProcess("OTP")} />

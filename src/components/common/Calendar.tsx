@@ -1,159 +1,114 @@
-"use client";
-
 import { cn } from "@/utils/class-name";
 import * as React from "react";
 import { DayPicker } from "react-day-picker";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
-import DropdownInput from "./DropdownInput";
+import { buttonVariants } from "./Button";
+import Combobox from "./Combobox";
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
-  disableFutureDates?: boolean;
-  disablePastDates?: boolean;
-  disableLessThan18?: boolean;
-};
+export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
-function Calendar({
-  className,
-  classNames,
-  showOutsideDays = true,
-  disableFutureDates = false,
-  disablePastDates = false,
-  disableLessThan18 = false,
-  ...props
-}: CalendarProps) {
-  const [month, setMonth] = React.useState(new Date());
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth();
-
-  const eighteenYearsAgoYear = currentYear - 18;
-
-  // Generate years with restrictions
-  const earliestYear = currentYear - 150; // 150 years ago from the current year
-  const latestYear = currentYear + 20;
-
-  const years = Array.from(
-    { length: latestYear - earliestYear + 1 },
-    (_, index) => {
-      const year = latestYear - index;
-      if (disableFutureDates && year > currentYear) return null;
-      if (disablePastDates && year < currentYear) return null;
-      if (disableLessThan18 && year > eighteenYearsAgoYear) return null;
-      return { label: year.toString(), value: year.toString() };
-    }
-  ).filter((year): year is { label: string; value: string } => year !== null);
-
-  // Generate months
-  const months = Array.from({ length: 12 }, (_, index) => {
-    const monthYear = month.getFullYear();
-
-    if (
-      (disableFutureDates &&
-        monthYear === currentYear &&
-        index > currentMonth) ||
-      (disablePastDates && monthYear === currentYear && index < currentMonth)
-    ) {
-      return null;
-    }
-
-    if (disableLessThan18 && monthYear === eighteenYearsAgoYear) {
-      const eighteenYearsAgoMonth = new Date().getMonth();
-      if (index > eighteenYearsAgoMonth) {
-        return null;
-      }
-    }
-
-    return {
-      label: new Date(0, index).toLocaleString("default", { month: "long" }),
-      value: index.toString(),
-    };
-  }).filter(
-    (month): month is { label: string; value: string } => month !== null
-  );
-
-  const handleMonthChange = (value: string) => {
-    if (value) {
-      const newMonth = parseInt(value, 10);
-      const updatedMonth = new Date(month.setMonth(newMonth));
-      setMonth(new Date(updatedMonth));
-    }
-  };
-
-  const handleYearChange = (value: string) => {
-    if (value) {
-      const newYear = parseInt(value, 10);
-      const updatedYear = new Date(month.setFullYear(newYear));
-      setMonth(new Date(updatedYear));
-    }
-  };
-
-  const currentMonthOption = months.find(
-    (m) => parseInt(m.value, 10) === month.getMonth()
-  );
-  const currentYearOption = years.find(
-    (y) => parseInt(y.value, 10) === month.getFullYear()
-  );
-
+function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
   return (
     <div className="relative">
-      <div className="grid grid-cols-2 gap-2 px-3 mt-3 ">
-        <DropdownInput
-          value={currentMonthOption?.value}
-          onValueChange={handleMonthChange}
-          options={months}
-          placeholder="Month..."
-          sort={false}
-        />
-        <DropdownInput
-          value={currentYearOption?.value}
-          onValueChange={handleYearChange}
-          options={years}
-          placeholder="Year..."
-          sort={false}
-        />
-      </div>
       <DayPicker
-        month={month}
-        onMonthChange={setMonth}
         showOutsideDays={showOutsideDays}
         className={cn("p-3", className)}
         classNames={{
-          months:
-            "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-          month: "",
-          caption: "hidden",
-          caption_label: "hidden",
+          root: "p-3",
+          months: "flex flex-col",
+          month: "space-y-4",
+          month_caption: "flex justify-center pt-1 relative items-center",
+          dropdowns: "flex items-center gap-4 w-full",
+          caption_label: "text-body-sm font-medium",
           nav: "space-x-1 flex items-center",
-          nav_button: cn(
-            "h-7 w-7 bg-transparent rounded-md border border-midGrey p-0 opacity-50 hover:opacity-100"
+          button_previous: cn(
+            buttonVariants({ variant: "ghost" }),
+            "h-7 w-7 bg-transparent rounded-md border border-mid-grey p-0 opacity-50 hover:opacity-100 absolute left-4 top-3 z-10"
           ),
-          nav_button_previous: "absolute right-[3.2rem]",
-          nav_button_next: "absolute right-4",
-          table: "w-full border-collapse space-y-1",
-          head_row: "flex",
-          head_cell:
-            "text-offBlack font-semibold rounded-md w-9 font-normal text-[0.8rem]",
-          row: "flex w-full mt-2",
-          cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-midGrey/50 [&:has([aria-selected])]:bg-midGrey first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-          day: cn(
-            // buttonVariants({ variant: "ghost" }),
-            "h-8 w-8 p-0 font-normal aria-selected:opacity-100 hover:bg-lightGrey rounded-md ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          button_next: cn(
+            buttonVariants({ variant: "ghost" }),
+            "h-7 w-7 bg-transparent rounded-md border border-mid-grey p-0 opacity-50 hover:opacity-100 absolute right-4 top-3 z-10 "
           ),
-          day_range_end: "day-range-end",
-          day_selected:
-            "text-white rounded-md hover:text-white focus:text-white",
-          day_today: "bg-gradient-to-b from-primary to-secondary text-white",
-          day_outside:
-            "day-outside text-muted-foreground opacity-50 aria-selected:bg-midGrey/50 aria-selected:text-offBlack aria-selected:opacity-30",
-          day_disabled: "text-muted-foreground opacity-50",
-          day_range_middle:
-            "aria-selected:bg-midGrey aria-selected:text-offBlack",
-          day_hidden: "invisible",
+          month_grid: "w-full border-collapse space-y-1",
+          weekdays: "flex",
+          weekday: "text-black font-semibold rounded-md w-full text-center text-[0.8rem]",
+          week: "flex w-full mt-2",
+          day: "w-full h-9 mx-[3px] flex items-center justify-center text-center text-sm p-0 relative rounded-md focus-within:relative focus-within:z-20",
+          day_button: cn(
+            "h-9 w-full p-0 font-normal aria-selected:opacity-100 hover:bg-mid-grey rounded-md ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          ),
+          range_end: "range-end",
+          selected:
+            "bg-primary text-white hover:primary hover:text-white focus:bg-primary focus:text-white [&>button]:hover:bg-primary [$>button]:hover:text-white [&>button]:focus:bg-primary [$>button]:focus:text-white",
+          today: "border border-mid-grey",
+          outside:
+            "day-outside text-muted-foreground opacity-50 aria-selected:bg-mid-grey/50 aria-selected:text-black aria-selected:opacity-30",
+          disabled: "text-charcoal-grey opacity-50",
+          range_middle: "aria-selected:bg-mid-grey aria-selected:text-black",
+          hidden: "invisible",
           ...classNames,
         }}
         components={{
-          IconLeft: () => <BiChevronLeft className="ml-1 w-4 h-4" />,
-          IconRight: () => <BiChevronRight className="ml-1 w-4 h-4" />,
+          MonthsDropdown: ({ options, onChange, value }) => (
+            <Combobox
+              wrapperClassName="min-w-fit max-w-full"
+              triggerClassName="h-9 rounded-lg"
+              align="start"
+              onValueChange={(value) => {
+                const event = {
+                  target: { value },
+                } as unknown as React.ChangeEvent<HTMLSelectElement>;
+
+                onChange?.(event);
+              }}
+              value={typeof value === "number" ? value.toString() : (value as unknown as string)}
+              options={
+                options
+                  ?.filter((option) => !option.disabled)
+                  ?.map((option) => ({
+                    label: option.label,
+                    value: option.value.toString(),
+                  })) || []
+              }
+              enableClearSelection={false}
+            />
+          ),
+          YearsDropdown: ({ options, onChange, value }) => (
+            <Combobox
+              wrapperClassName="min-w-fit max-w-full"
+              triggerClassName="h-9 rounded-lg"
+              align="end"
+              onValueChange={(value) => {
+                const event = {
+                  target: { value },
+                } as unknown as React.ChangeEvent<HTMLSelectElement>;
+
+                onChange?.(event);
+              }}
+              value={typeof value === "number" ? value.toString() : (value as unknown as string)}
+              options={
+                options
+                  ?.filter((option) => !option.disabled)
+                  ?.map((option) => ({
+                    label: option.label,
+                    value: option.value.toString(),
+                  })) || []
+              }
+              filterByOnlyValue
+              enableClearSelection={false}
+            />
+          ),
+          Chevron: (props) => {
+            if (props.orientation === "left") {
+              return <BiChevronLeft {...props} />;
+            }
+
+            return <BiChevronRight {...props} />;
+          },
         }}
+        hideNavigation
+        captionLayout="dropdown"
+        autoFocus
         {...props}
       />
     </div>

@@ -1,40 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
 
-@import "tailwindcss";
-
-@theme {
-  --font-plus-jakarta: "Plus Jakarta Sans", sans-serif;
-  --color-primary: #03eb0b;
-  --color-primary-active: #294c28;
-  --color-primary-dormant: #346633;
-  --color-secondary: #0a7e32;
-  --color-light-green: #eaffea;
-  --color-lighter-green: #fafffa;
-  --color-charcoal-gray: #4b4b4b;
-  --color-black: #000000;
-  --color-off-black: #0f0f0f;
-  --color-yellow: #f7b11c;
-  --color-warning: #f7b11c;
-  --color-warning-light: #ffedc7;
-  --color-dark-yellow: #6f5f09;
-  --color-light-yellow: #feffd9;
-  --color-info: #0468b1;
-  --color-mid-info: #0468b1;
-  --color-light-info: #cff3ff;
-  --color-danger: #f22424;
-  --color-mid-danger: #c90000;
-  --color-light-danger: #ffeded;
-  --color-grey: #808080;
-  --color-mid-grey: #d9d9d9;
-  --color-deep-grey: #979797;
-  --color-light-grey: #f0f0f0;
-  --color-extra-light-grey: #f4f4f4;
-  --color-feint-grey: #f9fafb;
-  --color-cream: #f9f9f9;
-  --color-tertiary-cream: #f5f5de;
-  --color-accent-green: #eaffea;
-  --color-tertiary-green: #fafffa;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 * {
   font-family: "Plus Jakarta Sans", sans-serif;

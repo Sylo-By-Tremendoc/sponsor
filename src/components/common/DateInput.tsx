@@ -1,156 +1,123 @@
-"use client";
-
 import * as React from "react";
-import { format } from "date-fns";
-import { OpenPopoverBtn, Popover, PopoverContent } from "./Popover";
-import { cn } from "@/utils/class-name";
+import { format, formatDate } from "date-fns";
 import { BiCalendar } from "react-icons/bi";
-import SkeletonLoader from "./SkeletonLoader";
+import { useUncontrolled } from "@/hooks/use-uncontrolled";
+import type { DayPicker, DayPickerProps } from "react-day-picker";
+import { cn } from "@/utils/class-name";
 import { FieldErrorText, FieldHelperText, FieldLabelText } from "./FormHelper";
+import { Popover, PopoverContent, PopoverTrigger } from "./Popover";
 import { Calendar } from "./Calendar";
 
 type Props = {
-  label?: string;
+  id?: string;
+  label?: React.ReactNode;
   required?: boolean;
-  isLoadingFelid?: boolean;
   placeholder?: string;
   error?: string;
-  hint?: string;
-  className?: string;
+  hint?: React.ReactNode;
   disabled?: boolean;
   defaultValue?: string;
-  disableFutureDates?: boolean;
-  disablePastDates?: boolean;
-  minDate?: string;
-  maxDate?: string;
-  /** Prevents selection of dates less than 18 years from the current date */
-  disableLessThan18?: boolean;
-  onValueChange?: (value: any) => void;
-};
+  value?: string;
+  onValueChange?: (value: string) => void;
+  disabledDays?: DayPickerProps["disabled"];
 
-export const DateInput = React.forwardRef<HTMLButtonElement, Props>(
-  (
-    {
-      label,
-      required,
-      isLoadingFelid,
-      placeholder = "Pick a date",
-      error,
-      hint,
-      disabled,
-      defaultValue,
-      disableFutureDates = false,
-      disablePastDates = false,
-      minDate,
-      maxDate,
-      disableLessThan18 = false,
-      className,
-      onValueChange,
-    },
-    ref
-  ) => {
-    const [isOpen, setIsOpen] = React.useState(false);
-    const [date, setDate] = React.useState<Date | undefined>(
-      defaultValue ? new Date(defaultValue) : undefined
-    );
+  wrapperClassName?: string;
+  className?: string;
 
-    const currentDate = new Date();
-    const minSelectableDate = minDate ? new Date(minDate) : null;
-    const maxSelectableDate = maxDate ? new Date(maxDate) : null;
+  ref?: React.LegacyRef<HTMLButtonElement>;
+} & Omit<
+  React.ComponentPropsWithoutRef<typeof DayPicker>,
+  "disabled" | "mode" | "selected" | "onSelect"
+>;
 
-    const eighteenYearsAgo = new Date();
-    eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+export const DateInput = ({
+  id,
+  label,
+  required,
+  placeholder = "Pick a date",
+  error,
+  hint,
+  disabled,
+  defaultValue,
+  value,
+  onValueChange,
+  disabledDays,
+  ref,
+  wrapperClassName,
+  className,
+  ...rest
+}: Props) => {
+  const _id = React.useId();
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [_value, handleValueChange] = useUncontrolled({
+    defaultValue,
+    value,
+    onChange: onValueChange,
+  });
 
-    React.useEffect(() => {
-      if (defaultValue) {
-        setDate(new Date(defaultValue));
-      }
-    }, [defaultValue]);
+  return (
+    <div
+      className={cn(
+        "w-full flex flex-col items-start space-y-1",
+        wrapperClassName
+      )}
+    >
+      {label && (
+        <label className="text-sm font-medium text-black" htmlFor={id || _id}>
+          <FieldLabelText label={label} required={required} />
+        </label>
+      )}
 
-    return (
-      <div className="w-full flex flex-col space-y-1.5">
-        {label && (
-          <label
-            className="text-sm font-medium text-offBlack text-start"
-            htmlFor={label}
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger asChild ref={ref}>
+          <button
+            id={id || _id}
+            disabled={disabled}
+            className={cn(
+              "flex items-center h-10 w-full rounded-[15px] bg-[#F9F9F9] border border-[#EFEFEF] hover:border-primary focus-visible:border-primary px-3 file:border-0 file:bg-transparent file:font-medium placeholder:text-[12px] text-[13px] placeholder:leading-[18px] placeholder:text-[#B5B5B5] focus-visible:outline-none outline-none  disabled:cursor-not-allowed disabled:bg-lightGrey disabled:border-midGrey disabled:text-darkGrey disabled:placeholder:text-darkGrey transition-all duration-300 ease-in-out",
+              {
+                "hover:border-primary": !error && !disabled,
+                "text-charcoal-grey": !_value,
+                "border-danger border-2 text-danger ": !!error,
+              },
+              className
+            )}
           >
-            <FieldLabelText label={label} required={required} />
-          </label>
-        )}
+            <BiCalendar className="mr-2 h-4 w-4" />
+            {_value ? (
+              format(_value, "PPP")
+            ) : (
+              <span className=" text-left text-[12px] text-[#B5B5B5]">{placeholder}</span>
+            )}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="p-0">
+          <Calendar
+            mode="single"
+            selected={_value ? new Date(_value) : undefined}
+            defaultMonth={_value ? new Date(_value) : undefined}
+            onSelect={(date) => {
+              handleValueChange(formatDate(date, "yyyy-MM-dd"));
+              setIsOpen(false);
+            }}
+            autoFocus
+            showOutsideDays
+            required
+            disabled={disabledDays}
+            {...rest}
+          />
+        </PopoverContent>
+      </Popover>
 
-        {isLoadingFelid ? (
-          <SkeletonLoader className="w-28 h-[1.2rem] mt-1 rounded" />
-        ) : (
-          <Popover open={isOpen} onOpenChange={setIsOpen}>
-            <OpenPopoverBtn asChild ref={ref}>
-              <button
-                disabled={disabled}
-                className={cn(
-                  "flex items-center h-10 w-full rounded-[15px] bg-[#F9F9F9] border border-[#EFEFEF] hover:border-primary focus-visible:border-primary px-3 file:border-0 file:bg-transparent file:font-medium placeholder:text-[12px] text-[13px] placeholder:leading-[18px] placeholder:text-[#4B4B4B] focus-visible:outline-none outline-none disabled:cursor-not-allowed disabled:bg-lightGrey disabled:border-midGrey disabled:text-darkGrey disabled:placeholder:text-darkGrey transition-all duration-300 ease-in-out",
-                  {
-                    "": !error && !disabled,
-                    " border-danger border-2 text-danger ": !!error,
-                  },
-                  className
-                )}
-              >
-                <BiCalendar className="mr-2 w-4 h-4" />
-                {date ? (
-                  format(date, "MMM do, yyyy")
-                ) : (
-                  <span className="text-xs font-light text-left text-[#B5B5B5]">{placeholder}</span>
-                )}
-              </button>
-            </OpenPopoverBtn>
-            <PopoverContent className="p-0">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={(date) => {
-                  setDate(date);
-                  date && onValueChange?.(format(date, "yyyy-MM-dd"));
-                  setIsOpen(false);
-                }}
-                disableFutureDates={disableFutureDates}
-                disablePastDates={disablePastDates}
-                disableLessThan18={disableLessThan18}
-                disabled={(date) => {
-                  const isFutureDateDisabled =
-                    disableFutureDates && date > currentDate;
-                  const isPastDateDisabled =
-                    disablePastDates === true &&
-                    date < new Date(currentDate.setHours(0, 0, 0, 0));
-                  const isBeforeMinDateDisabled = minSelectableDate
-                    ? date < minSelectableDate
-                    : false;
-                  const isAfterMaxDateDisabled = maxSelectableDate
-                    ? date > maxSelectableDate
-                    : false;
-                  const isLessThan18Disabled = disableLessThan18
-                    ? date > eighteenYearsAgo
-                    : false;
+      {error && <FieldErrorText error={error} />}
+      {hint && !error && <FieldHelperText hint={hint} />}
 
-                  return (
-                    isFutureDateDisabled ||
-                    isPastDateDisabled ||
-                    isBeforeMinDateDisabled ||
-                    isAfterMaxDateDisabled ||
-                    isLessThan18Disabled
-                  );
-                }}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        )}
-
-        {error && <FieldErrorText error={error} className="text-start" />}
-        {hint && !error && (
-          <FieldHelperText hint={hint} className="text-start" />
-        )}
-      </div>
-    );
-  }
-);
+      <input
+        type="hidden"
+        value={_value ? formatDate(_value, "yyyy-MM-dd") : ""}
+      />
+    </div>
+  );
+};
 
 DateInput.displayName = "DateInput";

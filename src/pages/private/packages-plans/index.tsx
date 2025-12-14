@@ -9,27 +9,30 @@ import { useState } from "react";
 import { cn } from "@/utils/class-name";
 import type { ColumnDef } from "@tanstack/react-table";
 import { HiDotsHorizontal, HiOutlinePlus } from "react-icons/hi";
-import { convertPrice } from "@/utils/constant";
+import { convertPrice, formatDate } from "@/utils/constant";
 
 import DeleteCardModal from "./components/DeleteCardModal";
 import AddCardModal from "./components/AddCardModal";
 import GetStartedModal from "@/pages/public/home/GetStartedModal";
-
-type SubscriptionPlan = {
-  id: string;
-  plan: string;
-  price: number;
-  duration: string;
-  startDate: string;
-  beneficiaryName: string;
-  market: string;
-  status: "Active" | "Expired" | "Pending";
-};
+import useGetAllSubscriptionPlans from "./hooks/use-get-all-subscription-plans";
+import NetworkError from "@/pages/error/NetworkError";
+import type { SubscriptionPlan } from "@/types/plans";
+import Container from "@/components/common/Container";
 
 const PackagePlans = () => {
   const navigate = useNavigate();
   const pagination = useSetPagination();
-  const [, setSearch] = useState("");
+  const [search, setSearch] = useState("");
+
+  const { data, isLoading, isFetching, refetch, error } =
+    useGetAllSubscriptionPlans({
+      enabled: true,
+      pageNumber: pagination?.pageNumber,
+      pageSize: pagination?.pageSize,
+      search,
+    });
+
+  console.log("data", data);
 
   const [paymentCardDetails, setPaymentCardDetails] =
     useState<PaymentCardInfo | null>(null);
@@ -38,82 +41,11 @@ const PackagePlans = () => {
   const [showGetStartedModal, setShowGetStartedModal] = useState(false);
   const [openDeleteCardModal, setOpenDeleteCardModal] = useState(false);
 
-  const isLoading = false;
-
-  const data: SubscriptionPlan[] = [
-    {
-      id: "1",
-      plan: "Easy Care (Individual)",
-      price: 7.77,
-      duration: "6 Months",
-      startDate: "16 Aug, 2024 - 10:00AM",
-      beneficiaryName: "Peter Omiwole",
-      market: "Nigeria",
-      status: "Active",
-    },
-    {
-      id: "2",
-      plan: "Premium Health Plus",
-      price: 12.5,
-      duration: "12 Months",
-      startDate: "10 Jan, 2025 - 09:30AM",
-      beneficiaryName: "Sarah Johnson",
-      market: "Ghana",
-      status: "Pending",
-    },
-    {
-      id: "3",
-      plan: "Family Care Basic",
-      price: 9.99,
-      duration: "6 Months",
-      startDate: "25 Feb, 2025 - 02:00PM",
-      beneficiaryName: "David Okeke",
-      market: "Nigeria",
-      status: "Active",
-    },
-    {
-      id: "4",
-      plan: "Corporate Wellness",
-      price: 15.2,
-      duration: "1 Year",
-      startDate: "02 Mar, 2025 - 11:00AM",
-      beneficiaryName: "Grace Afolabi",
-      market: "Kenya",
-      status: "Expired",
-    },
-    {
-      id: "5",
-      plan: "Essential Plan",
-      price: 5.0,
-      duration: "3 Months",
-      startDate: "18 Apr, 2025 - 04:30PM",
-      beneficiaryName: "John Doe",
-      market: "Nigeria",
-      status: "Active",
-    },
-    {
-      id: "6",
-      plan: "Platinum Coverage",
-      price: 20.75,
-      duration: "1 Year",
-      startDate: "05 May, 2025 - 08:15AM",
-      beneficiaryName: "Emily White",
-      market: "Ghana",
-      status: "Pending",
-    },
-  ];
-
   const columns: ColumnDef<SubscriptionPlan>[] = [
     {
-      id: "plan",
+      id: "name",
       header: "Plan",
-      accessorKey: "plan",
-      cell: (info) => info.getValue(),
-    },
-    {
-      id: "beneficiaryName",
-      header: "Beneficiary",
-      accessorKey: "beneficiaryName",
+      accessorKey: "name",
       cell: (info) => info.getValue(),
     },
     {
@@ -132,10 +64,13 @@ const PackagePlans = () => {
       cell: (info) => info.getValue(),
     },
     {
-      id: "startDate",
+      id: "created_at",
       header: "Start Date",
-      accessorKey: "startDate",
-      cell: (info) => info.getValue(),
+      accessorKey: "created_at",
+      cell: (info) => {
+        const created_at = info.getValue<string>();
+        return formatDate(created_at);
+      },
     },
     {
       id: "market",
@@ -175,15 +110,17 @@ const PackagePlans = () => {
     },
   ];
 
+  if (error) return <NetworkError onClick={() => refetch()} />;
+
   return (
-    <div className="space-y-5">
+    <Container className="space-y-5">
       <Typography variant="largeTextBold">Package/Plans</Typography>
 
       <div className="grid md:grid-cols-2 gap-5">
         <div className="flex flex-col justify-between gap-5 p-4 bg-white border border-mid-grey rounded-2xl min-h-[187px]">
           <div className="space-y-1">
             <Typography variant={"mediumTextSemibold"}>
-              Subscription Plans Count
+              Subscription Plans
             </Typography>
             <Typography variant={"xSmallText"} className="text-charcoal-gray">
               Your Active Subscription Package{" "}
@@ -231,16 +168,17 @@ const PackagePlans = () => {
       <LineThrough className="py-3" />
 
       <CustomTable
-        data={data}
+        data={data || []}
         columns={columns}
-        isLoading={isLoading}
-        totalEntries={data?.length}
+        isLoading={isLoading || isFetching}
+        totalEntries={data?.length || 0}
         pageSize={pagination.pageSize}
         pageNumber={pagination.pageNumber || 1}
         onSearch={(search) => setSearch(search)}
         handlePageChange={pagination.handlePageChange}
         // handlePageSizeChange={pagination.handlePageSizeChange}
         onRowClick={(row) => navigate(`/beneficiaries/${row.original?.id}`)}
+        emptyText="No subscribed plans at the moment"
       />
 
       <GetStartedModal
@@ -263,7 +201,7 @@ const PackagePlans = () => {
           setOpenDeleteCardModal(false);
         }}
       />
-    </div>
+    </Container>
   );
 };
 

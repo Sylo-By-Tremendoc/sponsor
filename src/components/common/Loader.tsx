@@ -71,7 +71,7 @@ const FullScreenLoader = ({
   return (
     <div
       className={cn(
-        "fixed top-0 bottom-0 inset-0 w-screen h-screen z-999999 flex items-center justify-center bg-black/20 backdrop-blur-[1px]",
+        "fixed top-0 bottom-0 inset-0 w-screen h-screen z-50 flex items-center justify-center bg-black/20 backdrop-blur-[1px]",
         className
       )}
       style={style}
