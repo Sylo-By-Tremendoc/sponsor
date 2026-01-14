@@ -1,32 +1,38 @@
 import { motion } from "motion/react";
 import Pill from "../../../components/common/Pill";
 import { Section, TitleText } from "./components";
+import partnerLogo1 from "../../../assets/images/partner-logo-1.png";
+import partnerLogo2 from "../../../assets/images/partner-logo-2.png";
+import partnerLogo3 from "../../../assets/images/partner-logo-3.png";
+import partnerLogo4 from "../../../assets/images/partner-logo-4.png";
+import partnerLogo5 from "../../../assets/images/partner-logo-5.png";
+import partnerLogo6 from "../../../assets/images/partner-logo-6.png";
 
 const OurPartners = () => {
   const partners = [
     {
       name: "AXA",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/4/47/Axa_Logo.svg",
+      logo: partnerLogo1,
     },
     {
       name: "Bupa",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/8/83/Bupa_logo.svg",
+      logo: partnerLogo2,
     },
     {
       name: "Sanlam",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Sanlam_logo.svg",
+      logo: partnerLogo3,
     },
     {
       name: "Liberty Health",
-      logo: "https://upload.wikimedia.org/wikipedia/en/8/8a/Liberty_Group_logo.svg",
+      logo: partnerLogo4,
     },
     {
       name: "Prudential",
-      logo: "https://upload.wikimedia.org/wikipedia/en/8/85/Prudential_plc_logo.svg",
+      logo: partnerLogo5,
     },
     {
       name: "Old Mutual",
-      logo: "https://upload.wikimedia.org/wikipedia/en/1/16/Old_Mutual_logo.svg",
+      logo: partnerLogo6,
     },
   ];
 
@@ -51,7 +57,7 @@ const OurPartners = () => {
           {[...partners, ...partners].map((partner, i) => (
             <div
               key={i}
-              className="shrink-0 flex items-center justify-center w-40 h-20 bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300"
+              className="shrink-0 flex items-center justify-center w-40 h-20 transition-all duration-300"
             >
               <img
                 src={partner.logo}

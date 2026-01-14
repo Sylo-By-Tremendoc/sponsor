@@ -1,25 +1,35 @@
-export type GetRequestParamsType<T> = {
+export type PaginationMeta = {
+  current_page: number;
+  from: number | null;
+  last_page: number;
+  per_page: number;
+  to: number | null;
+  total: number;
+};
+
+export type PaginationLinks = {
+  first: string;
+  last: string;
+  prev: string | null;
+  next: string | null;
+};
+
+export type PaginatedData<T> = {
   data: T[];
-  pageNumber?: number;
-  pageSize?: number;
-  search?: string;
+  links: PaginationLinks;
+  meta: PaginationMeta;
 };
 
 export type PaginatedResponseType<T> = {
-  statusCode: number;
-  data: T[];
+  success: boolean;
+  message: string;
+  data: PaginatedData<T>;
 };
 
 export type SingleResponseType<T> = {
-  statusCode: number;
-  formatters: Array<any>;
-  contentTypes: Array<any>;
-  declaredType: any;
-  value: {
-    value: T;
-    message: string;
-    statusCode: number;
-  };
+  data: T;
+  message: string;
+  success: boolean;
 };
 
 export type MutationResponseType<T> = {

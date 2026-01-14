@@ -1,164 +1,175 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { CustomTable } from "../../../components/common/table";
 import { cn } from "../../../utils/class-name";
-import { HiDotsHorizontal } from "react-icons/hi";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useSetPagination } from "@/hooks/use-set-pagination";
-import { useNavigate } from "react-router-dom";
 import LineThrough from "@/components/common/LineThrough";
-import DashboardCard from "./DashboardCard";
+import { DashboardCard, DashboardCardLoader } from "./components/DashboardCard";
 import Typography from "@/components/common/Typography";
 import useAuth from "@/hooks/use-auth";
-import useGetAllBeneficiaries from "../beneficiaries/hooks/use-get-all-beneficiaries";
 import NetworkError from "@/pages/error/NetworkError";
-import type { BeneficiariesParams } from "@/types/beneficiary";
 import Container from "@/components/common/Container";
+import type { TableFilterField } from "@/types/filter";
+import type { SubscriptionPlan } from "@/types/plans";
+import { convertPrice, formatDate } from "@/utils/constant";
+import { useCurrencyStore } from "@/store/currency-store";
+import useGetAllSubscriptionPlans from "../packages-plans/hooks/use-get-all-subscription-plans";
+import ActionsMenu from "@/components/common/ActionsMenu";
+import Icons from "@/components/common/Icons";
+import ViewSubscriptionDetailsModal from "../packages-plans/components/ViewSubscriptionDetailsModal";
+import DeleteSubscriptionModal from "../packages-plans/components/DeleteSubscriptionModal";
+import { DashboardCarousel } from "./components/DashboardCarousel";
 
 const Dashboard = () => {
   const { authUser } = useAuth();
-  const navigate = useNavigate();
   const pagination = useSetPagination();
-  const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState({});
+
+  const currency = useCurrencyStore((state) => state?.currency);
 
   const { data, isLoading, isFetching, refetch, error } =
-    useGetAllBeneficiaries({
+    useGetAllSubscriptionPlans({
       enabled: true,
-      pageNumber: pagination?.pageNumber,
-      pageSize: pagination?.pageSize,
-      search,
+      page: pagination?.page,
+      per_page: pagination?.per_page,
+      filters,
     });
 
-  // const isLoading = false;
+  const [selectedSubscription, setSelectedSubscription] =
+    useState<SubscriptionPlan | null>(null);
 
-  // const data: Beneficiary[] = [
-  //   {
-  //     id: "1",
-  //     name: "Lina Kabenski",
-  //     avatarUrl: "https://randomuser.me/api/portraits/men/2.jpg",
-  //     relationship: "Brother",
-  //     dateAdded: "16 Aug, 2024 - 10:00AM",
-  //     packageName: "Easy Care (Individual)",
-  //     packageDuration: "1 Month",
-  //     status: "Active",
-  //   },
-  //   {
-  //     id: "2",
-  //     name: "Gregory Henry",
-  //     relationship: "Child",
-  //     dateAdded: "16 Aug, 2024 - 10:00AM",
-  //     packageName: "Easy Care (Individual)",
-  //     packageDuration: "1 Month",
-  //     status: "Inactive",
-  //   },
+  const [
+    openViewSubscriptionDetailsModal,
+    setOpenViewSubscriptionDetailsModal,
+  ] = useState(false);
+  const [openDeleteSubscriptionModal, setOpenDeleteSubscriptionModal] =
+    useState(false);
 
-  //   {
-  //     id: "1",
-  //     name: "Lina Kabenski",
-  //     avatarUrl: "https://randomuser.me/api/portraits/men/2.jpg",
-  //     relationship: "Brother",
-  //     dateAdded: "16 Aug, 2024 - 10:00AM",
-  //     packageName: "Easy Care (Individual)",
-  //     packageDuration: "1 Month",
-  //     status: "Active",
-  //   },
-  //   {
-  //     id: "2",
-  //     name: "Gregory Henry",
-  //     relationship: "Child",
-  //     dateAdded: "16 Aug, 2024 - 10:00AM",
-  //     packageName: "Easy Care (Individual)",
-  //     packageDuration: "1 Month",
-  //     status: "Inactive",
-  //   },
-  // ];
-
-  const analytics = [
-    {
-      title: "Total Beneficiary",
-      icon: {
-        name: "users",
-        color: "#DCFFDD",
+  const analytics = useMemo(
+    () => [
+      {
+        title: "Total Beneficiary",
+        icon: {
+          name: "users",
+          color: "#DCFFDD",
+        },
+        count: data?.meta?.total ?? 0,
       },
-      count: 4,
-    },
-    {
-      title: "Total Package",
-      icon: {
-        name: "users",
-        color: "#DDEBFF",
+      {
+        title: "Total Package",
+        icon: {
+          name: "users",
+          color: "#DDEBFF",
+        },
+        count: data?.meta?.total ?? 0,
       },
-      count: 4,
-    },
-  ];
+    ],
+    [data?.meta?.total]
+  );
 
-  const columns: ColumnDef<BeneficiariesParams>[] = [
+  const columns: ColumnDef<SubscriptionPlan>[] = [
     {
-      header: "Beneficial",
-      accessorKey: "name",
-      cell: ({ row }) => {
-        const { avatarUrl, name } = row.original;
-        return (
-          <div className="flex items-center gap-2">
-            <div className="relative w-[30px] h-[30px] rounded-full overflow-hidden bg-gray-200">
-              {avatarUrl ? (
-                <img src={avatarUrl} alt={name} className="object-cover" />
-              ) : (
-                <div className="w-full h-full bg-gray-300" />
-              )}
-            </div>
-            {name}
-          </div>
-        );
-      },
+      header: "Plan",
+      accessorFn: (row) => row.plan.name,
+      cell: ({ getValue }) => (
+        <span className="font-medium">{getValue<string>()}</span>
+      ),
     },
+
     {
-      header: "Relationship",
-      accessorKey: "relationship",
-      cell: (info) => info.getValue(),
+      header: "Beneficiary",
+      accessorFn: (row) =>
+        `${row.beneficiary.first_name} ${row.beneficiary.last_name}`,
+      cell: ({ getValue }) => (
+        <span className="truncate">{getValue<string>()}</span>
+      ),
     },
+
     {
-      header: "Date Added",
-      accessorKey: "dateAdded",
-      cell: (info) => info.getValue(),
+      header: "Price",
+      accessorFn: (row) => row.price,
+      cell: ({ row }) => convertPrice(Number(row.original.price), currency),
     },
+
     {
-      header: "Package Name",
-      accessorKey: "packageName",
-      cell: (info) => info.getValue(),
+      header: "Billing",
+      accessorKey: "billing_interval",
+      cell: ({ getValue }) => (
+        <span className="capitalize">{getValue<string>()}</span>
+      ),
     },
+
     {
-      header: "Package Duration",
-      accessorKey: "packageDuration",
-      cell: (info) => info.getValue(),
+      header: "Start Date",
+      accessorKey: "starts_at",
+      cell: ({ getValue }) => formatDate(getValue<string>()),
     },
+
+    {
+      header: "End Date",
+      accessorKey: "ends_at",
+      cell: ({ getValue }) => formatDate(getValue<string>()),
+    },
+
     {
       header: "Status",
       accessorKey: "status",
       cell: ({ getValue }) => {
-        const status = getValue() as string;
-        const isActive = status.toLowerCase() === "active";
+        const status = getValue<string>();
+
         return (
-          <div
+          <span
             className={cn(
-              "font-medium",
-              isActive ? "text-green-600" : "text-red-500"
+              "font-medium capitalize",
+              status === "active" && "text-green-600",
+              status === "pending" && "text-amber-500",
+              status === "canceled" && "text-red-500"
             )}
           >
             {status}
-          </div>
+          </span>
         );
       },
     },
+
     {
       header: "Action",
       id: "actions",
-      cell: () => (
-        <button className="hover:bg-gray-100 rounded-full">
-          <HiDotsHorizontal className="w-4 h-4" />
-        </button>
+      cell: ({ row }) => (
+        <ActionsMenu
+          items={[
+            {
+              icon: <Icons iconName="view" />,
+              title: "View",
+              action: "view",
+            },
+            // {
+            //   icon: <Icons iconName="delete" />,
+            //   title: "Delete",
+            //   action: "delete",
+            //   danger: true,
+            // },
+          ]}
+          onSelect={(action) => {
+            handleTableAction(action, row.original);
+          }}
+        />
       ),
     },
   ];
+
+  const handleTableAction = (
+    action: string,
+    subscription: SubscriptionPlan
+  ) => {
+    setSelectedSubscription(subscription);
+
+    if (action === "view") {
+      setOpenViewSubscriptionDetailsModal(true);
+    } else if (action === "delete") {
+      setOpenDeleteSubscriptionModal(true);
+    }
+  };
 
   if (error) return <NetworkError onClick={() => refetch()} />;
 
@@ -174,37 +185,90 @@ const Dashboard = () => {
       </div>
 
       <div className="grid md:grid-cols-3 items-center gap-5">
-        <div className="hidden md:flex md:col-span-2 border bg-black h-full rounded-2xl"></div>
-
+        <div className="hidden md:flex md:col-span-2 h-full">
+          <DashboardCarousel />
+        </div>
         <div className="flex flex-col gap-5">
-          {analytics?.map((item, index) => (
-            <DashboardCard
-              key={index}
-              title={item?.title}
-              icon={item?.icon}
-              count={item?.count}
-            />
-          ))}
+          {isLoading || isFetching
+            ? Array.from({ length: 2 }).map((_, index) => (
+                <DashboardCardLoader key={index} />
+              ))
+            : analytics?.map((item, index) => (
+                <DashboardCard
+                  key={index}
+                  title={item?.title}
+                  icon={item?.icon}
+                  count={item?.count}
+                />
+              ))}
         </div>
       </div>
 
       <LineThrough className="py-3" />
 
       <CustomTable
-        data={data || []}
+        title={"Subscriptions"}
+        data={data?.data || []}
         columns={columns}
         isLoading={isLoading || isFetching}
-        totalEntries={data?.length || 0}
-        pageSize={pagination.pageSize}
-        pageNumber={pagination.pageNumber || 1}
-        onSearch={(search) => setSearch(search)}
+        totalEntries={data?.meta?.total || 0}
+        pageSize={pagination.per_page}
+        pageNumber={pagination.page || 1}
         handlePageChange={pagination.handlePageChange}
-        // handlePageSizeChange={pagination.handlePageSizeChange}
-        onRowClick={(row) => navigate(`/beneficiaries/${row.original?.id}`)}
-        emptyText="No Beneficiary at the moment"
+        filterProps={{
+          filters: tableFilters,
+          onApply: (values) => {
+            setFilters(values);
+            pagination.handlePageChange(1);
+          },
+          onReset: () => {
+            setFilters({});
+            pagination.handlePageChange(1);
+          },
+        }}
+        onRowClick={(row) => {
+          setSelectedSubscription(row?.original);
+          setOpenViewSubscriptionDetailsModal(true);
+        }}
+        emptyText="No subscribed plans at the moment"
       />
+
+      {selectedSubscription && (
+        <ViewSubscriptionDetailsModal
+          details={selectedSubscription}
+          openViewSubscriptionDetailsModal={openViewSubscriptionDetailsModal}
+          setOpenViewSubscriptionDetailsModal={
+            setOpenViewSubscriptionDetailsModal
+          }
+        />
+      )}
+
+      {selectedSubscription && (
+        <DeleteSubscriptionModal
+          selectedSubscription={selectedSubscription}
+          openDeleteSubscriptionModal={openDeleteSubscriptionModal}
+          setOpenDeleteSubscriptionModal={setOpenDeleteSubscriptionModal}
+          handleDelete={() => {
+            refetch();
+            setOpenDeleteSubscriptionModal(false);
+          }}
+        />
+      )}
     </Container>
   );
 };
 
 export default Dashboard;
+
+const tableFilters: TableFilterField[] = [
+  {
+    type: "text",
+    name: "name",
+    label: "Name",
+  },
+  {
+    type: "text",
+    name: "email",
+    label: "Email",
+  },
+];

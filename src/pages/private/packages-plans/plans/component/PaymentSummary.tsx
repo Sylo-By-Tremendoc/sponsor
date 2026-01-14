@@ -3,25 +3,71 @@ import CheckBoxInput from "@/components/common/CheckBoxInput";
 import LineThrough from "@/components/common/LineThrough";
 import TextInput from "@/components/common/TextInput";
 import Typography from "@/components/common/Typography";
-import { convertPrice } from "@/utils/constant";
+import { convertPrice, replaceEmptyStringsWithNull } from "@/utils/constant";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import type { BeneficiaryInfo } from "./BeneficiaryInformationCard";
-import type { PaymentCardInfo } from "../../components/PaymentCard";
 import { cn } from "@/utils/class-name";
+import type { BeneficiariesParams } from "@/types/beneficiary";
+import type { PlansParam } from "@/types/plans";
+import { useCurrencyStore } from "@/store/currency-store";
+import SkeletonLoader from "@/components/common/SkeletonLoader";
+import useRequestPlanPaymentOTP from "../hooks/use-request-plan-payment-otp";
+import { getErrorMessage } from "@/utils/get-error-message";
+import useAuth from "@/hooks/use-auth";
+import { maskEmail } from "@/utils/formatters";
 
 const PaymentSummary = ({
+  plan,
+  showHeader = true,
+  isLoading,
   beneficiaries,
-  paymentCardDetails,
-  handleMakePayment,
+  onSuccess,
   className,
 }: {
+  showHeader?: boolean;
+  isLoading: boolean;
   className?: string;
-  beneficiaries: BeneficiaryInfo[];
-  paymentCardDetails: PaymentCardInfo;
-  handleMakePayment: () => void;
+  plan: PlansParam;
+  beneficiaries: BeneficiariesParams[];
+  onSuccess: () => void;
 }) => {
+  const { authUser } = useAuth();
+  const currency = useCurrencyStore((state) => state?.currency);
+
+  const price = Number(plan?.price || 0);
+  const serviceCharge = price * 0.05;
+  const totalPrice = price + serviceCharge;
+
   const [paymentTerms, setPaymentTerms] = useState(false);
+
+  const requestPlanPaymentOTP = useRequestPlanPaymentOTP();
+
+  const handleRequestOTP = () => {
+    const newData = {
+      channel: "email",
+    };
+
+    const submittedData = replaceEmptyStringsWithNull(newData);
+
+    requestPlanPaymentOTP.mutate(submittedData, {
+      onSuccess: () => {
+        toast.success(
+          `We have sent an OTP to your email ${maskEmail(
+            authUser?.user?.email
+          )}`
+        );
+        onSuccess();
+      },
+      onError: (error: Error) => {
+        toast.error(
+          getErrorMessage(
+            error?.message,
+            "An error occurred. Please try again."
+          )
+        );
+      },
+    });
+  };
 
   return (
     <div
@@ -30,18 +76,40 @@ const PaymentSummary = ({
         className
       )}
     >
-      <Typography variant={"largeText"} className="px-3">
-        Payment Summary
-      </Typography>
+      {showHeader && (
+        <>
+          <Typography variant={"largeText"} className="px-3">
+            Payment Summary
+          </Typography>
 
-      <LineThrough />
+          <LineThrough />
+        </>
+      )}
 
       <div className="flex-1 overflow-auto px-3 pt-1">
         <div className="border border-dashed border-primary bg-light-green p-4 rounded-xl space-y-2">
-          <Typography variant={"mediumText"}>Easy Care (Individual)</Typography>
-          <Typography variant={"smallText"} className="text-charcoal-gray">
-            Lorem Ipsum is simply dummy text of the printing industry.
-          </Typography>
+          {isLoading ? (
+            <SkeletonLoader className="w-20 h-7 rounded-md mb-2" />
+          ) : (
+            <Typography variant={"mediumText"} className="mb-2">
+              {plan?.name || ""}
+            </Typography>
+          )}
+
+          {isLoading ? (
+            <div className="space-y-1">
+              <SkeletonLoader className="w-full h-3 rounded-sm" />
+              <SkeletonLoader className="w-full h-3 rounded-sm" />
+              <SkeletonLoader className="w-full h-3 rounded-sm" />
+            </div>
+          ) : (
+            <Typography
+              variant={"smallText"}
+              className="text-charcoal-gray line-clamp-3"
+            >
+              {plan?.description || ""}
+            </Typography>
+          )}
         </div>
 
         <div className="my-4 w-full border border-dashed border-mid-grey contain-none"></div>
@@ -49,19 +117,19 @@ const PaymentSummary = ({
         <div className="space-y-2.5 mb-6">
           <Typography variant={"mediumText"}>Payment Breakdown</Typography>
 
-          <div className="space-y-1">
+          <div className="space-y-2">
             <div className="flex justify-between">
-              <Typography variant={"smallText"}>Package × 1</Typography>
+              <Typography variant={"smallText"}>Plan </Typography>
               <Typography variant={"smallText"}>
-                {convertPrice(7.99)}
+                {convertPrice(Number(price), currency)}
               </Typography>
             </div>
 
             <div className="flex justify-between">
+              <Typography variant={"smallText"}>Service Charge</Typography>
               <Typography variant={"smallText"}>
-                Taxes and Surcharges
+                {convertPrice(serviceCharge, currency)}
               </Typography>
-              <Typography variant={"smallText"}>{convertPrice(1.0)}</Typography>
             </div>
           </div>
         </div>
@@ -84,7 +152,9 @@ const PaymentSummary = ({
 
         <div className="flex justify-between items-center gap-3 mb-4">
           <Typography variant={"largeText"}>Total</Typography>
-          <Typography variant={"largeText"}>{convertPrice(8.99)}</Typography>
+          <Typography variant={"largeText"}>
+            {convertPrice(totalPrice, currency)}
+          </Typography>
         </div>
 
         <label className="flex items-start gap-3 cursor-pointer mb-6">
@@ -92,7 +162,10 @@ const PaymentSummary = ({
             checked={paymentTerms}
             onChange={() => setPaymentTerms(!paymentTerms)}
           />
-          <Typography variant={"xSmallText"} className="text-charcoal-gray">
+          <Typography
+            variant={"xSmallText"}
+            className="text-charcoal-gray mt-[2px]"
+          >
             I agree to the{" "}
             <a href="" target="_blank" className="text-primary underline">
               payment terms and refund policy
@@ -102,7 +175,6 @@ const PaymentSummary = ({
 
         <Button
           className="w-full"
-          disabled={beneficiaries.length === 0 || paymentCardDetails === null}
           onClick={() => {
             if (!paymentTerms) {
               toast.error(
@@ -112,10 +184,16 @@ const PaymentSummary = ({
               return;
             }
 
-            handleMakePayment();
+            handleRequestOTP();
           }}
+          isLoading={requestPlanPaymentOTP?.isPending}
+          disabled={
+            requestPlanPaymentOTP?.isPending || beneficiaries?.length === 0
+          }
         >
-          Proceed to Payment
+          {requestPlanPaymentOTP?.isPending
+            ? "Processing..."
+            : "Proceed to Payment"}
         </Button>
       </div>
     </div>

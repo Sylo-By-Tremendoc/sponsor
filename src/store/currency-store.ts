@@ -16,10 +16,10 @@ export type CurrencyStore = CurrencyState & {
 export const defaultInitState: CurrencyState = {
   search: "",
   currency: {
-    id: "CAD",
-    label: "Canadian Dollar",
-    symbol: "C$",
-    flag: "https://flagcdn.com/w160/ca.png",
+    id: "EUR",
+    label: "Euro",
+    symbol: "€",
+    flag: "https://flagcdn.com/w160/eu.png",
   },
 };
 
@@ -41,10 +41,10 @@ export const createCurrencyStore = (
           if (version !== 1) {
             return {
               currency: {
-                id: "CAD",
-                label: "Canadian Dollar",
-                symbol: "C$",
-                flag: "https://flagcdn.com/w160/ca.png",
+                id: "EUR",
+                label: "Euro",
+                symbol: "€",
+                flag: "https://flagcdn.com/w160/eu.png",
               },
             };
           }

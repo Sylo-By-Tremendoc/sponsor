@@ -5,26 +5,31 @@ import type { PaginatedResponseType } from "@/types/api";
 
 export type PaginatedProps = {
   enabled?: boolean;
-  pageNumber?: number;
-  pageSize?: number;
-  search?: string;
-  type?: string;
+  page?: number;
+  per_page?: number;
+  filters?: Record<string, any>;
 };
+
 const useGetAllNotification = ({
   enabled = false,
-  pageNumber = 1,
-  pageSize = 5,
-  search = "",
-  type = "",
+  page = 1,
+  per_page = 10,
+  filters = {},
 }: PaginatedProps) => {
   const { getRequest } = useAxiosBase();
 
+  const queryParams = new URLSearchParams({
+    page: String(page),
+    per_page: String(per_page),
+    ...Object.fromEntries(
+      Object.entries(filters).filter(([_, v]) => v !== undefined && v !== "")
+    ),
+  }).toString();
+
   return useQuery({
-    queryKey: ["GET_ALL_NOTIFICATIONS", pageNumber, pageSize, search, type],
+    queryKey: ["GET_ALL_NOTIFICATIONS", page, per_page, filters],
     queryFn: () =>
-      getRequest(
-        `/notifications?type=${type}&read=${false}&pageNumber=${pageNumber}&pageSize=${pageSize}&search=${search}`
-      ).then(
+      getRequest(`/notifications?${queryParams}`).then(
         (res: PaginatedResponseType<NotificationParams>) => res.data
       ),
     staleTime: 50000,

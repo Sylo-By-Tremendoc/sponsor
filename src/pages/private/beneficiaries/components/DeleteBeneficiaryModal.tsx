@@ -1,5 +1,7 @@
 import { Button } from "@/components/common/Button";
 import CustomDialog, { DialogFooter } from "@/components/common/modals/Dialog";
+import type { BeneficiariesParams } from "@/types/beneficiary";
+import useDeleteBeneficiary from "../hooks/use-delete-beneficiary";
 
 const DeleteBeneficiaryModal = ({
   beneficiary,
@@ -7,18 +9,19 @@ const DeleteBeneficiaryModal = ({
   setOpenDeleteBeneficiaryModal,
   handleDelete,
 }: {
-  beneficiary: any;
+  beneficiary: BeneficiariesParams;
   openDeleteBeneficiaryModal: boolean;
   setOpenDeleteBeneficiaryModal: (val: boolean) => void;
   handleDelete: () => void;
 }) => {
+  const { deleteBeneficiary } = useDeleteBeneficiary(beneficiary?.id);
   return (
     <CustomDialog
       title={"Delete Beneficiary"}
-      description={`Are you sure you want to delete ${beneficiary?.firstName} ${beneficiary?.lastName} as your beneficiary`}
+      description={`Are you sure you want to delete ${beneficiary?.first_name} ${beneficiary?.last_name} as your beneficiary`}
       openModal={openDeleteBeneficiaryModal}
       onClose={() => setOpenDeleteBeneficiaryModal(false)}
-      className="w-100"
+      className="md:w-100"
     >
       <DialogFooter className="pt-5">
         <Button
@@ -28,8 +31,17 @@ const DeleteBeneficiaryModal = ({
         >
           Cancel
         </Button>
-        <Button className="bg-danger text-white w-full" onClick={handleDelete}>
-          Delete
+        <Button
+          className="bg-danger text-white w-full"
+          isLoading={deleteBeneficiary?.isPending}
+          disabled={deleteBeneficiary?.isPending}
+          onClick={() => {
+            deleteBeneficiary.mutate(undefined, {
+              onSuccess: () => handleDelete(),
+            });
+          }}
+        >
+          {deleteBeneficiary?.isPending ? "Deleting..." : "Delete"}
         </Button>
       </DialogFooter>
     </CustomDialog>

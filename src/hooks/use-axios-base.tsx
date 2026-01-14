@@ -14,61 +14,93 @@ const useAxiosBase = () => {
 
   const handleErrorResponse = useCallback(
     (status: number, message?: string) => {
+      const error = {
+        message: message || "Session expired!",
+        status,
+      };
+
       if (status === 401 || status === 403) {
-        toast.error(message || "Session expired!");
-        sessionStorage.removeItem("user");
-        setAuthUser(null);
-        navigate("/account/login");
+        toast.error(error.message);
+
+        // sessionStorage.removeItem("user");
+        // setAuthUser(null);
+        // navigate("/account/login");
       }
-      return Promise.reject(message || "An error occurred");
+
+      return Promise.reject(error);
     },
     [navigate, setAuthUser]
   );
 
   const getRequest = async (url: string, params?: object) => {
     try {
-      const response: AxiosResponse<any> = await axiosInstance.get(url, params);
-
-      if ([401, 403].includes(response.status)) {
-        return handleErrorResponse(response.status);
-      }
-
-      return response.data;
-    } catch (error: any) {
-      const status = error.response?.status;
-      const message = error.response?.data?.value?.message || error.message;
-      if (status && [401, 403].includes(status)) {
-        return handleErrorResponse(status, message);
-      }
-      throw new Error(message);
-    }
-  };
-
-  const postRequest = async (url: string, data: any, params?: any) => {
-    try {
-      const response: AxiosResponse = await axiosInstance.post(url, data, {
+      const response: AxiosResponse<any> = await axiosInstance.get(url, {
         params,
       });
       return response.data;
     } catch (error: any) {
-      const message = error.response?.data?.value?.message || error.message;
-      const data = error.response?.data?.value?.value || null;
+      const status = error.response?.status;
+      const data = error.response?.data;
+
+      if ([401, 403].includes(status)) {
+        return handleErrorResponse(status, data?.message);
+      }
 
       throw {
-        message,
-        data,
+        message: data?.message || error.message,
+        errors: data?.errors || null,
+        status,
       };
     }
   };
 
-  const putRequest = async (url: string, data: any, params?: any) => {
+  const postRequest = async (
+    url: string,
+    data: any,
+    params?: any,
+    isFormData = false
+  ) => {
+    try {
+      const response: AxiosResponse = await axiosInstance.post(url, data, {
+        params,
+        headers: isFormData
+          ? { "Content-Type": "multipart/form-data" }
+          : undefined,
+      });
+      return response.data;
+    } catch (error: any) {
+      const responseData = error.response?.data;
+
+      throw {
+        message: responseData?.message || error.message,
+        errors: responseData?.errors || null,
+        status: error.response?.status,
+      };
+    }
+  };
+
+  const putRequest = async (
+    url: string,
+    data: any,
+    params?: any,
+    isFormData = false
+  ) => {
     try {
       const response: AxiosResponse = await axiosInstance.put(url, data, {
         params,
+        headers: isFormData
+          ? { "Content-Type": "multipart/form-data" }
+          : undefined,
       });
-      return response;
+      return response.data;
     } catch (error: any) {
-      throw new Error(error.response?.data?.value?.message || error.message);
+      const responseData = error.response?.data;
+
+      throw {
+        message: responseData?.message || error.message,
+        errors: responseData?.errors || null,
+        status: error.response?.status,
+      };
     }
   };
 
@@ -84,9 +116,17 @@ const useAxiosBase = () => {
   useEffect(() => {
     const requestInterceptor = axiosInstance.interceptors.request.use(
       (config) => {
-        if (isAuthenticated && !config.headers["Authorization"]) {
-          config.headers["Authorization"] = `Bearer ${authUser?.token}`;
+        // Attach auth token
+        if (isAuthenticated && authUser?.token) {
+          config.headers = config.headers || {};
+          config.headers.Authorization = `Bearer ${authUser.token}`;
         }
+
+        // VERY IMPORTANT: let Axios set multipart boundary
+        if (config.data instanceof FormData) {
+          delete config.headers["Content-Type"];
+        }
+
         return config;
       },
       (error) => Promise.reject(error)
@@ -95,14 +135,6 @@ const useAxiosBase = () => {
     const responseInterceptor = axiosInstance.interceptors.response.use(
       (response) => response,
       (error) => {
-        const status = error?.response?.status;
-
-        if ([401, 403].includes(status)) {
-          return handleErrorResponse(
-            status,
-            error.response?.data?.value?.message
-          );
-        }
         return Promise.reject(error);
       }
     );
@@ -111,7 +143,7 @@ const useAxiosBase = () => {
       axiosInstance.interceptors.request.eject(requestInterceptor);
       axiosInstance.interceptors.response.eject(responseInterceptor);
     };
-  }, [authUser, handleErrorResponse]);
+  }, [axiosInstance, authUser, isAuthenticated, handleErrorResponse]);
 
   return { getRequest, postRequest, putRequest, deleteRequest };
 };

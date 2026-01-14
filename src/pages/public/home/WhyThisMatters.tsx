@@ -8,8 +8,11 @@ import { Section, TitleText } from "./components";
 import { convertPrice } from "../../../utils/constant";
 import type { SectionParam } from ".";
 import whyThisMattersImg from "../../../assets/images/why-this-matters.png";
+import { useCurrencyStore } from "@/store/currency-store";
 
 const WhyThisMatters = ({ setShowGetStartedModal }: SectionParam) => {
+  const currency = useCurrencyStore((state) => state?.currency);
+
   const features = [
     {
       title: "Comprehensive Care",
@@ -34,7 +37,7 @@ const WhyThisMatters = ({ setShowGetStartedModal }: SectionParam) => {
     { value: "7%", label: "Countries Covered" },
     { value: "3.5M+", label: "Target Diasporas" },
     { value: "2", label: "Confirmed Partners" },
-    { value: convertPrice(9.99), label: "Starting Price" },
+    { value: convertPrice(9.99, currency), label: "Starting Price" },
   ];
 
   return (
@@ -125,7 +128,7 @@ const WhyThisMatters = ({ setShowGetStartedModal }: SectionParam) => {
           className="w-full flex justify-center"
         >
           <Button onClick={() => setShowGetStartedModal(true)}>
-            Get Started from {convertPrice(9.99)}/month
+            Get Started from {convertPrice(9.99, currency)}/month
           </Button>
         </motion.div>
       </Section>

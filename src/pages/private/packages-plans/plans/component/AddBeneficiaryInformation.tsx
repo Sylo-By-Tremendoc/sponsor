@@ -1,6 +1,5 @@
 import Typography from "@/components/common/Typography";
 import { Button } from "@/components/common/Button";
-import type { BeneficiaryInfo } from "./BeneficiaryInformationCard";
 import BeneficiaryInformationCard from "./BeneficiaryInformationCard";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -20,7 +19,8 @@ import { useBeneficiaryStore } from "@/store/beneficiary-store";
 import { beneficiaryCountries } from "@/utils/constant";
 import { DialogFooter } from "@/components/common/modals/Dialog";
 import AddBeneficiaryInformationModal from "./AddBeneficiaryInformationModal";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import type { BeneficiariesParams } from "@/types/beneficiary";
 
 const AddBeneficiaryInformation = ({
   beneficiaries,
@@ -32,14 +32,14 @@ const AddBeneficiaryInformation = ({
   openAddBeneficiaryInformationModal,
   setOpenAddBeneficiaryInformationModal,
 }: {
-  beneficiaries: BeneficiaryInfo[];
-  selectedBeneficiary: BeneficiaryInfo;
-  setSelectedBeneficiary: (val: BeneficiaryInfo | null) => void;
+  beneficiaries: BeneficiariesParams[];
+  selectedBeneficiary: BeneficiariesParams;
+  setSelectedBeneficiary: (val: BeneficiariesParams | null) => void;
   openAddBeneficiaryInformationModal: boolean;
   setOpenAddBeneficiaryInformationModal: (val: boolean) => void;
-  handleAdd: (val: BeneficiaryInfo) => void;
-  handleEdit: (val: BeneficiaryInfo) => void;
-  handleDelete: (val: BeneficiaryInfo) => void;
+  handleAdd: (val: BeneficiariesParams) => void;
+  handleEdit: (val: BeneficiariesParams) => void;
+  handleDelete: (val: BeneficiariesParams) => void;
 }) => {
   const location = useBeneficiaryStore((state) => state.location);
   const ageRange = useBeneficiaryStore((state) => state.ageRange);
@@ -97,6 +97,11 @@ const AddBeneficiaryInformation = ({
     clearErrors();
   };
 
+  const addedBeneficiaries = useMemo(
+    () => beneficiaries?.filter((beneficiary) => beneficiary.isSelected) || [],
+    [beneficiaries]
+  );
+
   useEffect(() => {
     if (selectedCountry) {
       setValue("country", selectedCountry.label);
@@ -105,14 +110,14 @@ const AddBeneficiaryInformation = ({
 
   return (
     <section className="space-y-6">
-      {beneficiaries.length > 0 ? (
+      {addedBeneficiaries?.length > 0 ? (
         <div className="space-y-3">
           <Typography variant="smallTextSemibold">
             Added Beneficiaries
           </Typography>
 
           <div className="space-y-3">
-            {beneficiaries.map((b, idx) => (
+            {addedBeneficiaries?.map((b, idx) => (
               <BeneficiaryInformationCard
                 key={idx}
                 beneficiary={b}

@@ -7,7 +7,7 @@ const NoLocationOrAgeRangeSelected = ({ onClick }: { onClick: () => void }) => {
         Please complete your preferences
       </h3>
       <p className="text-gray-600 mb-6 max-w-xl mx-auto">
-        To help us tailor the best package for you, please select your
+        To help us tailor the best planfor you, please select your
         beneficiary country and age range..
       </p>
 

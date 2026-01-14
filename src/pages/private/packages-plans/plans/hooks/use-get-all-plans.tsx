@@ -5,24 +5,32 @@ import type { PlansParam } from "@/types/plans";
 
 export type PaginatedProps = {
   enabled?: boolean;
-  pageNumber?: number;
-  pageSize?: number;
-  search?: string;
+  page?: number;
+  per_page?: number;
+  filters?: Record<string, any>;
 };
 const useGetAllPlans = ({
   enabled = false,
-  pageNumber = 1,
-  pageSize = 5,
-  search = "",
+  page = 1,
+  per_page = 10,
+  filters = {},
 }: PaginatedProps) => {
   const { getRequest } = useAxiosBase();
 
+  const queryParams = new URLSearchParams({
+    page: String(page),
+    per_page: String(per_page),
+    ...Object.fromEntries(
+      Object.entries(filters).filter(([_, v]) => v !== undefined && v !== "")
+    ),
+  }).toString();
+
   return useQuery({
-    queryKey: ["GET_ALL_PLANS", pageNumber, pageSize, search],
+    queryKey: ["GET_ALL_PLANS", page, per_page, filters],
     queryFn: () =>
-      getRequest(
-        `/plans?pageNumber=${pageNumber}&pageSize=${pageSize}&search=${search}`
-      ).then((res: PaginatedResponseType<PlansParam>) => res.data),
+      getRequest(`/plans?${queryParams}`).then(
+        (res: PaginatedResponseType<PlansParam>) => res.data
+      ),
     staleTime: 50000,
     refetchOnWindowFocus: false,
     enabled,

@@ -14,15 +14,16 @@ import PackagePlans from "./pages/private/packages-plans";
 import Notifications from "./pages/private/notifications";
 import Settings from "./pages/private/settings";
 import Support from "./pages/private/support";
-import SingleBeneficiaryDetails from "./pages/private/beneficiaries/SingleBeneficiaryDetails";
 import PublicLayout from "./pages/public";
 import Profile from "./pages/private/profile";
 import Plans from "./pages/private/packages-plans/plans";
-import PlanPayment from "./pages/private/packages-plans/plans/PlanPayment";
 import Messages from "./pages/private/messages";
 import SecuritySettings from "./pages/private/settings/security";
 import NotificationSettings from "./pages/private/settings/notification";
 import ResetPassword from "./pages/auth/reset-password";
+import PlanPaymentPage from "./pages/private/packages-plans/plans/make-payment";
+import SingleBeneficiaryDetails from "./pages/private/beneficiaries/single-beneficiary-details";
+import Blogs from "./pages/public/blogs";
 
 const router = createBrowserRouter(
   [
@@ -37,6 +38,10 @@ const router = createBrowserRouter(
         {
           path: "/pricing",
           element: <Pricing />,
+        },
+        {
+          path: "/blogs",
+          element: <Blogs />,
         },
         {
           path: "/contact-us",
@@ -107,7 +112,8 @@ const router = createBrowserRouter(
         },
         {
           path: "/package-plans/plans/:id",
-          element: <PlanPayment />,
+          // element: <PlanPayment />,
+          element: <PlanPaymentPage />,
         },
       ],
     },

@@ -8,10 +8,8 @@ const buildUrl = (api: string) => {
 
 export const publicAxios = axios.create({
   baseURL: buildUrl(import.meta.env.VITE_ACCOUNT_BASE),
-  headers: { "Content-Type": "application/json" },
 });
 
 export const authAxios = axios.create({
   baseURL: buildUrl(import.meta.env.VITE_AUTHENTICATED_BASE),
-  headers: { "Content-Type": "application/json" },
 });

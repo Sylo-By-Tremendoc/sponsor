@@ -1,5 +1,5 @@
-import { useCurrencyStore } from "@/store/currency-store";
 import Avatar from "../assets/images/user-placeholder.jpg";
+import type { CurrencyDropdownParams } from "@/components/navbar/components/CurrencyDropdown";
 
 const transition = {
   duration: 0.4,
@@ -94,8 +94,11 @@ export const genderOptions = [
   // { label: "Other", value: "OTHER" },
 ];
 
-export const convertPrice = (price: number) => {
-  const currency = useCurrencyStore((state) => state?.currency);
+export const convertPrice = (
+  price: number,
+  currency: CurrencyDropdownParams
+) => {
+  // const currency = useCurrencyStore((state) => state?.currency);
 
   const conversionRates: Record<string, number> = {
     NGN: 19000, // Nigerian Naira
@@ -105,11 +108,11 @@ export const convertPrice = (price: number) => {
     GBP: 1, // British Pound (base)
   };
 
-  const rate = conversionRates[currency.id] || 1;
+  const rate = conversionRates[currency?.id] || 1;
   const converted = price * rate;
 
   // Format with currency symbol and local style
-  return `${currency.symbol}${converted.toLocaleString(undefined, {
+  return `${currency?.symbol}${converted.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
@@ -204,4 +207,50 @@ export const getSponsorCountry = (code: string) => {
 
 export const defaultImages = {
   avatar: Avatar,
+};
+
+export const buildResetValues = (filters: any[]) => {
+  const values: Record<string, any> = {};
+
+  filters.forEach((filter) => {
+    switch (filter.type) {
+      case "date":
+        values[filter.name] = filter.defaultValue ?? null;
+        break;
+
+      case "select":
+        values[filter.name] = filter.defaultValue ?? "";
+        break;
+
+      default:
+        values[filter.name] = filter.defaultValue ?? "";
+    }
+  });
+
+  return values;
+};
+
+export const splitAgeBracket = (ageBracket: string) => {
+  const [min, max] = ageBracket?.split("-")?.map(Number);
+
+  return {
+    minAge: min,
+    maxAge: max,
+  };
+};
+
+export const displayAgeRange = (min?: number, max?: number): string => {
+  if (min && max) {
+    return `${min} – ${max} years`;
+  }
+
+  if (min && !max) {
+    return `${min}+ years`;
+  }
+
+  if (!min == null && max) {
+    return `Up to ${max} years`;
+  }
+
+  return "All ages";
 };

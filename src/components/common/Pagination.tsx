@@ -60,7 +60,7 @@ const Pagination = ({
   };
 
   return (
-    <div className="flex justify-between items-center">
+    <div className="flex justify-between items-center p-4 border-t bg-white">
       <Typography variant="subTextSemibold" className="hidden md:block">
         {renderEntryInfo()}
       </Typography>
@@ -96,12 +96,10 @@ const Pagination = ({
                 key={index}
                 aria-label={`Go to page ${page}`}
                 className={cn(
-                  "outline-none bg-transparent border border-mid-grey px-1 min-w-[1.8rem] h-[1.7rem] flex items-center justify-center shrink-0 overflow-hidden",
-                  " font-normal text-sm cursor-pointer hover:bg-lightGrey opacity-70",
-                  {
-                    " bg-linear-to-b from-primary to-secondary text-white":
-                      pagination.active === page,
-                  }
+                  "outline-none border border-mid-grey px-1 min-w-[1.8rem] h-[1.7rem] flex items-center justify-center shrink-0 overflow-hidden font-normal text-sm cursor-pointer",
+                  pagination.active === page
+                    ? "bg-gradient-to-b from-primary to-secondary text-white opacity-100"
+                    : "bg-transparent hover:bg-lightGrey opacity-70"
                 )}
                 onClick={() => pagination.setPage(page)}
               >

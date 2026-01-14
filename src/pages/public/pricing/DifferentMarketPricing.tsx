@@ -11,6 +11,8 @@ import {
   PackagePlanCardLoader,
 } from "./components/PackagePlanCard";
 import useGetAllPlans from "@/pages/private/packages-plans/plans/hooks/use-get-all-plans";
+import { useBeneficiaryStore } from "@/store/beneficiary-store";
+import { splitAgeBracket } from "@/utils/constant";
 
 const DifferentMarketPricing = ({
   onClick,
@@ -20,71 +22,22 @@ const DifferentMarketPricing = ({
   className?: string;
 }) => {
   const pagination = useSetPagination();
-  const [search,] = useState("");
+
+  const ageRange = useBeneficiaryStore((state) => state.ageRange);
+  const location = useBeneficiaryStore((state) => state.location);
+
+  const { minAge, maxAge } = splitAgeBracket(ageRange);
 
   const { data, isLoading, isFetching, refetch, error } = useGetAllPlans({
-    enabled: true,
-    pageNumber: pagination?.pageNumber,
-    pageSize: pagination?.pageSize,
-    search,
+    enabled: !!ageRange && !!location,
+    page: pagination?.page,
+    per_page: pagination?.per_page,
+    filters: {
+      age_range_min: minAge,
+      age_range_max: maxAge,
+      country_code: location,
+    },
   });
-
-  console.log("PLANS", data);
-
-  // const PLANS = [
-  //   {
-  //     id: "basic",
-  //     name: "Beta Life Basic",
-  //     price: 9.99,
-  //     ageRange: "0-64 years",
-  //     paymentPlan: "monthly",
-  //     features: [
-  //       "Surgical Services",
-  //       "Medical Consultations",
-  //       "Laboratory Tests",
-  //       "Emergency Care",
-  //     ],
-  //   },
-  //   {
-  //     id: "standard",
-  //     name: "Beta Life Standard",
-  //     price: 19.99,
-  //     ageRange: "0-64 years",
-  //     paymentPlan: "monthly",
-  //     features: [
-  //       "Everything in Basic",
-  //       "Dental & Vision Coverage",
-  //       "Specialist Visits",
-  //       "24/7 Telemedicine Access",
-  //     ],
-  //   },
-  //   {
-  //     id: "premium",
-  //     name: "Beta Life Premium",
-  //     price: 29.99,
-  //     ageRange: "0-70 years",
-  //     paymentPlan: "monthly",
-  //     features: [
-  //       "Everything in Standard",
-  //       "Maternity Care",
-  //       "Private Room",
-  //       "International Coverage",
-  //     ],
-  //   },
-  //   {
-  //     id: "elite",
-  //     name: "Beta Life Elite",
-  //     price: 49.99,
-  //     ageRange: "0-75 years",
-  //     paymentPlan: "monthly",
-  //     features: [
-  //       "Everything in Premium",
-  //       "Personal Health Concierge",
-  //       "VIP Hospital Access",
-  //       "Annual Wellness Retreat",
-  //     ],
-  //   },
-  // ];
 
   const [paymentPlan, setPaymentPlan] = useState("MONTHLY");
   const paymentOptions = ["MONTHLY", "YEARLY"];
@@ -92,7 +45,7 @@ const DifferentMarketPricing = ({
   const filteredPlans = useMemo(() => {
     if (!data) return [];
 
-    return data.filter(
+    return data?.data?.filter(
       (plan) =>
         plan.billing_interval?.toLowerCase() === paymentPlan.toLowerCase()
     );

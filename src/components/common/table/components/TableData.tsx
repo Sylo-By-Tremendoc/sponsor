@@ -1,5 +1,5 @@
-import * as React from "react";
-import { cn } from "../../../utils/class-name";
+import { cn } from "@/utils/class-name";
+import React from "react";
 
 const Table = React.forwardRef<
   HTMLTableElement,
@@ -19,11 +19,7 @@ const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead
-    ref={ref}
-    className={cn("bg-white", className)}
-    {...props}
-  />
+  <thead ref={ref} className={cn("bg-white", className)} {...props} />
 ));
 
 TableHeader.displayName = "TableHeader";

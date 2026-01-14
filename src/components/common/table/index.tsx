@@ -13,7 +13,7 @@ import {
   TableRow,
   TableHead,
   TableCell,
-} from "./component";
+} from "./components/TableData";
 import { useMemo } from "react";
 import CheckBoxInput from "../CheckBoxInput";
 import { cn } from "../../../utils/class-name";
@@ -22,35 +22,35 @@ import SkeletonLoader from "../SkeletonLoader";
 import Icons from "../Icons";
 import If from "../If";
 import Pagination from "../Pagination";
-import TextInput from "../TextInput";
-import { useDebouncedCallback } from "use-debounce";
+import type { TableFilterProps } from "@/types/filter";
+import { TableFilter } from "./components/TableFilter";
 
 interface CustomTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  title?: string;
   pageSize?: number;
   pageNumber?: number;
   totalEntries: number;
   isLoading?: boolean;
   enableRowSelection?: boolean;
-  emptyText?: string;
   className?: string;
-  searchPlaceholder?: string;
-  onSearch?: (searchText: string) => void;
+  emptyText?: string;
+  filterProps?: TableFilterProps;
   handlePageChange: (page: number) => void;
   onRowClick?: (row: Row<TData>) => void;
 }
 
 export function CustomTable<TData, TValue>({
   columns,
+  title,
   data,
-  onSearch,
+  filterProps,
   totalEntries,
   pageSize = 10,
   pageNumber = 1,
   isLoading = false,
   enableRowSelection = true,
-  searchPlaceholder,
   emptyText,
   className,
   onRowClick,
@@ -129,43 +129,33 @@ export function CustomTable<TData, TValue>({
     enableColumnResizing: true,
   });
 
-  const handleSearch = useDebouncedCallback((searchText: string) => {
-    onSearch?.(searchText);
-  }, 500);
-
   return (
-    <div className={cn("relative w-full overflow-auto space-y-2", className)}>
-      <div className="mb-3 flex flex-col-reverse gap-3 md:flex-row md:items-center md:justify-between">
-        {onSearch && (
-          <div className="w-full md:w-[203px]">
-            <TextInput
-              height="35px"
-              placeholder={searchPlaceholder || "Search..."}
-              type="search"
-              name="search"
-              searchIconSize={16}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="bg-white"
-            />
-          </div>
+    <div
+      className={cn(
+        "relative border border-mid-grey rounded-[15px] w-full overflow-auto",
+        className
+      )}
+    >
+      <div className="p-4 bg-white flex  gap-3 items-center justify-between">
+        {title && (
+          <Typography
+            variant={"mediumText"}
+            className="text-[#4A4A4A] font-medium"
+          >
+            {title}
+          </Typography>
         )}
 
-        <div className="flex items-center gap-2">
-          <Typography
-            variant={"smallTextBold"}
-            className="font-medium text-charcoal-gray"
-          >
-            Filter By:
-          </Typography>
-          <select className="border rounded-md px-2 py-1 text-sm">
-            <option value="">Status</option>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </select>
-        </div>
+        {filterProps && (
+          <TableFilter
+            filters={filterProps.filters}
+            onApply={filterProps.onApply}
+            onReset={filterProps.onReset}
+          />
+        )}
       </div>
 
-      <div className="border border-mid-grey rounded-[15px] overflow-hidden">
+      <div className="border-t overflow-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -276,6 +266,9 @@ export function CustomTable<TData, TValue>({
                             key={cell.id}
                             className={cn(
                               "py-4",
+                              !["actions", "row-select"].includes(
+                                cell.column.id
+                              ) && "min-w-[10rem]",
                               onRowClick && "cursor-pointer"
                             )}
                             onClick={
@@ -310,7 +303,9 @@ export function CustomTable<TData, TValue>({
                       colSpan={tableColumns.length}
                       className="h-24 text-center"
                     >
-                      <Typography variant="xSmallText">{emptyText ?? "No results."}</Typography>
+                      <Typography variant="xSmallText">
+                        {emptyText ?? "No results."}
+                      </Typography>
                     </TableCell>
                   </TableRow>
                 )}

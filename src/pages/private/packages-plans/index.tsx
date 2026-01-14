@@ -1,4 +1,3 @@
-import { Button } from "@/components/common/Button";
 import Typography from "@/components/common/Typography";
 import PaymentCard, { type PaymentCardInfo } from "./components/PaymentCard";
 import LineThrough from "@/components/common/LineThrough";
@@ -8,7 +7,7 @@ import { useSetPagination } from "@/hooks/use-set-pagination";
 import { useState } from "react";
 import { cn } from "@/utils/class-name";
 import type { ColumnDef } from "@tanstack/react-table";
-import { HiDotsHorizontal, HiOutlinePlus } from "react-icons/hi";
+import { HiOutlinePlus } from "react-icons/hi";
 import { convertPrice, formatDate } from "@/utils/constant";
 
 import DeleteCardModal from "./components/DeleteCardModal";
@@ -18,21 +17,34 @@ import useGetAllSubscriptionPlans from "./hooks/use-get-all-subscription-plans";
 import NetworkError from "@/pages/error/NetworkError";
 import type { SubscriptionPlan } from "@/types/plans";
 import Container from "@/components/common/Container";
+import type { TableFilterField } from "@/types/filter";
+import { useCurrencyStore } from "@/store/currency-store";
+import {
+  SubscriptionSummaryCard,
+  SubscriptionSummaryCardLoader,
+} from "./components/SubscriptionSummaryCard";
+import ViewSubscriptionDetailsModal from "./components/ViewSubscriptionDetailsModal";
+import Icons from "@/components/common/Icons";
+import ActionsMenu from "@/components/common/ActionsMenu";
+import DeleteSubscriptionModal from "./components/DeleteSubscriptionModal";
 
 const PackagePlans = () => {
   const navigate = useNavigate();
   const pagination = useSetPagination();
-  const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState({});
+
+  const currency = useCurrencyStore((state) => state?.currency);
 
   const { data, isLoading, isFetching, refetch, error } =
     useGetAllSubscriptionPlans({
       enabled: true,
-      pageNumber: pagination?.pageNumber,
-      pageSize: pagination?.pageSize,
-      search,
+      page: pagination?.page,
+      per_page: pagination?.per_page,
+      filters,
     });
 
-  console.log("data", data);
+  const [selectedSubscription, setSelectedSubscription] =
+    useState<SubscriptionPlan | null>(null);
 
   const [paymentCardDetails, setPaymentCardDetails] =
     useState<PaymentCardInfo | null>(null);
@@ -40,102 +52,132 @@ const PackagePlans = () => {
   const [openAddCardDetails, setOpenAddCardDetails] = useState(false);
   const [showGetStartedModal, setShowGetStartedModal] = useState(false);
   const [openDeleteCardModal, setOpenDeleteCardModal] = useState(false);
+  const [
+    openViewSubscriptionDetailsModal,
+    setOpenViewSubscriptionDetailsModal,
+  ] = useState(false);
+  const [openDeleteSubscriptionModal, setOpenDeleteSubscriptionModal] =
+    useState(false);
 
   const columns: ColumnDef<SubscriptionPlan>[] = [
     {
-      id: "name",
       header: "Plan",
-      accessorKey: "name",
-      cell: (info) => info.getValue(),
+      accessorFn: (row) => row.plan.name,
+      cell: ({ getValue }) => (
+        <span className="font-medium">{getValue<string>()}</span>
+      ),
     },
+
     {
-      id: "price",
+      header: "Beneficiary",
+      accessorFn: (row) =>
+        `${row.beneficiary.first_name} ${row.beneficiary.last_name}`,
+      cell: ({ getValue }) => (
+        <span className="truncate">{getValue<string>()}</span>
+      ),
+    },
+
+    {
       header: "Price",
-      accessorKey: "price",
-      cell: (info) => {
-        const price = info.getValue<number>();
-        return convertPrice(price);
-      },
+      accessorFn: (row) => row.price,
+      cell: ({ row }) => convertPrice(Number(row.original.price), currency),
     },
+
     {
-      id: "duration",
-      header: "Duration",
-      accessorKey: "duration",
-      cell: (info) => info.getValue(),
+      header: "Billing",
+      accessorKey: "billing_interval",
+      cell: ({ getValue }) => (
+        <span className="capitalize">{getValue<string>()}</span>
+      ),
     },
+
     {
-      id: "created_at",
       header: "Start Date",
-      accessorKey: "created_at",
-      cell: (info) => {
-        const created_at = info.getValue<string>();
-        return formatDate(created_at);
-      },
+      accessorKey: "starts_at",
+      cell: ({ getValue }) => formatDate(getValue<string>()),
     },
+
     {
-      id: "market",
-      header: "Market",
-      accessorKey: "market",
-      cell: (info) => info.getValue(),
+      header: "End Date",
+      accessorKey: "ends_at",
+      cell: ({ getValue }) => formatDate(getValue<string>()),
     },
+
     {
       header: "Status",
       accessorKey: "status",
       cell: ({ getValue }) => {
-        const status = getValue() as string;
+        const status = getValue<string>();
+
         return (
-          <div
+          <span
             className={cn(
-              "font-medium",
-              status === "Active"
-                ? "text-green-600"
-                : status === "Pending"
-                ? "text-amber-500"
-                : "text-red-500"
+              "font-medium capitalize",
+              status === "active" && "text-green-600",
+              status === "pending" && "text-amber-500",
+              status === "canceled" && "text-red-500"
             )}
           >
             {status}
-          </div>
+          </span>
         );
       },
     },
+
     {
       header: "Action",
       id: "actions",
-      cell: () => (
-        <button className="hover:bg-gray-100 rounded-full">
-          <HiDotsHorizontal className="w-4 h-4" />
-        </button>
+      cell: ({ row }) => (
+        <ActionsMenu
+          items={[
+            {
+              icon: <Icons iconName="view" />,
+              title: "View",
+              action: "view",
+            },
+            {
+              icon: <Icons iconName="delete" />,
+              title: "Delete",
+              action: "delete",
+              danger: true,
+            },
+          ]}
+          onSelect={(action) => {
+            handleTableAction(action, row.original);
+          }}
+        />
       ),
     },
   ];
 
+  const handleTableAction = (
+    action: string,
+    subscription: SubscriptionPlan
+  ) => {
+    setSelectedSubscription(subscription);
+
+    if (action === "view") {
+      setOpenViewSubscriptionDetailsModal(true);
+    } else if (action === "delete") {
+      setOpenDeleteSubscriptionModal(true);
+    }
+  };
+
   if (error) return <NetworkError onClick={() => refetch()} />;
 
   return (
-    <Container className="space-y-5">
-      <Typography variant="largeTextBold">Package/Plans</Typography>
+    <Container className="space-y-4">
+      <Typography variant="largeTextBold">Plans</Typography>
 
       <div className="grid md:grid-cols-2 gap-5">
-        <div className="flex flex-col justify-between gap-5 p-4 bg-white border border-mid-grey rounded-2xl min-h-[187px]">
-          <div className="space-y-1">
-            <Typography variant={"mediumTextSemibold"}>
-              Subscription Plans
-            </Typography>
-            <Typography variant={"xSmallText"} className="text-charcoal-gray">
-              Your Active Subscription Package{" "}
-            </Typography>
-          </div>
-
-          <div className="flex justify-between items-end gap-5">
-            <Typography className="text-[4rem] font-bold leading-none">
-              4
-            </Typography>
-            <Button onClick={() => setShowGetStartedModal(true)}>
-              By New Plan
-            </Button>
-          </div>
-        </div>
+        {isLoading || isFetching ? (
+          <SubscriptionSummaryCardLoader />
+        ) : (
+          <SubscriptionSummaryCard
+            total={data?.meta?.total || 0}
+            onActionClick={() => setShowGetStartedModal(true)}
+          />
+        )}
 
         {paymentCardDetails ? (
           <PaymentCard
@@ -168,16 +210,29 @@ const PackagePlans = () => {
       <LineThrough className="py-3" />
 
       <CustomTable
-        data={data || []}
+        title={"Subscriptions"}
+        data={data?.data || []}
         columns={columns}
         isLoading={isLoading || isFetching}
-        totalEntries={data?.length || 0}
-        pageSize={pagination.pageSize}
-        pageNumber={pagination.pageNumber || 1}
-        onSearch={(search) => setSearch(search)}
+        totalEntries={data?.meta?.total || 0}
+        pageSize={pagination.per_page}
+        pageNumber={pagination.page || 1}
         handlePageChange={pagination.handlePageChange}
-        // handlePageSizeChange={pagination.handlePageSizeChange}
-        onRowClick={(row) => navigate(`/beneficiaries/${row.original?.id}`)}
+        filterProps={{
+          filters: tableFilters,
+          onApply: (values) => {
+            setFilters(values);
+            pagination.handlePageChange(1);
+          },
+          onReset: () => {
+            setFilters({});
+            pagination.handlePageChange(1);
+          },
+        }}
+        onRowClick={(row) => {
+          setSelectedSubscription(row?.original);
+          setOpenViewSubscriptionDetailsModal(true);
+        }}
         emptyText="No subscribed plans at the moment"
       />
 
@@ -193,6 +248,28 @@ const PackagePlans = () => {
         setPaymentCardDetails={setPaymentCardDetails}
       />
 
+      {selectedSubscription && (
+        <ViewSubscriptionDetailsModal
+          details={selectedSubscription}
+          openViewSubscriptionDetailsModal={openViewSubscriptionDetailsModal}
+          setOpenViewSubscriptionDetailsModal={
+            setOpenViewSubscriptionDetailsModal
+          }
+        />
+      )}
+
+      {selectedSubscription && (
+        <DeleteSubscriptionModal
+          selectedSubscription={selectedSubscription}
+          openDeleteSubscriptionModal={openDeleteSubscriptionModal}
+          setOpenDeleteSubscriptionModal={setOpenDeleteSubscriptionModal}
+          handleDelete={() => {
+            refetch();
+            setOpenDeleteSubscriptionModal(false);
+          }}
+        />
+      )}
+
       <DeleteCardModal
         openDeleteCardModal={openDeleteCardModal}
         setOpenDeleteCardModal={setOpenDeleteCardModal}
@@ -206,3 +283,16 @@ const PackagePlans = () => {
 };
 
 export default PackagePlans;
+
+const tableFilters: TableFilterField[] = [
+  {
+    type: "text",
+    name: "name",
+    label: "Name",
+  },
+  {
+    type: "text",
+    name: "email",
+    label: "Email",
+  },
+];

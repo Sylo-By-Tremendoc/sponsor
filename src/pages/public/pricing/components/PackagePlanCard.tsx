@@ -2,8 +2,15 @@ import { Button } from "@/components/common/Button";
 import Icons from "@/components/common/Icons";
 import SkeletonLoader from "@/components/common/SkeletonLoader";
 import Typography from "@/components/common/Typography";
+import { useCurrencyStore } from "@/store/currency-store";
 import type { PlansParam } from "@/types/plans";
-import { convertPrice, convertToTitleCase } from "@/utils/constant";
+import {
+  convertPrice,
+  convertToTitleCase,
+  displayAgeRange,
+} from "@/utils/constant";
+import { useState } from "react";
+import ViewAllPlanDetailsModal from "./ViewAllPlanDetailsModal";
 
 export const PackagePlanCard = ({
   plan,
@@ -14,7 +21,14 @@ export const PackagePlanCard = ({
   paymentPlan: string;
   onClick: (val: string) => void;
 }) => {
-   const price = Number(plan.price)
+  const price = Number(plan.price);
+
+  const currency = useCurrencyStore((state) => state?.currency);
+
+  const MAX_VISIBLE = 3;
+
+  const [openDetailsModal, setOpenDetailsModal] = useState(false);
+
   return (
     <div className="flex flex-col justify- bg-white transition-all duration-300 rounded-2xl p-6 border border-[#E5E5E5] shadow-[0_1px_4px_rgba(0,0,0,0.05)] space-y-5 w-full max-w-sm hover:-translate-y-1 hover:border-[#2BAC0B] hover:shadow-[0_4px_12px_rgba(43,172,11,0.1)] cursor-pointer">
       <div>
@@ -24,14 +38,14 @@ export const PackagePlanCard = ({
         <Typography variant="xxSmallTextSemibold" className="text-gray-600">
           Age:{" "}
           <span className="font-normal text-charcoal-gray">
-            {plan?.ageRange}
+            {displayAgeRange(plan.age_range_min, plan.age_range_max)}
           </span>
         </Typography>
       </div>
 
       <div className="flex items-baseline gap-1">
         <Typography variant="xxlargeTextBold" className="text-[#2BAC0B]">
-          {convertPrice(price)}
+          {convertPrice(price, currency)}
         </Typography>
         <Typography variant="smallText" className="text-gray-500">
           / {convertToTitleCase(paymentPlan || plan?.billing_interval)}
@@ -46,15 +60,35 @@ export const PackagePlanCard = ({
       </Button>
 
       <div className="space-y-3 pt-3 border-t border-gray-100">
-        {plan?.services?.map((service, index) => (
+        {plan?.benefits?.slice(0, MAX_VISIBLE)?.map((benefit, index) => (
           <div key={index} className="flex items-center gap-2">
             <Icons iconName="check" className="w-4 h-4 text-[#2BAC0B]" />
             <Typography variant="xSmallText" className="text-charcoal-gray">
-              {service?.name}
+              {benefit?.benefit_name}
             </Typography>
           </div>
         ))}
+
+        {plan?.benefits && plan.benefits.length > MAX_VISIBLE && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpenDetailsModal(true);
+            }}
+            className="text-primary text-xs font-medium hover:underline pl-1 pt-2"
+          >
+            View more
+          </button>
+        )}
       </div>
+
+      <ViewAllPlanDetailsModal
+        plan={plan}
+        openViewAllPlanDetailsModal={openDetailsModal}
+        setOpenViewAllPlanDetailsModal={setOpenDetailsModal}
+        onBuy={() => onClick(plan?.id)}
+      />
     </div>
   );
 };
@@ -112,7 +146,7 @@ export const NoPackagePlan = () => {
 
       <p className="font-semibold text-gray-800 text-sm">No Plans Available</p>
       <p className="text-gray-500 text-xs mt-1">
-        There are currently no package plans to show. Please check back later.
+        There are currently no planplans to show. Please check back later.
       </p>
     </div>
   );

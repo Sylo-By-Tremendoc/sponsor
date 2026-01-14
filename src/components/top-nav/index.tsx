@@ -47,7 +47,7 @@ const TopNav = () => {
         </button>
 
         <UserDropdown handleLogOut={() => setShowLogoutModal(true)}>
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-end gap-1">
             <button className="outline-none border-none bg-transparent w-fit shrink-0 block">
               {authUser?.user?.profilePicture && (
                 <img
@@ -66,18 +66,15 @@ const TopNav = () => {
                 </div>
               )}
             </button>
-            <div className="flex flex-col">
+            <div>
               <Typography
-                variant={"xSmallTextSemibold"}
-                className="text-charcoal-gray leading-3"
+                variant={"xxSmallTextSemibold"}
+                className="text-charcoal-gray leading-[7px]"
               >
                 {authUser?.user?.first_name}
               </Typography>
-              <Typography
-                variant={"xSmallText"}
-                className="font-medium text-[#848484]"
-              >
-                {location?.label}
+              <Typography variant={"xxSmallText"} className="text-[#848484]">
+                {location?.label || "--"}
               </Typography>
             </div>
           </div>

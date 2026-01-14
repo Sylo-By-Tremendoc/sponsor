@@ -1,26 +1,19 @@
 import { Button } from "@/components/common/Button";
 import LineThrough from "@/components/common/LineThrough";
 import Typography from "@/components/common/Typography";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import ActionsMenu from "@/components/common/ActionsMenu";
 import Icons from "@/components/common/Icons";
 import SkeletonLoader from "@/components/common/SkeletonLoader";
+import type { BeneficiariesParams } from "@/types/beneficiary";
+import { defaultImages } from "@/utils/constant";
 
 export const BeneficialCard = ({
-  name,
-  email,
-  firstName,
-  relationship,
-  profilePicture,
+  beneficiary,
   onClick,
   handleAction,
 }: {
-  name: string;
-  firstName: string;
-  relationship: string;
-  email: string;
-  profilePicture: string;
+  beneficiary: BeneficiariesParams;
   onClick: () => void;
   handleAction: (action: string) => void;
 }) => {
@@ -28,10 +21,14 @@ export const BeneficialCard = ({
     <motion.div
       whileHover={{ scale: 1.02 }}
       transition={{ type: "spring", stiffness: 250, damping: 20 }}
-      className="flex flex-col justify-between gap-5 p-5 border border-mid-grey bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 relative"
+      className="cursor-pointer flex flex-col justify-between gap-5 p-5 border border-mid-grey bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 relative"
+      onClick={onClick}
     >
       <div className="space-y-3">
-        <div className="absolute right-4 top-3 flex justify-end">
+        <div
+          className="absolute right-4 top-3 flex justify-end"
+          onClick={(e) => e.stopPropagation()}
+        >
           <ActionsMenu
             items={[
               {
@@ -59,30 +56,34 @@ export const BeneficialCard = ({
 
         <div className="flex flex-col items-center text-center space-y-2">
           <motion.img
-            src={profilePicture}
-            alt={`${name}'s profile`}
+            src={beneficiary?.profile_picture || defaultImages?.avatar}
+            alt={`${beneficiary?.first_name}'s profile`}
             className="w-[107px] h-[107px] rounded-full border border-gray-200 object-cover"
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3 }}
           />
 
           <div>
-            <Typography variant="mediumText">{name}</Typography>
+            <Typography variant="mediumText">
+              {beneficiary?.first_name} {beneficiary?.last_name}
+            </Typography>
             <Typography variant="xSmallText" className="text-charcoal-gray">
-              {relationship}
+              {beneficiary?.relationship}
             </Typography>
           </div>
         </div>
 
         <LineThrough className="w-2/3 mx-auto opacity-60" />
 
-        <div className="text-center">
-          <Link
-            to="#"
-            className="text-xs text-primary hover:underline hover:text-primary-dark transition-colors"
+        <div className="flex justify-center min-w-0">
+          <Typography
+            as="a"
+            href={`mailto:${beneficiary.email}`}
+            variant="xSmallText"
+            className="text-primary underline cursor-pointer truncate"
           >
-            {email}
-          </Link>
+            {beneficiary.email}
+          </Typography>
         </div>
       </div>
 
@@ -92,7 +93,7 @@ export const BeneficialCard = ({
         className="w-full hover:bg-primary hover:text-white transition-all"
         onClick={onClick}
       >
-        Manage {firstName}
+        Manage {beneficiary?.first_name}
       </Button>
     </motion.div>
   );

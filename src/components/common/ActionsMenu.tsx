@@ -56,7 +56,7 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({
       <DropdownMenuContent
         align={contentAlign ?? "end"}
         className={cn(
-          "p-2 rounded-xl bg-white",
+          "rounded-xl bg-white",
           "data-[state=open]:animate-scaleIn",
           contentClassName
         )}
@@ -76,9 +76,9 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({
                   <DropdownMenuItem
                     key={j}
                     onSelect={(e) => {
+                      e.stopPropagation();
                       setOpen(false);
                       onSelect(sub.action);
-                      e.stopPropagation();
                     }}
                     className="cursor-pointer items-center gap-[8px] text-left hover:bg-light-grey"
                   >

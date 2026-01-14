@@ -163,9 +163,7 @@ export const schema = yup.object().shape({
     .required("Card holder's name is required")
     .min(3, "Name is too short"),
 
-  expiryDate: yup
-    .string()
-    .required("Expiry date is required"),
+  expiryDate: yup.string().required("Expiry date is required"),
 
   cvc: yup
     .string()

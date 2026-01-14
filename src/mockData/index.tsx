@@ -458,3 +458,36 @@ export const mockConversations: Conversation[] = [
     ],
   },
 ];
+
+export const mockBeneficiaries = [
+  {
+    id: "01BN001",
+    name: "Charles Omiwole",
+    phone: "+2347067421332",
+    email: "charles.omiwole@gmail.com",
+  },
+  {
+    id: "01BN002",
+    name: "Lina Kabenski",
+    phone: "+2347012345678",
+    email: "lina.kabenski@example.com",
+  },
+  {
+    id: "01BN003",
+    name: "John Doe",
+    phone: "+2348012345678",
+    email: "john.doe@example.com",
+  },
+  {
+    id: "01BN004",
+    name: "Jane Smith",
+    phone: "+2348023456789",
+    email: "jane.smith@example.com",
+  },
+  {
+    id: "01BN005",
+    name: "Mary Johnson",
+    phone: "+2348034567890",
+    email: "mary.johnson@example.com",
+  },
+];

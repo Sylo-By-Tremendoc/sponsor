@@ -10,8 +10,11 @@ import {
 import Typography from "../../../components/common/Typography";
 import { convertPrice } from "../../../utils/constant";
 import { Section, TitleText } from "../home/components";
+import { useCurrencyStore } from "@/store/currency-store";
 
 const ComparePlans = () => {
+  const currency = useCurrencyStore((state) => state?.currency);
+
   const planData = [
     {
       section: "Hospital Care",
@@ -100,7 +103,6 @@ const ComparePlans = () => {
         premium: 60000,
       },
       benefits: [
-       
         {
           name: "Dental care",
           basic: "—",
@@ -133,7 +135,6 @@ const ComparePlans = () => {
         premium: 35000,
       },
       benefits: [
-       
         {
           name: "AI health monitoring",
           basic: "—",
@@ -288,16 +289,16 @@ const ComparePlans = () => {
                 </TableCell>
 
                 <TableCell className="text-[12px] font-medium tracking-wide text-center p-3 border-r border-gray-300">
-                  {convertPrice(section?.price?.basic)}
+                  {convertPrice(section?.price?.basic, currency)}
                 </TableCell>
                 <TableCell className="text-[12px] font-medium tracking-wide text-center p-3 border-r border-gray-300">
-                  {convertPrice(section?.price?.standard)}
+                  {convertPrice(section?.price?.standard, currency)}
                 </TableCell>
                 <TableCell className="text-[12px] font-medium tracking-wide text-center p-3 border-r border-gray-300">
-                  {convertPrice(section?.price?.enhanced)}
+                  {convertPrice(section?.price?.enhanced, currency)}
                 </TableCell>
                 <TableCell className="text-[12px] font-medium tracking-wide text-center p-3">
-                  {convertPrice(section?.price?.premium)}
+                  {convertPrice(section?.price?.premium, currency)}
                 </TableCell>
               </TableRow>
 

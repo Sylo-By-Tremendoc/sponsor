@@ -5,103 +5,51 @@ import {
   BeneficialCardLoader,
 } from "./components/BeneficialCard";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import DeleteBeneficiaryModal from "./components/DeleteBeneficiaryModal";
 import GetStartedModal from "@/pages/public/home/GetStartedModal";
 import Container from "@/components/common/Container";
-import { useSetPagination } from "@/hooks/use-set-pagination";
-import useGetAllBeneficiaries from "./hooks/use-get-all-beneficiaries";
 import NetworkError from "@/pages/error/NetworkError";
-import EmptyBeneficiaries from "./components/EmptyBeneficiaries";
+import useGetAllBeneficiariesInfinity from "./hooks/use-get-all-beneficiaries-infinity";
+import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
+import EmptyState from "@/components/common/EmptyState";
+import type { BeneficiariesParams } from "@/types/beneficiary";
+import UpdateBeneficiaryModal from "./components/UpdateBeneficiaryModal";
 
 const Beneficiaries = () => {
   const navigate = useNavigate();
 
-  const pagination = useSetPagination();
-  const [search, setSearch] = useState("");
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const { isIntersecting, ref: markerRef } = useIntersectionObserver({
+    threshold: 0.5,
+  });
 
-  const { data, isLoading, isFetching, refetch, error } =
-    useGetAllBeneficiaries({
-      enabled: true,
-      pageNumber: pagination?.pageNumber,
-      pageSize: pagination?.pageSize,
-      search,
-    });
+  const {
+    data,
+    error,
+    refetch,
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useGetAllBeneficiariesInfinity({
+    enabled: true,
+    per_page: 8,
+  });
 
-  const [selectedBeneficiary, setSelectedBeneficiary] = useState<any | null>(
-    null
-  );
+  const beneficiaries = useMemo(() => {
+    return data?.pages.map((page) => page.data).flat() || [];
+  }, [data?.pages]);
+
+  const [selectedBeneficiary, setSelectedBeneficiary] =
+    useState<BeneficiariesParams | null>(null);
 
   const [showGetStartedModal, setShowGetStartedModal] = useState(false);
+  const [openUpdateBeneficiaryModal, setOpenUpdateBeneficiaryModal] =
+    useState(false);
   const [openDeleteBeneficiaryModal, setOpenDeleteBeneficiaryModal] =
     useState(false);
-
-  const beneficiaries = [
-    {
-      id: "1",
-      profilePicture: "https://randomuser.me/api/portraits/men/1.jpg",
-      firstName: "Charles",
-      lastName: "Omiwole",
-      relationship: "Brother",
-      email: "charles.omiwole@gmail.com",
-    },
-    {
-      id: "2",
-      profilePicture: "https://randomuser.me/api/portraits/women/2.jpg",
-      firstName: "Mary",
-      lastName: "Johnson",
-      relationship: "Sister",
-      email: "mary.johnson@gmail.com",
-    },
-    {
-      id: "3",
-      profilePicture: "https://randomuser.me/api/portraits/men/3.jpg",
-      firstName: "John",
-      lastName: "Adewale",
-      relationship: "Father",
-      email: "john.adewale@gmail.com",
-    },
-    {
-      id: "4",
-      profilePicture: "https://randomuser.me/api/portraits/women/4.jpg",
-      firstName: "Grace",
-      lastName: "Adewale",
-      relationship: "Mother",
-      email: "grace.adewale@gmail.com",
-    },
-    {
-      id: "5",
-      profilePicture: "https://randomuser.me/api/portraits/men/5.jpg",
-      firstName: "Emmanuel",
-      lastName: "Bello",
-      relationship: "Cousin",
-      email: "emmanuel.bello@gmail.com",
-    },
-    {
-      id: "6",
-      profilePicture: "https://randomuser.me/api/portraits/women/6.jpg",
-      firstName: "Sarah",
-      lastName: "Benson",
-      relationship: "Aunt",
-      email: "sarah.benson@gmail.com",
-    },
-    {
-      id: "7",
-      profilePicture: "https://randomuser.me/api/portraits/men/7.jpg",
-      firstName: "Tunde",
-      lastName: "Afolabi",
-      relationship: "Uncle",
-      email: "tunde.afolabi@gmail.com",
-    },
-    {
-      id: "8",
-      profilePicture: "https://randomuser.me/api/portraits/women/8.jpg",
-      firstName: "Esther",
-      lastName: "Ogundipe",
-      relationship: "Sister",
-      email: "esther.ogundipe@gmail.com",
-    },
-  ];
 
   const handleAction = (action: string, item: any) => {
     setSelectedBeneficiary(item);
@@ -112,7 +60,7 @@ const Beneficiaries = () => {
         break;
 
       case "edit":
-        navigate(`/beneficiaries/${name}/edit`);
+        setOpenUpdateBeneficiaryModal(true);
         break;
 
       case "delete":
@@ -124,10 +72,22 @@ const Beneficiaries = () => {
     }
   };
 
+  useEffect(() => {
+    if (isIntersecting && hasNextPage && !isFetchingNextPage && !isFetching) {
+      fetchNextPage();
+    }
+  }, [
+    isIntersecting,
+    isFetchingNextPage,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+  ]);
+
   if (error) return <NetworkError onClick={() => refetch()} />;
 
   return (
-    <Container className="space-y-4">
+    <Container ref={scrollRef} className="space-y-4">
       <div className="flex justify-between items-center gap-4">
         <Typography variant="largeTextBold">Beneficiaries</Typography>
         <Button onClick={() => setShowGetStartedModal(true)}>
@@ -135,45 +95,66 @@ const Beneficiaries = () => {
         </Button>
       </div>
 
-      {isLoading || isFetching ? (
-        <div className="grid md:grid-cols-3 xl:grid-cols-4 gap-3 items-center">
+      {(isLoading || isFetching) && !isFetchingNextPage ? (
+        <div className="grid md:grid-cols-3 xl:grid-cols-4 items-center gap-5">
           {Array.from({ length: 4 }).map((_, index) => (
             <BeneficialCardLoader key={index} />
           ))}
         </div>
+      ) : beneficiaries?.length ? (
+        <div className="grid md:grid-cols-3 xl:grid-cols-4 items-center gap-5">
+          {beneficiaries?.map((item, index) => (
+            <BeneficialCard
+              key={index}
+              beneficiary={item}
+              handleAction={(action) => handleAction(action, item)}
+              onClick={() => navigate(`/beneficiaries/${item?.id}`)}
+            />
+          ))}
+        </div>
       ) : (
-        <div className="grid md:grid-cols-3 xl:grid-cols-4 gap-3 items-center">
-          {data?.length === 0 ? (
-            <div className="col-span-full">
-              <EmptyBeneficiaries
-                onAdd={() => setShowGetStartedModal(true)}
-              />
-            </div>
-          ) : (
-            data?.map((item, index) => (
-              <BeneficialCard
-                key={index}
-                email={item?.email}
-                firstName={item?.firstName}
-                relationship={item?.relationship}
-                profilePicture={item?.profilePicture}
-                name={`${item?.firstName} ${item?.lastName}`}
-                handleAction={(action) => handleAction(action, item)}
-                onClick={() => navigate(`/beneficiaries/${item?.id}`)}
-              />
-            ))
-          )}
+        <EmptyState
+          title="No Beneficiaries Added Yet"
+          description="Add your first beneficiary to easily manage ownership, permissions, and access settings."
+          iconName="user-group"
+          buttonText="Add Beneficiary"
+          onButtonClick={() => {}}
+        />
+      )}
+
+      {isFetchingNextPage && (
+        <div className="grid md:grid-cols-3 xl:grid-cols-4 items-center gap-5">
+          {Array.from({ length: 8 }).map((_, idx) => (
+            <BeneficialCardLoader key={idx} />
+          ))}
         </div>
       )}
 
-      <DeleteBeneficiaryModal
-        beneficiary={selectedBeneficiary}
-        openDeleteBeneficiaryModal={openDeleteBeneficiaryModal}
-        setOpenDeleteBeneficiaryModal={setOpenDeleteBeneficiaryModal}
-        handleDelete={() => {
-          setOpenDeleteBeneficiaryModal(false);
-        }}
-      />
+      <div ref={markerRef} className="h-8 w-full" />
+
+      {selectedBeneficiary && (
+        <UpdateBeneficiaryModal
+          beneficiary={selectedBeneficiary}
+          openUpdateBeneficiaryModal={openUpdateBeneficiaryModal}
+          setOpenUpdateBeneficiaryModal={setOpenUpdateBeneficiaryModal}
+          onSuccess={() => {
+            refetch();
+            setOpenUpdateBeneficiaryModal(false);
+          }}
+        />
+      )}
+
+      {selectedBeneficiary && (
+        <DeleteBeneficiaryModal
+          beneficiary={selectedBeneficiary}
+          openDeleteBeneficiaryModal={openDeleteBeneficiaryModal}
+          setOpenDeleteBeneficiaryModal={setOpenDeleteBeneficiaryModal}
+          handleDelete={() => {
+            refetch();
+            setOpenDeleteBeneficiaryModal(false);
+          }}
+        />
+      )}
 
       <GetStartedModal
         showGetStartedModal={showGetStartedModal}

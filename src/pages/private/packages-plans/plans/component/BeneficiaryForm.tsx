@@ -3,6 +3,7 @@ import DropdownInput from "@/components/common/DropdownInput";
 import PhoneInput from "@/components/common/PhoneInput";
 import TextInput from "@/components/common/TextInput";
 import { useBeneficiaryStore } from "@/store/beneficiary-store";
+import type { BeneficiariesParams } from "@/types/beneficiary";
 import { countryData } from "@/utils/constant";
 import {
   Controller,
@@ -13,7 +14,6 @@ import {
   type UseFormClearErrors,
 } from "react-hook-form";
 import type { Country } from "react-phone-number-input";
-import type { BeneficiaryInfo } from "./BeneficiaryInformationCard";
 
 type BeneficiaryFormValues = {
   fullName: string;
@@ -39,7 +39,7 @@ const BeneficiaryForm = ({
   register: UseFormRegister<BeneficiaryFormValues>;
   clearErrors: UseFormClearErrors<BeneficiaryFormValues>;
   errors: FieldErrors<BeneficiaryFormValues>;
-  selectedBeneficiary: BeneficiaryInfo;
+  selectedBeneficiary: BeneficiariesParams;
 }) => {
   const location = useBeneficiaryStore((state) => state.location) as Country;
 
@@ -85,8 +85,8 @@ const BeneficiaryForm = ({
         label="Date of Birth"
         placeholder="YYYY-MM-DD"
         defaultValue={
-          selectedBeneficiary?.dateOfBirth
-            ? new Date(selectedBeneficiary?.dateOfBirth).toISOString()
+          selectedBeneficiary?.date_of_birth
+            ? new Date(selectedBeneficiary?.date_of_birth).toISOString()
             : undefined
         }
         {...register("dateOfBirth", {

@@ -17,6 +17,7 @@ import {
   FaLinkedinIn,
   FaXTwitter,
 } from "react-icons/fa6";
+import contactUsImg from "../../../assets/images/contact-us.png";
 
 const SendAMessage = () => {
   const {
@@ -83,10 +84,10 @@ const SendAMessage = () => {
         </Button>
       </div>
 
-      <div className="hidden md:flex flex-col flex-[40%] bg-[#F9F9FB] rounded-xl p-3">
+      <div className="hidden md:flex flex-col flex-[40%] bg-[#F9F9FB] border rounded-xl p-3">
         <img
-          src=""
-          alt=""
+          src={contactUsImg}
+          alt="Contact Us"
           className="w-full h-[211px] object-fit rounded-xl overflow-hidden"
         />
 

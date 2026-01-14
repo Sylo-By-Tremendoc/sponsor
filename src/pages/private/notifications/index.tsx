@@ -11,6 +11,7 @@ import ActionsMenu from "@/components/common/ActionsMenu";
 import DeleteNotificationModal from "./components/DeleteNotificationModal";
 import useGetAllNotification from "./hooks/use-get-all-notifications";
 import NetworkError from "@/pages/error/NetworkError";
+import type { TableFilterField } from "@/types/filter";
 
 export type NotificationParams = {
   id: string;
@@ -21,14 +22,14 @@ export type NotificationParams = {
 
 const Notifications = () => {
   const pagination = useSetPagination();
-  const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState({});
 
   const { data, isLoading, isFetching, refetch, error } = useGetAllNotification(
     {
       enabled: true,
-      pageNumber: pagination?.pageNumber,
-      pageSize: pagination?.pageSize,
-      search,
+      page: pagination?.page,
+      per_page: pagination?.per_page,
+      filters,
     }
   );
 
@@ -124,13 +125,26 @@ const Notifications = () => {
       <Typography variant={"largeTextBold"}>Notifications</Typography>
 
       <CustomTable
-        data={data || []}
+        title={`${data?.meta?.total || 0} ${
+          data?.meta?.total || 0 > 1 ? "Notifications" : "Notification"
+        }`}
+        data={data?.data || []}
         columns={columns}
         isLoading={isLoading || isFetching}
-        totalEntries={data?.length || 0}
-        pageSize={pagination.pageSize}
-        pageNumber={pagination.pageNumber || 1}
-        onSearch={(search) => setSearch(search)}
+        totalEntries={data?.meta?.total || 0}
+        pageSize={pagination.per_page}
+        pageNumber={pagination.page || 1}
+        filterProps={{
+          filters: tableFilters,
+          onApply: (values) => {
+            setFilters(values);
+            pagination.handlePageChange(1);
+          },
+          onReset: () => {
+            setFilters({});
+            pagination.handlePageChange(1);
+          },
+        }}
         handlePageChange={pagination.handlePageChange}
         // handlePageSizeChange={pagination.handlePageSizeChange}
         onRowClick={(row) => {
@@ -159,3 +173,20 @@ const Notifications = () => {
 };
 
 export default Notifications;
+
+const tableFilters: TableFilterField[] = [
+  {
+    type: "select",
+    name: "status",
+    label: "Status",
+    options: [
+      { label: "Read", value: "read" },
+      { label: "Unread", value: "unread" },
+    ],
+  },
+  {
+    type: "date",
+    name: "date",
+    label: "Date",
+  },
+];

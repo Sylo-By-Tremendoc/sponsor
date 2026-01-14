@@ -47,7 +47,7 @@ const GetStartedModal = ({
             variant="xSmallText"
             className="text-center text-charcoal-gray"
           >
-            To help us tailor the best package for you, please select your
+            To help us tailor the best planfor you, please select your
             beneficiary country.
           </Typography>
         </div>

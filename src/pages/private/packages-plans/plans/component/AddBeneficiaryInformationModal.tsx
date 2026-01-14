@@ -1,10 +1,10 @@
 import CustomDialog from "@/components/common/modals/Dialog";
-import type { BeneficiaryInfo } from "./BeneficiaryInformationCard";
+import type { BeneficiariesParams } from "@/types/beneficiary";
 import { useEffect, type ReactNode } from "react";
 
 interface AddBeneficiaryInformationModalProps {
-  selectedBeneficiary: BeneficiaryInfo | null;
-  setSelectedBeneficiary: (val: BeneficiaryInfo | null) => void;
+  selectedBeneficiary: BeneficiariesParams | null;
+  setSelectedBeneficiary: (val: BeneficiariesParams | null) => void;
   openAddBeneficiaryInformationModal: boolean;
   setOpenAddBeneficiaryInformationModal: (val: boolean) => void;
   children?: ReactNode;

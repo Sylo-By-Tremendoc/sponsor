@@ -78,13 +78,13 @@ const DropdownMenuContent = React.forwardRef<
         ref={ref}
         sideOffset={sideOffset}
         className={cn(
-          "z-50 overflow-hidden rounded-md border p-0.5 text-charcoal-grey shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          "z-50 overflow-hidden rounded-md bg-white border text-charcoal-grey shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
           sameWidthAsTrigger && " w-(--radix-dropdown-menu-trigger-width)",
           wrapperClassName
         )}
         {...props}
       >
-        <div className={cn("bg-background rounded-sm p-1", className)}>
+        <div className={cn("bg-background rounded-md p-1", className)}>
           {children}
         </div>
       </DropdownMenuPrimitive.Content>

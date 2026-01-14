@@ -4,13 +4,13 @@ import { useSearchParams } from "react-router-dom";
 export const useSetPagination = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const _page = searchParams.get("page") || 1;
-  const _pageSize = searchParams.get("pageSize") || 10;
+  const _per_page = searchParams.get("per_page") || 10;
 
-  const [pageNumber, setPageNumber] = useState(Number(_page));
-  const [pageSize, setPageSize] = useState(Number(_pageSize));
+  const [page, setPage] = useState(Number(_page));
+  const [pageSize, setPageSize] = useState(Number(_per_page));
 
   const handlePageChange = (page: number) => {
-    setPageNumber(page);
+    setPage(page);
     setSearchParams((prevParams) => {
       return new URLSearchParams({
         ...Object.fromEntries(prevParams.entries()),
@@ -20,16 +20,16 @@ export const useSetPagination = () => {
   };
 
   const handlePageSizeChange = (pageSize: number) => {
-    setPageNumber(1);
+    setPage(1);
     setPageSize(pageSize);
     setSearchParams((prevParams) => {
       return new URLSearchParams({
         ...Object.fromEntries(prevParams.entries()),
-        pageSize: pageSize.toString(),
+        per_page: pageSize.toString(),
         page: "1",
       });
     });
   };
 
-  return { pageNumber, pageSize, handlePageChange, handlePageSizeChange };
+  return { page, per_page: pageSize, handlePageChange, handlePageSizeChange };
 };

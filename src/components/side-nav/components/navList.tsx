@@ -31,7 +31,7 @@ export const getTopNavList = () => {
       canView: true,
     },
     {
-      title: "Package/Plans",
+      title: "Plans",
       path: "/package-plans",
       icon: (isActive: boolean) => (
         <Icons iconName="packages" fill={isActive ? "#03eb0b" : "white"} />
@@ -95,6 +95,7 @@ export const ShowLogoutModal = ({
     setAuthUser(null);
     localStorage.clear();
     navigate("/");
+    setShowLogoutModal(false);
   };
 
   return (
@@ -103,7 +104,7 @@ export const ShowLogoutModal = ({
       description="Are you sure you want to log out? You will need to log in again to continue."
       openModal={showLogoutModal}
       onClose={() => setShowLogoutModal(false)}
-      className="w-100"
+      className="md:w-100"
     >
       <DialogFooter className="pt-5">
         <Button
