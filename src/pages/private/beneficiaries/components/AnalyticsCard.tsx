@@ -1,7 +1,8 @@
 import Icons from "@/components/common/Icons";
+import SkeletonLoader from "@/components/common/SkeletonLoader";
 import Typography from "@/components/common/Typography";
 
-const AnalyticsCard = ({
+export const AnalyticsCard = ({
   title,
   date,
   icon,
@@ -29,4 +30,15 @@ const AnalyticsCard = ({
   );
 };
 
-export default AnalyticsCard;
+export const AnalyticsCardLoader = () => {
+  return (
+    <div className="space-y-2 bg-white p-3 rounded-2xl border border-mid-grey animate-pulse">
+      <div className="flex justify-between items-center gap-5">
+        <SkeletonLoader className="h-4 w-24 rounded-md" />
+        <SkeletonLoader className="h-7 w-7 rounded-lg" />
+      </div>
+
+      <SkeletonLoader className="h-5 w-32 rounded-md" />
+    </div>
+  );
+};

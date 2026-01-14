@@ -37,11 +37,11 @@ const SecuritySettings = () => {
 
   return (
     <div id="myContainerId" className="space-y-7 flex-1 bg-white overflow-auto">
-      <Typography variant="largeTextBold">Security Settings</Typography>
+      <Typography variant="mediumTextSemibold">Security Settings</Typography>
 
       {/* Security score */}
-      <div className="w-full border border-gray-200 rounded-xl py-4 px-5 flex items-center justify-between bg-white">
-        <div className="flex items-center gap-4">
+      <div className="w-full border border-gray-200 rounded-xl py-4 px-5 flex flex-col md:flex-row items-center justify-between gap-5 bg-white">
+        <div className="flex flex-col md:flex-row items-center gap-4">
           <div className="relative w-14 h-14">
             <svg className="w-full h-full -rotate-90">
               <circle
@@ -69,7 +69,7 @@ const SecuritySettings = () => {
             </span>
           </div>
 
-          <p className="text-gray-700">
+          <p className="text-gray-700 text-center md:text-start">
             Your account security is <span className="font-semibold">90%</span>
             <br />
             <span className="text-sm text-gray-500">
@@ -78,7 +78,9 @@ const SecuritySettings = () => {
           </p>
         </div>
 
-        <Button>Review security</Button>
+        <Button size={"small"} className="text-xs">
+          Review security
+        </Button>
       </div>
 
       {/* Basics */}
@@ -87,7 +89,7 @@ const SecuritySettings = () => {
           Basics
         </Typography>
 
-        <div className="flex items-center justify-between border-b border-mid-grey py-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 border-b border-mid-grey py-4">
           <div>
             <Typography variant={"smallTextSemibold"}>Password</Typography>
             <Typography variant={"xSmallText"} className="text-charcoal-gray">
@@ -105,13 +107,17 @@ const SecuritySettings = () => {
             </div>
           </div>
 
-          <Button size={"small"} variant={"outline"}>
+          <Button
+            size={"small"}
+            variant={"outline"}
+            className="w-fit md:w-auto"
+          >
             <HiOutlinePencil />
             Edit
           </Button>
         </div>
 
-        <div className="flex items-center justify-between border-b border-mid-grey py-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 border-b border-mid-grey py-4">
           <div>
             <Typography variant={"smallTextSemibold"}>
               Two-step verification
@@ -141,7 +147,11 @@ const SecuritySettings = () => {
             </Typography>
           </div>
 
-          <Button size={"small"} variant={"outline"}>
+          <Button
+            size={"small"}
+            variant={"outline"}
+            className="w-fit md:w-auto"
+          >
             <HiOutlinePencil />
             Edit
           </Button>
@@ -163,8 +173,8 @@ const SecuritySettings = () => {
             >
               <div className="flex items-center gap-3">
                 <FiMonitor size={22} className="text-gray-500" />
-                <div className="space-y-1">
-                  <Typography variant={"mediumTextSemibold"}>
+                <div>
+                  <Typography variant={"smallTextSemibold"}>
                     {device.name}
                   </Typography>
                   <Typography

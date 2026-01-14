@@ -1,25 +1,30 @@
 import { Button } from "@/components/common/Button";
 import CustomDialog, { DialogFooter } from "@/components/common/modals/Dialog";
-import type { BeneficiaryInfo } from "./BeneficiaryInformationCard";
+import type { BeneficiariesParams } from "@/types/beneficiary";
 
 const DeleteBeneficiaryModal = ({
   selectedBeneficiary,
+  setSelectedBeneficiary,
   showDeleteBeneficiaryModal,
   setShowDeleteBeneficiaryModal,
   handleDelete,
 }: {
-  selectedBeneficiary: BeneficiaryInfo;
+  selectedBeneficiary: BeneficiariesParams;
   showDeleteBeneficiaryModal: boolean;
   setShowDeleteBeneficiaryModal: (val: boolean) => void;
+  setSelectedBeneficiary: (val: BeneficiariesParams | null) => void;
   handleDelete: () => void;
 }) => {
   return (
     <CustomDialog
       title={"Delete Beneficiary"}
-      description={`Are you sure you want to delete ${selectedBeneficiary?.fullName} as your beneficiary.`}
+      description={`Are you sure you want to delete ${selectedBeneficiary?.first_name} ${selectedBeneficiary?.last_name} as your beneficiary.`}
       openModal={showDeleteBeneficiaryModal}
-      onClose={() => setShowDeleteBeneficiaryModal(false)}
-      className="w-100"
+      onClose={() => {
+        setSelectedBeneficiary(null);
+        setShowDeleteBeneficiaryModal(false);
+      }}
+      className="md:w-100"
     >
       <DialogFooter className="pt-5">
         <Button

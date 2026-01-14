@@ -39,22 +39,19 @@ function DialogContent({
   showCloseButton?: boolean;
 }) {
   return (
-    <DialogPortal data-slot="dialog-portal">
+    <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
-        data-slot="dialog-content"
         className={cn(
-          "flex flex-col bg-white max-h-[95vh] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50  w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-[20px] border p-6 shadow-lg duration-200 sm:max-w-lg",
+          "fixed top-[50%] left-[50%] z-50 w-[95%] max-w-lg max-h-[95vh] translate-x-[-50%] translate-y-[-50%] flex flex-col gap-4 rounded-[20px] border bg-white p-6 shadow-lg duration-200",
+          "data-[state=open]:fade-in data-[state=closed]:fade-out data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95",
           className
         )}
         {...props}
       >
         {children}
         {showCloseButton && (
-          <DialogPrimitive.Close
-            data-slot="dialog-close"
-            className="absolute right-4 top-4 h-[44] w-[44] rounded-lg border bg-feint-grey p-1 opacity-70 transition-all duration-300 hover:bg-primary hover:text-white ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:opacity-100 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
-          >
+          <DialogPrimitive.Close className="absolute top-4 right-4 bg-feint-grey border p-1 transition-all duration-300 hover:bg-primary hover:text-white rounded-lg">
             <HiX size={19} />
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>
@@ -82,7 +79,7 @@ export function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "flex flex-col-reverse gap-5 sm:flex-row justify-center py-2",
+        "flex flex-col-reverse gap-3 md:gap-5 sm:flex-row justify-center py-2",
         className
       )}
       {...props}
@@ -110,7 +107,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("text-xs text-charcoal-gray", className)}
+      className={cn("text-muted-foreground text-sm", className)}
       {...props}
     />
   );

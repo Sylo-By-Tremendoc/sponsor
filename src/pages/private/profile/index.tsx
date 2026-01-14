@@ -5,46 +5,53 @@ import Typography from "@/components/common/Typography";
 import { FaCheckCircle } from "react-icons/fa";
 import UpdateProfileModal from "./UpdateProfileModal";
 import { useState } from "react";
+import useAuth from "@/hooks/use-auth";
+import { defaultImages, formatDate, getSponsorCountry } from "@/utils/constant";
+import Container from "@/components/common/Container";
 
 const Profile = () => {
+  const { authUser } = useAuth();
+
+  const location = getSponsorCountry(authUser?.user?.country!);
+
   const user = {
-    name: "Peter Omiwole",
-    email: "peter.omiwole@gmail.com",
-    location: "London, United Kingdom",
+    name: `${authUser?.user?.first_name} ${authUser?.user?.last_name}`,
+    email: authUser?.user?.email,
+    location: location?.label ?? "",
     verified: true,
-    photo: "https://randomuser.me/api/portraits/men/75.jpg",
+    photo: "",
     personalInfo: [
       {
         label: "First Name",
-        value: "Charles",
+        value: authUser?.user?.first_name,
       },
       {
         label: "Last Name",
-        value: "Omiwole",
+        value: authUser?.user?.last_name,
       },
       {
         label: "Email",
-        value: "peter.omiwole@gmail.com",
+        value: authUser?.user?.email,
       },
       {
         label: "Phone Number",
-        value: "+234 (0)7067 4213 32",
+        value: `${authUser?.user?.country_code} ${authUser?.user?.phone}`,
       },
       {
         label: "Date of Birth",
-        value: "04 - 10 - 1990",
+        value: formatDate(authUser?.user?.dateOfBirth!) || "--",
       },
       {
         label: "Gender",
-        value: "Male",
+        value: authUser?.user?.gender || "--",
       },
       {
         label: "Country",
-        value: "Nigeria",
+        value: location?.label || "--",
       },
       {
         label: "State",
-        value: "Lagos",
+        value: authUser?.user?.state || "--",
       },
     ],
   };
@@ -54,14 +61,14 @@ const Profile = () => {
   const handleUpdateProfile = () => {};
 
   return (
-    <div className="space-y-5">
+    <Container className="space-y-5">
       <Typography variant="largeTextBold">Profile</Typography>
 
       <div className="bg-white rounded-2xl p-6 flex items-center gap-5 border border-mid-grey">
         <img
-          src={user.photo}
+          src={user.photo || defaultImages?.avatar}
           alt={user.name}
-          className="w-20 h-20 rounded-full object-cover"
+          className="w-20 h-20 border rounded-full object-cover"
         />
 
         <div className="flex flex-col grow">
@@ -90,9 +97,21 @@ const Profile = () => {
           {user?.personalInfo?.map((item, index) => (
             <div key={index} className="space-y-1">
               <FieldLabelText view label={item?.label} />
-              <Typography variant={"smallText"} className="font-medium">
-                {item?.value}
-              </Typography>
+
+              {item?.label === "Email" ? (
+                <Typography
+                  as="a"
+                  variant="smallText"
+                  href={`mailto:${item?.value}`}
+                  className="text-primary font-medium underline"
+                >
+                  {item?.value}
+                </Typography>
+              ) : (
+                <Typography variant="smallText" className="font-medium">
+                  {item?.value}
+                </Typography>
+              )}
             </div>
           ))}
         </div>
@@ -103,7 +122,7 @@ const Profile = () => {
         setShowUpdateProfileModal={setShowUpdateProfileModal}
         handleUpdateProfile={handleUpdateProfile}
       />
-    </div>
+    </Container>
   );
 };
 

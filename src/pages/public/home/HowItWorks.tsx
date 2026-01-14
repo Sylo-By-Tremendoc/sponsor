@@ -5,13 +5,17 @@ import { motion } from "motion/react";
 import { Section, TitleText } from "./components";
 import { convertPrice } from "../../../utils/constant";
 import type { SectionParam } from ".";
+import { useCurrencyStore } from "@/store/currency-store";
 
 const HowItWorks = ({ setShowGetStartedModal }: SectionParam) => {
+  const currency = useCurrencyStore((state) => state?.currency);
+
   const steps = [
     {
       title: "Choose Your Plan",
       desc: `Select from affordable healthcare plans starting at ${convertPrice(
-        9.99
+        9.99,
+        currency
       )}/month, designed specifically for your family’s needs.`,
     },
     {
@@ -75,7 +79,7 @@ const HowItWorks = ({ setShowGetStartedModal }: SectionParam) => {
         className="mt-12 bg-primary text-black font-semibold px-8 py-4 rounded-full text-sm shadow hover:shadow-lg transition-all duration-300"
         onClick={() => setShowGetStartedModal(true)}
       >
-        Get Started From {convertPrice(9.99)}/month
+        Get Started From {convertPrice(9.99, currency)}/month
       </motion.button>
     </Section>
   );

@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { BiCheck, BiChevronDown, BiChevronUp } from "react-icons/bi";
@@ -98,95 +96,97 @@ const DropdownInput = <T extends Record<string, unknown> = {}>({
   }, [options, sort]);
 
   return (
-    <div className={cn("w-full flex flex-col space-y-1.5", wrapperClassName)}>
-      {label && (
-        <label
-          className="text-sm font-medium text-offBlack"
-          htmlFor={id || _id}
-        >
-          <FieldLabelText label={label} required={required} />
-        </label>
-      )}
+    <div className={cn("flex flex-col justify-end space-y-1.5", wrapperClassName)}>
+      <label className="flex flex-col space-y-1">
+        {label && (
+          <label
+            className="text-sm font-medium text-offBlack"
+            htmlFor={id || _id}
+          >
+            <FieldLabelText label={label} required={required} />
+          </label>
+        )}
 
-      <Select
-        value={_value}
-        onValueChange={handleValueChange}
-        disabled={disabled}
-        {...rest}
-      >
-        <SelectTrigger
-          id={id || _id}
-          ref={ref}
-          error={error}
-          disabled={disabled}
-          className={triggerClassName}
-        >
-          {isLoading ? (
-            <span className="inline-flex items-center gap-1 text-charcoal-grey/80">
-              <TbLoader className="w-4 h-auto animate-spin mr-1" />
-              <i className="text-body-xs">Loading...</i>
-            </span>
-          ) : (
-            <>
-              {sortedOptions.find((option) => option.value === _value) ? (
-                <SelectValue>
-                  {
-                    sortedOptions.find((option) => option.value === _value)
-                      ?.label
-                  }
-                </SelectValue>
-              ) : (
-                <span className="text-[12px] leading-[18px] text-[#B5B5B5]">
-                  {placeholder}
-                </span>
-              )}
-            </>
-          )}
-        </SelectTrigger>
-
-        <SelectContent
-          className={contentClassName}
+        <Select
           value={_value}
-          handleValueChange={handleValueChange}
-          clearSelectionText={clearSelectionText}
-          enableClearSelection={enableClearSelection}
+          onValueChange={handleValueChange}
+          disabled={disabled}
+          {...rest}
         >
-          {isLoading ? (
-            <div className="px-4 py-6 text-body-sm">{loadingText}</div>
-          ) : sortedOptions.length > 0 ? (
-            sortedOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {renderItem ? (
-                  renderItem(option, _value === option.value)
+          <SelectTrigger
+            id={id || _id}
+            ref={ref}
+            error={error}
+            disabled={disabled}
+            className={triggerClassName}
+          >
+            {isLoading ? (
+              <span className="inline-flex items-center gap-1 text-charcoal-grey/80">
+                <TbLoader className="w-4 h-auto animate-spin mr-1" />
+                <i className="text-body-xs">Loading...</i>
+              </span>
+            ) : (
+              <>
+                {sortedOptions.find((option) => option.value === _value) ? (
+                  <SelectValue>
+                    {
+                      sortedOptions.find((option) => option.value === _value)
+                        ?.label
+                    }
+                  </SelectValue>
                 ) : (
-                  <div className="flex flex-col items-start space-y-1">
-                    <Typography
-                      variant="smallText"
-                      className={cn(
-                        "text-body-sm",
-                        !option.description ? "font-normal" : "font-bold"
-                      )}
-                    >
-                      {option.label}
-                    </Typography>
-
-                    {option?.description && (
-                      <Typography
-                        variant="xSmallText"
-                        className="text-charcoal-gray"
-                      >
-                        {option.description}
-                      </Typography>
-                    )}
-                  </div>
+                  <span className="text-[12px] leading-[18px] text-[#B5B5B5]">
+                    {placeholder}
+                  </span>
                 )}
-              </SelectItem>
-            ))
-          ) : (
-            <div className="px-4 py-6 text-body-sm">{emptyText}</div>
-          )}
-        </SelectContent>
-      </Select>
+              </>
+            )}
+          </SelectTrigger>
+
+          <SelectContent
+            className={contentClassName}
+            value={_value}
+            handleValueChange={handleValueChange}
+            clearSelectionText={clearSelectionText}
+            enableClearSelection={enableClearSelection}
+          >
+            {isLoading ? (
+              <div className="px-4 py-6 text-body-sm">{loadingText}</div>
+            ) : sortedOptions.length > 0 ? (
+              sortedOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {renderItem ? (
+                    renderItem(option, _value === option.value)
+                  ) : (
+                    <div className="flex flex-col items-start space-y-1">
+                      <Typography
+                        variant="smallText"
+                        className={cn(
+                          "text-body-sm",
+                          !option.description ? "font-normal" : "font-bold"
+                        )}
+                      >
+                        {option.label}
+                      </Typography>
+
+                      {option?.description && (
+                        <Typography
+                          variant="xSmallText"
+                          className="text-charcoal-gray"
+                        >
+                          {option.description}
+                        </Typography>
+                      )}
+                    </div>
+                  )}
+                </SelectItem>
+              ))
+            ) : (
+              <div className="px-4 py-6 text-body-sm">{emptyText}</div>
+            )}
+          </SelectContent>
+        </Select>
+      </label>
 
       {error && <FieldErrorText error={error} />}
       {hint && !error && <FieldHelperText hint={hint} />}
@@ -211,10 +211,10 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      " flex items-center w-full rounded-[15px] justify-between px-4 py-2 bg-[#F9F9F9] border border-[#EFEFEF] hover:border-black focus-visible:border-black outline-none text-body-xs disabled:bg-light-grey disabled:border-mid-grey ring-offset-0 disabled:text-dark-grey disabled:placeholder:text-dark-grey placeholder:text-[12px] text-[13px] placeholder:leading-[18px] placeholder:text-[#B5B5B5] disabled:text-opacity-90 disabled:cursor-not-allowed [&>span]:truncate group transition-all duration-300 ease-in-out",
+      " flex items-center w-full rounded-[15px] h-10 justify-between px-4 py-2 bg-[#F9F9F9] border border-[#EFEFEF] hover:border-primary focus-visible:border-black outline-none text-body-xs disabled:bg-light-grey disabled:border-mid-grey ring-offset-0 disabled:text-dark-grey disabled:placeholder:text-dark-grey placeholder:text-[12px] text-[13px] placeholder:leading-[18px] placeholder:text-[#B5B5B5] disabled:text-opacity-90 disabled:cursor-not-allowed [&>span]:truncate group transition-all duration-300 ease-in-out",
       {
         "": !error && !props.disabled,
-        " border-danger ring-2 ring-danger text-danger ": !!error,
+        " border-danger border-2 text-danger ": !!error,
         "text-charcoal-grey": !props.value,
       },
       className
@@ -299,9 +299,9 @@ const SelectContent = React.forwardRef<
         <SelectPrimitive.Content
           ref={ref}
           className={cn(
-            "relative z-50 max-h-96 min-w-32 w-full overflow-hidden rounded-2xl border bg-white border-mid-grey text-black data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+            "relative z-50 max-h-60 min-w-32 w-full overflow-hidden rounded-2xl border bg-white border-mid-grey text-black data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
             position === "popper" &&
-              "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-2 max-h-(--radix-select-content-available-height) w-(--radix-select-trigger-width)",
+              "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-2 max-h-(--radix-select-content-available-height) w-[var(--radix-select-trigger-width)]",
             className
           )}
           position={position}

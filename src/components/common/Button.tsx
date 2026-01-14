@@ -7,20 +7,19 @@ import * as Slot from "@radix-ui/react-slot";
 import { cn } from "../../utils/class-name";
 
 export const buttonVariants = cva(
-  // Base styles
-  "inline-flex items-center gap-2 justify-center whitespace-nowrap rounded-full transition-colors duration-200 ease-in-out focus-visible:outline-none outline-none font-bold focus-visible:ring-[3px] focus-visible:ring-light-grey cursor-pointer",
+  "inline-flex items-center gap-2 justify-center whitespace-nowrap rounded-full transition-colors duration-200 ease-in-out focus-visible:outline-none outline-none font-bold cursor-pointer",
   {
     variants: {
       variant: {
         filled:
-          "bg-primary hover:opacity-90 w-fit hover:shadow-[0px_1px_2px_0px_#10182808] focus-visible:ring-primary/30",
+          "bg-primary text-white w-fit focus-visible:ring-[3px] focus-visible:ring-primary/30",
         outline:
-          "bg-transparent border border-mid-gre hover:border-mid-grey hover:shadow-[0px_4px_4px_0px_#335F3240] w-fit focus-visible:ring-primary/30",
-        ghost: "hover:bg-light-grey hover:text-deep-black",
+          "bg-transparent border border-black text-black w-fit focus-visible:ring-[3px] focus-visible:ring-primary/30",
+        ghost: "text-black",
         "outline-danger":
-          "bg-transparent border-2 border-danger text-danger hover:border-danger hover:text-danger hover:shadow-[0px_4px_4px_0px_#335F3240] w-fit",
+          "bg-transparent border-2 border-danger text-danger w-fit focus-visible:ring-[3px] focus-visible:ring-danger/30",
         danger:
-          "bg-danger-light border-2 border-danger hover:opacity-90 text-danger w-fit focus-visible:ring-danger/30",
+          "bg-danger-light border-2 border-danger text-danger w-fit focus-visible:ring-[3px] focus-visible:ring-danger/30",
         custom: "",
       },
       size: {
@@ -31,44 +30,12 @@ export const buttonVariants = cva(
         icon: "size-10 rounded-sm",
       },
       disabled: {
-        true: "cursor-not-allowed",
+        true: "cursor-not-allowed bg-light-grey text-charcoal-gray border border-mid-grey opacity-60",
       },
       glow: {
         true: "relative z-[2] [&+.glow]:absolute [&+.glow]:z-[1] [&+.glow]:inset-0 [&+.glow]:rounded-full [&+.glow]:animate-sonar-glow",
       },
     },
-    compoundVariants: [
-      {
-        variant: "filled",
-        disabled: true,
-        className: "bg-light-grey text-charcoal-gray",
-      },
-      {
-        variant: "outline",
-        disabled: true,
-        className: "border-mid-grey text-[#B0B0B0] text-charcoal-grey",
-      },
-      {
-        variant: "filled",
-        glow: true,
-        className: "[&+.glow]:bg-primary/50",
-      },
-      {
-        variant: "outline",
-        glow: true,
-        className: "[&+.glow]:bg-primary/50 bg-background",
-      },
-      {
-        variant: "outline-danger",
-        glow: true,
-        className: "[&+.glow]:bg-danger/75 bg-background",
-      },
-      {
-        variant: "danger",
-        glow: true,
-        className: "[&+.glow]:bg-danger/75",
-      },
-    ],
     defaultVariants: {
       variant: "filled",
       size: "medium",
@@ -111,7 +78,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       return (
         <div
           className={cn(
-            " relative inline-flex items-center justify-center w-fit h-fit ",
+            "relative inline-flex items-center justify-center w-fit h-fit",
             glowWrapperClassName
           )}
         >
@@ -130,12 +97,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             )}
             {...props}
           >
-            {icon && icon}
-            <Slot.Slottable>{children}</Slot.Slottable>
-            {isLoading && (
+            {isLoading ? (
               <TbLoader3 className="animate-spin size-5" aria-hidden="true" />
+            ) : (
+              icon
             )}
+            <Slot.Slottable>{children}</Slot.Slottable>
           </Comp>
+
           <span className="glow" />
         </div>
       );
@@ -157,11 +126,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         {...props}
       >
-        {icon && icon}
-        <Slot.Slottable>{children}</Slot.Slottable>
-        {isLoading && (
+        {isLoading ? (
           <TbLoader3 className="animate-spin size-5" aria-hidden="true" />
+        ) : (
+          icon
         )}
+        <Slot.Slottable>{children}</Slot.Slottable>
       </Comp>
     );
   }

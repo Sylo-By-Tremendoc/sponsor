@@ -60,7 +60,6 @@ const UpdateProfileModal = ({
           required
           label="Date of Birth"
           placeholder="Select date of birth"
-          disableFutureDates
           // defaultValue={
           //   house?.completionDate
           //     ? new Date(house?.completionDate).toISOString()

@@ -1,3 +1,4 @@
+import { useCurrencyStore } from "@/store/currency-store";
 import type { SectionParam } from ".";
 import { Button } from "../../../components/common/Button";
 import Pill from "../../../components/common/Pill";
@@ -6,6 +7,7 @@ import { convertPrice } from "../../../utils/constant";
 import { Section, TitleText } from "./components";
 
 const GetStarted = ({ setShowGetStartedModal }: SectionParam) => {
+    const currency = useCurrencyStore((state) => state?.currency);
   return (
     <Section className="space-y-4 bg-[#F9F9FB] text-center">
       <Pill text="GET STARTED" />
@@ -19,7 +21,7 @@ const GetStarted = ({ setShowGetStartedModal }: SectionParam) => {
 
       <div className="flex flex-col md:flex-row justify-center items-center gap-5 pt-5">
         <Button onClick={() => setShowGetStartedModal(true)}>
-          Start From {convertPrice(9.99)}/month
+          Start From {convertPrice(9.99, currency)}/month
         </Button>
         <Button
           variant={"outline"}

@@ -90,6 +90,7 @@ const CheckBoxInput = ({
           justifyContent: "center",
           cursor: "pointer",
         }}
+        className="border border-mid-grey"
         {...rest}
       />
       {label && <FieldLabelText label={label} required={required} />}

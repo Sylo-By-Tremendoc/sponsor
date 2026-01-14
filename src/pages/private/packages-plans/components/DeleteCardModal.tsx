@@ -16,7 +16,7 @@ const DeleteCardModal = ({
       description="Are you sure you want to delete this card details"
       openModal={openDeleteCardModal}
       onClose={() => setOpenDeleteCardModal(false)}
-      className="w-100"
+      className="md:w-100"
     >
       <DialogFooter className="pt-5">
         <Button

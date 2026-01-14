@@ -1,4 +1,3 @@
-import { Button } from "@/components/common/Button";
 import Typography from "@/components/common/Typography";
 import PaymentCard, { type PaymentCardInfo } from "./components/PaymentCard";
 import LineThrough from "@/components/common/LineThrough";
@@ -8,28 +7,44 @@ import { useSetPagination } from "@/hooks/use-set-pagination";
 import { useState } from "react";
 import { cn } from "@/utils/class-name";
 import type { ColumnDef } from "@tanstack/react-table";
-import { HiDotsHorizontal, HiOutlinePlus } from "react-icons/hi";
-import { convertPrice } from "@/utils/constant";
+import { HiOutlinePlus } from "react-icons/hi";
+import { convertPrice, formatDate } from "@/utils/constant";
 
 import DeleteCardModal from "./components/DeleteCardModal";
 import AddCardModal from "./components/AddCardModal";
 import GetStartedModal from "@/pages/public/home/GetStartedModal";
-
-type SubscriptionPlan = {
-  id: string;
-  plan: string;
-  price: number;
-  duration: string;
-  startDate: string;
-  beneficiaryName: string;
-  market: string;
-  status: "Active" | "Expired" | "Pending";
-};
+import useGetAllSubscriptionPlans from "./hooks/use-get-all-subscription-plans";
+import NetworkError from "@/pages/error/NetworkError";
+import type { SubscriptionPlan } from "@/types/plans";
+import Container from "@/components/common/Container";
+import type { TableFilterField } from "@/types/filter";
+import { useCurrencyStore } from "@/store/currency-store";
+import {
+  SubscriptionSummaryCard,
+  SubscriptionSummaryCardLoader,
+} from "./components/SubscriptionSummaryCard";
+import ViewSubscriptionDetailsModal from "./components/ViewSubscriptionDetailsModal";
+import Icons from "@/components/common/Icons";
+import ActionsMenu from "@/components/common/ActionsMenu";
+import DeleteSubscriptionModal from "./components/DeleteSubscriptionModal";
 
 const PackagePlans = () => {
   const navigate = useNavigate();
   const pagination = useSetPagination();
-  const [, setSearch] = useState("");
+  const [filters, setFilters] = useState({});
+
+  const currency = useCurrencyStore((state) => state?.currency);
+
+  const { data, isLoading, isFetching, refetch, error } =
+    useGetAllSubscriptionPlans({
+      enabled: true,
+      page: pagination?.page,
+      per_page: pagination?.per_page,
+      filters,
+    });
+
+  const [selectedSubscription, setSelectedSubscription] =
+    useState<SubscriptionPlan | null>(null);
 
   const [paymentCardDetails, setPaymentCardDetails] =
     useState<PaymentCardInfo | null>(null);
@@ -37,168 +52,132 @@ const PackagePlans = () => {
   const [openAddCardDetails, setOpenAddCardDetails] = useState(false);
   const [showGetStartedModal, setShowGetStartedModal] = useState(false);
   const [openDeleteCardModal, setOpenDeleteCardModal] = useState(false);
-
-  const isLoading = false;
-
-  const data: SubscriptionPlan[] = [
-    {
-      id: "1",
-      plan: "Easy Care (Individual)",
-      price: 7.77,
-      duration: "6 Months",
-      startDate: "16 Aug, 2024 - 10:00AM",
-      beneficiaryName: "Peter Omiwole",
-      market: "Nigeria",
-      status: "Active",
-    },
-    {
-      id: "2",
-      plan: "Premium Health Plus",
-      price: 12.5,
-      duration: "12 Months",
-      startDate: "10 Jan, 2025 - 09:30AM",
-      beneficiaryName: "Sarah Johnson",
-      market: "Ghana",
-      status: "Pending",
-    },
-    {
-      id: "3",
-      plan: "Family Care Basic",
-      price: 9.99,
-      duration: "6 Months",
-      startDate: "25 Feb, 2025 - 02:00PM",
-      beneficiaryName: "David Okeke",
-      market: "Nigeria",
-      status: "Active",
-    },
-    {
-      id: "4",
-      plan: "Corporate Wellness",
-      price: 15.2,
-      duration: "1 Year",
-      startDate: "02 Mar, 2025 - 11:00AM",
-      beneficiaryName: "Grace Afolabi",
-      market: "Kenya",
-      status: "Expired",
-    },
-    {
-      id: "5",
-      plan: "Essential Plan",
-      price: 5.0,
-      duration: "3 Months",
-      startDate: "18 Apr, 2025 - 04:30PM",
-      beneficiaryName: "John Doe",
-      market: "Nigeria",
-      status: "Active",
-    },
-    {
-      id: "6",
-      plan: "Platinum Coverage",
-      price: 20.75,
-      duration: "1 Year",
-      startDate: "05 May, 2025 - 08:15AM",
-      beneficiaryName: "Emily White",
-      market: "Ghana",
-      status: "Pending",
-    },
-  ];
+  const [
+    openViewSubscriptionDetailsModal,
+    setOpenViewSubscriptionDetailsModal,
+  ] = useState(false);
+  const [openDeleteSubscriptionModal, setOpenDeleteSubscriptionModal] =
+    useState(false);
 
   const columns: ColumnDef<SubscriptionPlan>[] = [
     {
-      id: "plan",
       header: "Plan",
-      accessorKey: "plan",
-      cell: (info) => info.getValue(),
+      accessorFn: (row) => row.plan.name,
+      cell: ({ getValue }) => (
+        <span className="font-medium">{getValue<string>()}</span>
+      ),
     },
+
     {
-      id: "beneficiaryName",
       header: "Beneficiary",
-      accessorKey: "beneficiaryName",
-      cell: (info) => info.getValue(),
+      accessorFn: (row) =>
+        `${row.beneficiary.first_name} ${row.beneficiary.last_name}`,
+      cell: ({ getValue }) => (
+        <span className="truncate">{getValue<string>()}</span>
+      ),
     },
+
     {
-      id: "price",
       header: "Price",
-      accessorKey: "price",
-      cell: (info) => {
-        const price = info.getValue<number>();
-        return convertPrice(price);
-      },
+      accessorFn: (row) => row.price,
+      cell: ({ row }) => convertPrice(Number(row.original.price), currency),
     },
+
     {
-      id: "duration",
-      header: "Duration",
-      accessorKey: "duration",
-      cell: (info) => info.getValue(),
+      header: "Billing",
+      accessorKey: "billing_interval",
+      cell: ({ getValue }) => (
+        <span className="capitalize">{getValue<string>()}</span>
+      ),
     },
+
     {
-      id: "startDate",
       header: "Start Date",
-      accessorKey: "startDate",
-      cell: (info) => info.getValue(),
+      accessorKey: "starts_at",
+      cell: ({ getValue }) => formatDate(getValue<string>()),
     },
+
     {
-      id: "market",
-      header: "Market",
-      accessorKey: "market",
-      cell: (info) => info.getValue(),
+      header: "End Date",
+      accessorKey: "ends_at",
+      cell: ({ getValue }) => formatDate(getValue<string>()),
     },
+
     {
       header: "Status",
       accessorKey: "status",
       cell: ({ getValue }) => {
-        const status = getValue() as string;
+        const status = getValue<string>();
+
         return (
-          <div
+          <span
             className={cn(
-              "font-medium",
-              status === "Active"
-                ? "text-green-600"
-                : status === "Pending"
-                ? "text-amber-500"
-                : "text-red-500"
+              "font-medium capitalize",
+              status === "active" && "text-green-600",
+              status === "pending" && "text-amber-500",
+              status === "canceled" && "text-red-500"
             )}
           >
             {status}
-          </div>
+          </span>
         );
       },
     },
+
     {
       header: "Action",
       id: "actions",
-      cell: () => (
-        <button className="hover:bg-gray-100 rounded-full">
-          <HiDotsHorizontal className="w-4 h-4" />
-        </button>
+      cell: ({ row }) => (
+        <ActionsMenu
+          items={[
+            {
+              icon: <Icons iconName="view" />,
+              title: "View",
+              action: "view",
+            },
+            {
+              icon: <Icons iconName="delete" />,
+              title: "Delete",
+              action: "delete",
+              danger: true,
+            },
+          ]}
+          onSelect={(action) => {
+            handleTableAction(action, row.original);
+          }}
+        />
       ),
     },
   ];
 
+  const handleTableAction = (
+    action: string,
+    subscription: SubscriptionPlan
+  ) => {
+    setSelectedSubscription(subscription);
+
+    if (action === "view") {
+      setOpenViewSubscriptionDetailsModal(true);
+    } else if (action === "delete") {
+      setOpenDeleteSubscriptionModal(true);
+    }
+  };
+
+  if (error) return <NetworkError onClick={() => refetch()} />;
+
   return (
-    <div className="space-y-5">
-      <Typography variant="largeTextBold">Package/Plans</Typography>
+    <Container className="space-y-4">
+      <Typography variant="largeTextBold">Plans</Typography>
 
       <div className="grid md:grid-cols-2 gap-5">
-        <div className="flex flex-col justify-between gap-5 p-4 bg-white border border-mid-grey rounded-2xl min-h-[187px]">
-          <div className="space-y-1">
-            <Typography variant={"mediumTextSemibold"}>
-              Subscription Plans Count
-            </Typography>
-            <Typography variant={"xSmallText"} className="text-charcoal-gray">
-              Your Active Subscription Package{" "}
-            </Typography>
-          </div>
-
-          <div className="flex justify-between items-end gap-5">
-            <Typography className="text-[4rem] font-bold leading-none">
-              4
-            </Typography>
-            <Button onClick={() => setShowGetStartedModal(true)}>
-              By New Plan
-            </Button>
-          </div>
-        </div>
+        {isLoading || isFetching ? (
+          <SubscriptionSummaryCardLoader />
+        ) : (
+          <SubscriptionSummaryCard
+            total={data?.meta?.total || 0}
+            onActionClick={() => setShowGetStartedModal(true)}
+          />
+        )}
 
         {paymentCardDetails ? (
           <PaymentCard
@@ -231,16 +210,30 @@ const PackagePlans = () => {
       <LineThrough className="py-3" />
 
       <CustomTable
-        data={data}
+        title={"Subscriptions"}
+        data={data?.data || []}
         columns={columns}
-        isLoading={isLoading}
-        totalEntries={data?.length}
-        pageSize={pagination.pageSize}
-        pageNumber={pagination.pageNumber || 1}
-        onSearch={(search) => setSearch(search)}
+        isLoading={isLoading || isFetching}
+        totalEntries={data?.meta?.total || 0}
+        pageSize={pagination.per_page}
+        pageNumber={pagination.page || 1}
         handlePageChange={pagination.handlePageChange}
-        // handlePageSizeChange={pagination.handlePageSizeChange}
-        onRowClick={(row) => navigate(`/beneficiaries/${row.original?.id}`)}
+        filterProps={{
+          filters: tableFilters,
+          onApply: (values) => {
+            setFilters(values);
+            pagination.handlePageChange(1);
+          },
+          onReset: () => {
+            setFilters({});
+            pagination.handlePageChange(1);
+          },
+        }}
+        onRowClick={(row) => {
+          setSelectedSubscription(row?.original);
+          setOpenViewSubscriptionDetailsModal(true);
+        }}
+        emptyText="No subscribed plans at the moment"
       />
 
       <GetStartedModal
@@ -255,6 +248,28 @@ const PackagePlans = () => {
         setPaymentCardDetails={setPaymentCardDetails}
       />
 
+      {selectedSubscription && (
+        <ViewSubscriptionDetailsModal
+          details={selectedSubscription}
+          openViewSubscriptionDetailsModal={openViewSubscriptionDetailsModal}
+          setOpenViewSubscriptionDetailsModal={
+            setOpenViewSubscriptionDetailsModal
+          }
+        />
+      )}
+
+      {selectedSubscription && (
+        <DeleteSubscriptionModal
+          selectedSubscription={selectedSubscription}
+          openDeleteSubscriptionModal={openDeleteSubscriptionModal}
+          setOpenDeleteSubscriptionModal={setOpenDeleteSubscriptionModal}
+          handleDelete={() => {
+            refetch();
+            setOpenDeleteSubscriptionModal(false);
+          }}
+        />
+      )}
+
       <DeleteCardModal
         openDeleteCardModal={openDeleteCardModal}
         setOpenDeleteCardModal={setOpenDeleteCardModal}
@@ -263,8 +278,21 @@ const PackagePlans = () => {
           setOpenDeleteCardModal(false);
         }}
       />
-    </div>
+    </Container>
   );
 };
 
 export default PackagePlans;
+
+const tableFilters: TableFilterField[] = [
+  {
+    type: "text",
+    name: "name",
+    label: "Name",
+  },
+  {
+    type: "text",
+    name: "email",
+    label: "Email",
+  },
+];

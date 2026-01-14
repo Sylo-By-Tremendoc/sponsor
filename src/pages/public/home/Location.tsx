@@ -6,8 +6,11 @@ import { Button } from "@/components/common/Button";
 import { convertPrice } from "@/utils/constant";
 import Typography from "@/components/common/Typography";
 import type { SectionParam } from ".";
+import { useCurrencyStore } from "@/store/currency-store";
 
 const Location = ({ setShowGetStartedModal }: SectionParam) => {
+    const currency = useCurrencyStore((state) => state?.currency);
+
   return (
     <Section className="space-y-5 relative flex flex-col items-center text-center bg-white">
       <span className="absolute top-0 w-[70%] border-t border-[#A1A1A1]"></span>
@@ -79,7 +82,7 @@ const Location = ({ setShowGetStartedModal }: SectionParam) => {
 
       <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
         <Button onClick={() => setShowGetStartedModal(true)}>
-          Get Started From {convertPrice(9.99)}/month
+          Get Started From {convertPrice(9.99, currency)}/month
         </Button>
       </motion.button>
     </Section>

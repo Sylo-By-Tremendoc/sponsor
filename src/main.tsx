@@ -40,7 +40,7 @@ createRoot(document.getElementById("root")!).render(
             pauseOnHover
             draggable
             theme="light"
-            className="z-999999!"
+            style={{ zIndex: 99 }}
           />
         </AuthenticationProvider>
       </QueryClientProvider>

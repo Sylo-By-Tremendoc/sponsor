@@ -1,4 +1,5 @@
-import { useSponsorStore } from "@/store/sponsor-store";
+import Avatar from "../assets/images/user-placeholder.jpg";
+import type { CurrencyDropdownParams } from "@/components/navbar/components/CurrencyDropdown";
 
 const transition = {
   duration: 0.4,
@@ -18,185 +19,18 @@ export const smoothSlideVariant = {
 };
 
 export const countryData = [
-  { id: "AF", name: "Afghanistan" },
-  { id: "AL", name: "Albania" },
-  { id: "DZ", name: "Algeria" },
-  { id: "AD", name: "Andorra" },
-  { id: "AO", name: "Angola" },
-  { id: "AR", name: "Argentina" },
-  { id: "AM", name: "Armenia" },
-  { id: "AU", name: "Australia" },
-  { id: "AT", name: "Austria" },
-  { id: "AZ", name: "Azerbaijan" },
-  { id: "BS", name: "Bahamas" },
-  { id: "BH", name: "Bahrain" },
-  { id: "BD", name: "Bangladesh" },
-  { id: "BB", name: "Barbados" },
-  { id: "BY", name: "Belarus" },
-  { id: "BE", name: "Belgium" },
-  { id: "BZ", name: "Belize" },
-  { id: "BJ", name: "Benin" },
-  { id: "BT", name: "Bhutan" },
-  { id: "BO", name: "Bolivia" },
-  { id: "BA", name: "Bosnia and Herzegovina" },
-  { id: "BW", name: "Botswana" },
-  { id: "BR", name: "Brazil" },
-  { id: "BN", name: "Brunei" },
-  { id: "BG", name: "Bulgaria" },
-  { id: "BF", name: "Burkina Faso" },
-  { id: "BI", name: "Burundi" },
-  { id: "KH", name: "Cambodia" },
-  { id: "CM", name: "Cameroon" },
   { id: "CA", name: "Canada" },
-  { id: "CV", name: "Cape Verde" },
-  { id: "CF", name: "Central African Republic" },
-  { id: "TD", name: "Chad" },
-  { id: "CL", name: "Chile" },
-  { id: "CN", name: "China" },
-  { id: "CO", name: "Colombia" },
-  { id: "KM", name: "Comoros" },
-  { id: "CG", name: "Congo" },
-  { id: "CR", name: "Costa Rica" },
-  { id: "HR", name: "Croatia" },
-  { id: "CU", name: "Cuba" },
-  { id: "CY", name: "Cyprus" },
-  { id: "CZ", name: "Czech Republic" },
-  { id: "DK", name: "Denmark" },
-  { id: "DJ", name: "Djibouti" },
-  { id: "DO", name: "Dominican Republic" },
-  { id: "EC", name: "Ecuador" },
-  { id: "EG", name: "Egypt" },
-  { id: "SV", name: "El Salvador" },
-  { id: "GQ", name: "Equatorial Guinea" },
-  { id: "ER", name: "Eritrea" },
-  { id: "EE", name: "Estonia" },
-  { id: "SZ", name: "Eswatini" },
-  { id: "ET", name: "Ethiopia" },
-  { id: "FJ", name: "Fiji" },
-  { id: "FI", name: "Finland" },
-  { id: "FR", name: "France" },
-  { id: "GA", name: "Gabon" },
-  { id: "GM", name: "Gambia" },
-  { id: "GE", name: "Georgia" },
-  { id: "DE", name: "Germany" },
-  { id: "GH", name: "Ghana" },
-  { id: "GR", name: "Greece" },
-  { id: "GD", name: "Grenada" },
-  { id: "GT", name: "Guatemala" },
-  { id: "GN", name: "Guinea" },
-  { id: "GW", name: "Guinea-Bissau" },
-  { id: "GY", name: "Guyana" },
-  { id: "HT", name: "Haiti" },
-  { id: "HN", name: "Honduras" },
-  { id: "HU", name: "Hungary" },
-  { id: "IS", name: "Iceland" },
-  { id: "IN", name: "India" },
-  { id: "ID", name: "Indonesia" },
-  { id: "IR", name: "Iran" },
-  { id: "IQ", name: "Iraq" },
-  { id: "IE", name: "Ireland" },
-  { id: "IL", name: "Israel" },
-  { id: "IT", name: "Italy" },
-  { id: "JM", name: "Jamaica" },
-  { id: "JP", name: "Japan" },
-  { id: "JO", name: "Jordan" },
-  { id: "KZ", name: "Kazakhstan" },
-  { id: "KE", name: "Kenya" },
-  { id: "KI", name: "Kiribati" },
-  { id: "KR", name: "South Korea" },
-  { id: "KW", name: "Kuwait" },
-  { id: "KG", name: "Kyrgyzstan" },
-  { id: "LA", name: "Laos" },
-  { id: "LV", name: "Latvia" },
-  { id: "LB", name: "Lebanon" },
-  { id: "LS", name: "Lesotho" },
-  { id: "LR", name: "Liberia" },
-  { id: "LY", name: "Libya" },
-  { id: "LI", name: "Liechtenstein" },
-  { id: "LT", name: "Lithuania" },
-  { id: "LU", name: "Luxembourg" },
-  { id: "MG", name: "Madagascar" },
-  { id: "MW", name: "Malawi" },
-  { id: "MY", name: "Malaysia" },
-  { id: "MV", name: "Maldives" },
-  { id: "ML", name: "Mali" },
-  { id: "MT", name: "Malta" },
-  { id: "MR", name: "Mauritania" },
-  { id: "MU", name: "Mauritius" },
-  { id: "MX", name: "Mexico" },
-  { id: "MD", name: "Moldova" },
-  { id: "MC", name: "Monaco" },
-  { id: "MN", name: "Mongolia" },
-  { id: "ME", name: "Montenegro" },
-  { id: "MA", name: "Morocco" },
-  { id: "MZ", name: "Mozambique" },
-  { id: "MM", name: "Myanmar" },
-  { id: "NA", name: "Namibia" },
-  { id: "NP", name: "Nepal" },
-  { id: "NL", name: "Netherlands" },
-  { id: "NZ", name: "New Zealand" },
-  { id: "NI", name: "Nicaragua" },
-  { id: "NE", name: "Niger" },
-  { id: "NG", name: "Nigeria" },
-  { id: "NO", name: "Norway" },
-  { id: "OM", name: "Oman" },
-  { id: "PK", name: "Pakistan" },
-  { id: "PA", name: "Panama" },
-  { id: "PG", name: "Papua New Guinea" },
-  { id: "PY", name: "Paraguay" },
-  { id: "PE", name: "Peru" },
-  { id: "PH", name: "Philippines" },
-  { id: "PL", name: "Poland" },
-  { id: "PT", name: "Portugal" },
-  { id: "QA", name: "Qatar" },
-  { id: "RO", name: "Romania" },
-  { id: "RU", name: "Russia" },
-  { id: "RW", name: "Rwanda" },
-  { id: "SA", name: "Saudi Arabia" },
-  { id: "SN", name: "Senegal" },
-  { id: "RS", name: "Serbia" },
-  { id: "SC", name: "Seychelles" },
-  { id: "SL", name: "Sierra Leone" },
-  { id: "SG", name: "Singapore" },
-  { id: "SK", name: "Slovakia" },
-  { id: "SI", name: "Slovenia" },
-  { id: "SO", name: "Somalia" },
-  { id: "ZA", name: "South Africa" },
-  { id: "ES", name: "Spain" },
-  { id: "LK", name: "Sri Lanka" },
-  { id: "SD", name: "Sudan" },
-  { id: "SR", name: "Suriname" },
-  { id: "SE", name: "Sweden" },
-  { id: "CH", name: "Switzerland" },
-  { id: "SY", name: "Syria" },
-  { id: "TW", name: "Taiwan" },
-  { id: "TZ", name: "Tanzania" },
-  { id: "TH", name: "Thailand" },
-  { id: "TG", name: "Togo" },
-  { id: "TT", name: "Trinidad and Tobago" },
-  { id: "TN", name: "Tunisia" },
-  { id: "TR", name: "Turkey" },
-  { id: "UG", name: "Uganda" },
-  { id: "UA", name: "Ukraine" },
-  { id: "AE", name: "United Arab Emirates" },
-  { id: "GB", name: "United Kingdom" },
   { id: "US", name: "United States" },
-  { id: "UY", name: "Uruguay" },
-  { id: "UZ", name: "Uzbekistan" },
-  { id: "VE", name: "Venezuela" },
-  { id: "VN", name: "Vietnam" },
-  { id: "ZM", name: "Zambia" },
-  { id: "ZW", name: "Zimbabwe" },
+  { id: "UK", name: "United Kingdom" },
 ];
 
 // export const ageRanges = ["18 - 25", "26 - 35", "36 - 45", "46 - 60", "60+"];
 export const ageRanges = [
-  { id: "18-25", label: "18 - 25 Years" },
-  { id: "26-35", label: "26 - 35 Years" },
-  { id: "36-45", label: "36 - 45 Years" },
-  { id: "46-55", label: "46 - 55 Years" },
-  { id: "56-65", label: "56 - 65 Years" },
-  { id: "65+", label: "65+ Years" },
+  { id: "0-17", label: "0 - 17 Years" },
+  { id: "18-30", label: "18 - 30 Years" },
+  { id: "31-50", label: "31 - 50 Years" },
+  { id: "51-70", label: "51 - 70 Years" },
+  { id: "70+", label: "70+ Years" },
 ];
 
 export const sponsorCountries = [
@@ -219,6 +53,34 @@ export const sponsorCountries = [
     flag: "https://flagcdn.com/w160/gb.png",
   },
 ];
+
+export const CURRENCIES = [
+  {
+    id: "CAD",
+    label: "Canadian Dollar",
+    symbol: "C$",
+    flag: "https://flagcdn.com/w160/ca.png",
+  },
+  {
+    id: "GBP",
+    label: "British Pound",
+    symbol: "£",
+    flag: "https://flagcdn.com/w160/gb.png",
+  },
+  {
+    id: "USD",
+    label: "US Dollar",
+    symbol: "$",
+    flag: "https://flagcdn.com/w160/us.png",
+  },
+  {
+    id: "EUR",
+    label: "Euro",
+    symbol: "€",
+    flag: "https://flagcdn.com/w160/eu.png",
+  },
+];
+
 export const beneficiaryCountries = [
   { id: "GH", label: "Ghana", code: "gh", flag: "/flags/gh.svg" },
   { id: "NG", label: "Nigeria", code: "ng", flag: "/flags/ng.svg" },
@@ -232,8 +94,11 @@ export const genderOptions = [
   // { label: "Other", value: "OTHER" },
 ];
 
-export const convertPrice = (price: number) => {
-  const sponsor = useSponsorStore((state) => state.sponsor);
+export const convertPrice = (
+  price: number,
+  currency: CurrencyDropdownParams
+) => {
+  // const currency = useCurrencyStore((state) => state?.currency);
 
   const conversionRates: Record<string, number> = {
     NGN: 19000, // Nigerian Naira
@@ -243,11 +108,11 @@ export const convertPrice = (price: number) => {
     GBP: 1, // British Pound (base)
   };
 
-  const rate = conversionRates[sponsor.id] || 1;
+  const rate = conversionRates[currency?.id] || 1;
   const converted = price * rate;
 
-  // Format with Sponsor symbol and local style
-  return `${sponsor.symbol}${converted.toLocaleString(undefined, {
+  // Format with currency symbol and local style
+  return `${currency?.symbol}${converted.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
@@ -294,4 +159,98 @@ export const replaceEmptyStringsWithNull = (obj: any): any => {
   }
 
   return result;
+};
+
+export const formatDate = (date: string) => {
+  if (date) {
+    const dateValue = new Date(date);
+
+    // Format the date
+    const options = {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    };
+    const formattedDate = new Intl.DateTimeFormat(
+      "en-GB",
+      options as Intl.DateTimeFormatOptions
+    ).format(dateValue);
+
+    // Format day with 'st', 'nd', 'rd', 'th' suffix
+    const day = dateValue.getDate();
+    let suffix = "th"; // Default suffix
+
+    // Handle special cases for 11th, 12th, 13th
+    if (day % 10 === 1 && day !== 11) {
+      suffix = "st";
+    } else if (day % 10 === 2 && day !== 12) {
+      suffix = "nd";
+    } else if (day % 10 === 3 && day !== 13) {
+      suffix = "rd";
+    }
+
+    // Format the day with its suffix
+    const dayWithSuffix = `${day}${suffix}`;
+
+    // Replace the day in the formatted date with the day with suffix
+    return formattedDate.replace(day.toString(), dayWithSuffix);
+  }
+  return "";
+};
+
+export const getSponsorCountry = (code: string) => {
+  return sponsorCountries.find(
+    (country) => country.id === code || country.id.slice(0, 2) === code
+  );
+};
+
+export const defaultImages = {
+  avatar: Avatar,
+};
+
+export const buildResetValues = (filters: any[]) => {
+  const values: Record<string, any> = {};
+
+  filters.forEach((filter) => {
+    switch (filter.type) {
+      case "date":
+        values[filter.name] = filter.defaultValue ?? null;
+        break;
+
+      case "select":
+        values[filter.name] = filter.defaultValue ?? "";
+        break;
+
+      default:
+        values[filter.name] = filter.defaultValue ?? "";
+    }
+  });
+
+  return values;
+};
+
+export const splitAgeBracket = (ageBracket: string) => {
+  const [min, max] = ageBracket?.split("-")?.map(Number);
+
+  return {
+    minAge: min,
+    maxAge: max,
+  };
+};
+
+export const displayAgeRange = (min?: number, max?: number): string => {
+  if (min && max) {
+    return `${min} – ${max} years`;
+  }
+
+  if (min && !max) {
+    return `${min}+ years`;
+  }
+
+  if (!min == null && max) {
+    return `Up to ${max} years`;
+  }
+
+  return "All ages";
 };

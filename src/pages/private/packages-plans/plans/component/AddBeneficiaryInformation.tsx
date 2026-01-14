@@ -1,51 +1,255 @@
 import Typography from "@/components/common/Typography";
 import { Button } from "@/components/common/Button";
-import { HiOutlinePlus } from "react-icons/hi";
-import type { BeneficiaryInfo } from "./BeneficiaryInformationCard";
 import BeneficiaryInformationCard from "./BeneficiaryInformationCard";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import {
+  validateAgeRangeWithYup,
+  validatePhoneNumberWithYup,
+} from "@/utils/validate-phone-number-with-yup";
+import { HiOutlinePlus } from "react-icons/hi";
+import BeneficiaryForm from "./BeneficiaryForm";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/common/Popover";
+import { useBeneficiaryStore } from "@/store/beneficiary-store";
+import { beneficiaryCountries } from "@/utils/constant";
+import { DialogFooter } from "@/components/common/modals/Dialog";
+import AddBeneficiaryInformationModal from "./AddBeneficiaryInformationModal";
+import { useEffect, useMemo } from "react";
+import type { BeneficiariesParams } from "@/types/beneficiary";
 
 const AddBeneficiaryInformation = ({
   beneficiaries,
-  onClick,
   handleAdd,
+  handleEdit,
   handleDelete,
+  selectedBeneficiary,
+  setSelectedBeneficiary,
+  openAddBeneficiaryInformationModal,
+  setOpenAddBeneficiaryInformationModal,
 }: {
-  beneficiaries: BeneficiaryInfo[];
-  onClick: (val: BeneficiaryInfo) => void;
-  handleAdd: () => void;
-  handleDelete: (val: BeneficiaryInfo) => void;
+  beneficiaries: BeneficiariesParams[];
+  selectedBeneficiary: BeneficiariesParams;
+  setSelectedBeneficiary: (val: BeneficiariesParams | null) => void;
+  openAddBeneficiaryInformationModal: boolean;
+  setOpenAddBeneficiaryInformationModal: (val: boolean) => void;
+  handleAdd: (val: BeneficiariesParams) => void;
+  handleEdit: (val: BeneficiariesParams) => void;
+  handleDelete: (val: BeneficiariesParams) => void;
 }) => {
-  
+  const location = useBeneficiaryStore((state) => state.location);
+  const ageRange = useBeneficiaryStore((state) => state.ageRange);
+  const [minAge, maxAge] = ageRange.split("-").map(Number);
+
+  const selectedCountry = beneficiaryCountries.find((c) => c.id === location);
+
+  const schema = yup.object().shape({
+    fullName: yup.string().required().min(3),
+    relationship: yup.string().required(),
+    email: yup.string().email().required(),
+    phoneNumber: validatePhoneNumberWithYup({ required: true }),
+    dateOfBirth: validateAgeRangeWithYup({
+      minAge,
+      maxAge,
+      outOfRangeMessage: `Age must be between ${minAge} and ${maxAge}`,
+    }),
+    country: yup.string().required(),
+    state: yup.string().required(),
+    address: yup.string().required().min(5),
+  });
+
+  const {
+    control,
+    setValue,
+    register,
+    clearErrors,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      country: selectedCountry?.label ?? "",
+    },
+    mode: "onChange",
+  });
+
+  const onSubmit = (data: any) => {
+    handleAdd(data);
+    handleReset();
+
+    setOpenAddBeneficiaryInformationModal(false);
+  };
+
+  const handleReset = () => {
+    setValue("fullName", "");
+    setValue("relationship", "");
+    setValue("email", "");
+    setValue("phoneNumber", "");
+    setValue("dateOfBirth", "");
+    setValue("state", "");
+    setValue("address", "");
+
+    clearErrors();
+  };
+
+  const addedBeneficiaries = useMemo(
+    () => beneficiaries?.filter((beneficiary) => beneficiary.isSelected) || [],
+    [beneficiaries]
+  );
+
+  useEffect(() => {
+    if (selectedCountry) {
+      setValue("country", selectedCountry.label);
+    }
+  }, [selectedCountry, setValue]);
 
   return (
-    <section className="space-y-4">
-      {beneficiaries?.length > 0 && (
-        <div className="space-y-3 bg-white border border-mid-grey rounded-2xl p-5">
-          <Typography variant={"largeText"}>Beneficiary Information</Typography>
+    <section className="space-y-6">
+      {addedBeneficiaries?.length > 0 ? (
+        <div className="space-y-3">
+          <Typography variant="smallTextSemibold">
+            Added Beneficiaries
+          </Typography>
 
-          <div className="grid  gap-4">
-            {beneficiaries?.map((b) => (
+          <div className="space-y-3">
+            {addedBeneficiaries?.map((b, idx) => (
               <BeneficiaryInformationCard
-                key={b.id}
+                key={idx}
                 beneficiary={b}
-                onClick={onClick}
+                handleEdit={handleEdit}
                 handleDelete={handleDelete}
               />
             ))}
           </div>
         </div>
+      ) : (
+        <BeneficiaryForm
+          control={control}
+          setValue={setValue}
+          register={register}
+          clearErrors={clearErrors}
+          errors={errors}
+          selectedBeneficiary={selectedBeneficiary!}
+        />
       )}
 
-      <Button
-        // variant={"outline"}
-        className="w-full text-white"
-        onClick={handleAdd}
+      {beneficiaries?.length === 0 && (
+        <Button
+          type="submit"
+          variant="outline"
+          className="w-full flex items-center justify-center gap-2"
+          onClick={handleSubmit(onSubmit)}
+        >
+          Add Beneficiary
+          <HiOutlinePlus />
+        </Button>
+      )}
+
+      <AddBeneficiaryInformationModal
+        selectedBeneficiary={selectedBeneficiary!}
+        setSelectedBeneficiary={setSelectedBeneficiary}
+        openAddBeneficiaryInformationModal={openAddBeneficiaryInformationModal}
+        setOpenAddBeneficiaryInformationModal={
+          setOpenAddBeneficiaryInformationModal
+        }
+        reset={reset}
+        handleReset={handleReset}
       >
-        Add {beneficiaries?.length > 0 && "Another"} Beneficiary{" "}
-        <HiOutlinePlus className="text-white" />
-      </Button>
+        <BeneficiaryForm
+          control={control}
+          setValue={setValue}
+          register={register}
+          clearErrors={clearErrors}
+          errors={errors}
+          selectedBeneficiary={selectedBeneficiary!}
+        />
+
+        <DialogFooter className="mt-5">
+          <Button
+            variant={"outline"}
+            className="md:w-full"
+            onClick={() => {
+              handleReset();
+              setOpenAddBeneficiaryInformationModal(false);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            className="md:w-full"
+            onClick={handleSubmit(onSubmit)}
+            disabled={!isValid}
+          >
+            {selectedBeneficiary ? "Update" : "Add"} Beneficiary
+          </Button>
+        </DialogFooter>
+      </AddBeneficiaryInformationModal>
     </section>
   );
 };
 
 export default AddBeneficiaryInformation;
+
+export const AddBeneficiaryPopover = ({
+  onUseExisting,
+  onAddNew,
+}: {
+  onUseExisting: () => void;
+  onAddNew: () => void;
+}) => {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full flex items-center justify-center gap-2"
+        >
+          Add Another Beneficiary
+          <HiOutlinePlus />
+        </Button>
+      </PopoverTrigger>
+
+      <PopoverContent
+        align="start"
+        side="bottom"
+        className="w-[var(--radix-popover-trigger-width)] p-0 border rounded-xl shadow-lg overflow-hidden"
+      >
+        <div className="flex flex-col">
+          <div
+            className="p-4 cursor-pointer hover:bg-gray-100 flex items-center justify-between"
+            onClick={onUseExisting}
+          >
+            <Typography variant={"smallText"}>
+              Use Existing Details{" "}
+              <span className="text-[11px] text-charcoal-gray pl-1">
+                (Location, Age Range and Plan)
+              </span>
+            </Typography>
+            <input type="checkbox" className="h-3 w-3 pointer-events-none" />
+          </div>
+
+          <div className="h-px bg-gray-200 w-full" />
+
+          <div
+            className="p-4 cursor-pointer hover:bg-gray-100 flex items-center justify-between"
+            onClick={onAddNew}
+          >
+            <Typography variant={"smallText"}>
+              Enter New Details{" "}
+              <span className="text-[11px] text-charcoal-gray pl-1">
+                (Location, Age Range and Plan)
+              </span>
+            </Typography>
+            <input type="checkbox" className="h-3 w-3 pointer-events-none" />
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+};

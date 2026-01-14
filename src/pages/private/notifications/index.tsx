@@ -4,10 +4,16 @@ import { useSetPagination } from "@/hooks/use-set-pagination";
 import { cn } from "@/utils/class-name";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
-import { HiDotsHorizontal } from "react-icons/hi";
-import { useNavigate } from "react-router-dom";
+import NotificationDrawer from "./components/NotificationDrawer";
+import Container from "@/components/common/Container";
+import Icons from "@/components/common/Icons";
+import ActionsMenu from "@/components/common/ActionsMenu";
+import DeleteNotificationModal from "./components/DeleteNotificationModal";
+import useGetAllNotification from "./hooks/use-get-all-notifications";
+import NetworkError from "@/pages/error/NetworkError";
+import type { TableFilterField } from "@/types/filter";
 
-type Notification = {
+export type NotificationParams = {
   id: string;
   notification: string;
   time: string;
@@ -15,65 +21,34 @@ type Notification = {
 };
 
 const Notifications = () => {
-  const navigate = useNavigate();
   const pagination = useSetPagination();
-  const [, setSearch] = useState("");
+  const [filters, setFilters] = useState({});
 
-  const isLoading = false;
+  const { data, isLoading, isFetching, refetch, error } = useGetAllNotification(
+    {
+      enabled: true,
+      page: pagination?.page,
+      per_page: pagination?.per_page,
+      filters,
+    }
+  );
 
-  const data: Notification[] = [
-    {
-      id: "1",
-      notification:
-        "A new doctor, Dr. Sarah Johnson, has registered and awaits your approval.",
-      time: "21 minutes ago",
-      isActive: true,
-    },
-    {
-      id: "2",
-      notification:
-        "Your payment for ‘Premium Health Plan’ has been successfully processed.",
-      time: "2 hours ago",
-      isActive: false,
-    },
-    {
-      id: "3",
-      notification:
-        "Peter Omiwole updated his beneficiary information for Easy Care (Individual).",
-      time: "5 hours ago",
-      isActive: true,
-    },
-    {
-      id: "4",
-      notification:
-        "Subscription for ‘Corporate Wellness Plan’ will expire in 3 days.",
-      time: "Yesterday",
-      isActive: false,
-    },
-    {
-      id: "5",
-      notification:
-        "New feedback received from Grace Afolabi on your recent workshop.",
-      time: "2 days ago",
-      isActive: false,
-    },
-    {
-      id: "6",
-      notification:
-        "System maintenance scheduled for 12th November, 10:00PM – 2:00AM.",
-      time: "3 days ago",
-      isActive: false,
-    },
-  ];
+  const [selectedNotification, setSelectedNotification] =
+    useState<NotificationParams | null>(null);
 
-  const columns: ColumnDef<Notification>[] = [
+  const [isOpenNotificationDrawer, setIsOpenNotificationDrawer] =
+    useState(false);
+  const [openDeleteNotificationModal, setOpenDeleteNotificationModal] =
+    useState(false);
+
+  const columns: ColumnDef<NotificationParams>[] = [
     {
       header: "Notification",
       accessorKey: "notification",
       cell: ({ row }) => {
         const { notification, time, isActive } = row.original;
         return (
-          <div className="flex justify-between items-center gap-4">
+          <div className="min-w-[20rem] flex justify-between items-center gap-4">
             <div className="flex items-center gap-3 flex-1">
               {isActive && (
                 <span className="shrink-0 w-2 h-2  bg-primary rounded-full"></span>
@@ -81,7 +56,7 @@ const Notifications = () => {
               <Typography
                 variant={"smallText"}
                 className={cn(
-                  "text-gray-800",
+                  "text-gray-800 line-clamp-2",
                   isActive ? "font-semibold" : "font-normal text-gray-600"
                 )}
               >
@@ -105,32 +80,113 @@ const Notifications = () => {
     {
       header: "Action",
       id: "actions",
-      cell: () => (
-        <button className="hover:bg-gray-100 rounded-full p-1">
-          <HiDotsHorizontal className="w-4 h-4 text-gray-600" />
-        </button>
-      ),
+      cell: ({ row }: { row: any }) => {
+        return (
+          <ActionsMenu
+            items={[
+              {
+                icon: <Icons iconName="view" />,
+                title: "View",
+                action: "view",
+              },
+              {
+                icon: <Icons iconName="delete" />,
+                title: "Delete",
+                action: "delete",
+                danger: true,
+              },
+            ]}
+            onSelect={(action) => {
+              handleTableAction(action, row.original);
+            }}
+          />
+        );
+      },
     },
   ];
 
+  const handleTableAction = (
+    action: string,
+    notification: NotificationParams
+  ) => {
+    setSelectedNotification(notification);
+
+    if (action === "view") {
+      setIsOpenNotificationDrawer(true);
+    } else if (action === "delete") {
+      setOpenDeleteNotificationModal(true);
+    }
+  };
+
+  if (error) return <NetworkError onClick={() => refetch()} />;
+
   return (
-    <div className="space-y-5">
+    <Container className="space-y-5">
       <Typography variant={"largeTextBold"}>Notifications</Typography>
 
       <CustomTable
-        data={data}
+        title={`${data?.meta?.total || 0} ${
+          data?.meta?.total || 0 > 1 ? "Notifications" : "Notification"
+        }`}
+        data={data?.data || []}
         columns={columns}
-        isLoading={isLoading}
-        totalEntries={data?.length}
-        pageSize={pagination.pageSize}
-        pageNumber={pagination.pageNumber || 1}
-        onSearch={(search) => setSearch(search)}
+        isLoading={isLoading || isFetching}
+        totalEntries={data?.meta?.total || 0}
+        pageSize={pagination.per_page}
+        pageNumber={pagination.page || 1}
+        filterProps={{
+          filters: tableFilters,
+          onApply: (values) => {
+            setFilters(values);
+            pagination.handlePageChange(1);
+          },
+          onReset: () => {
+            setFilters({});
+            pagination.handlePageChange(1);
+          },
+        }}
         handlePageChange={pagination.handlePageChange}
         // handlePageSizeChange={pagination.handlePageSizeChange}
-        onRowClick={(row) => navigate(`/beneficiaries/${row.original?.id}`)}
+        onRowClick={(row) => {
+          setIsOpenNotificationDrawer(true);
+          setSelectedNotification(row.original);
+        }}
+        emptyText="No Notifications at the moment."
       />
-    </div>
+
+      <NotificationDrawer
+        selectedNotification={selectedNotification!}
+        isOpen={isOpenNotificationDrawer}
+        setIsOpen={setIsOpenNotificationDrawer}
+      />
+
+      <DeleteNotificationModal
+        selectedNotification={selectedNotification!}
+        openDeleteNotificationModal={openDeleteNotificationModal}
+        setOpenDeleteNotificationModal={setOpenDeleteNotificationModal}
+        handleDelete={() => {
+          setOpenDeleteNotificationModal(false);
+        }}
+      />
+    </Container>
   );
 };
 
 export default Notifications;
+
+const tableFilters: TableFilterField[] = [
+  {
+    type: "select",
+    name: "status",
+    label: "Status",
+    options: [
+      { label: "Read", value: "read" },
+      { label: "Unread", value: "unread" },
+    ],
+  },
+  {
+    type: "date",
+    name: "date",
+    label: "Date",
+  },
+];

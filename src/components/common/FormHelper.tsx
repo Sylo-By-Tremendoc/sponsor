@@ -3,6 +3,7 @@ import { cn } from "../../utils/class-name";
 import Typography from "./Typography";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./Tooltip";
 import Icons from "./Icons";
+import type { ReactNode } from "react";
 
 export const FieldLabelText = ({
   label,
@@ -12,7 +13,7 @@ export const FieldLabelText = ({
   view,
   className,
 }: {
-  label: string;
+  label: ReactNode;
   className?: string;
   view?: boolean;
   info?: boolean;
@@ -63,7 +64,7 @@ export const FieldHelperText = ({
   hint,
   className,
 }: {
-  hint: string;
+  hint: ReactNode;
   className?: string;
 }) => (
   <Typography

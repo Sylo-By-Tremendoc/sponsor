@@ -14,8 +14,10 @@ const NotificationItem = ({
   const [isOn, setIsOn] = useState(defaultOn);
 
   return (
-    <div className="grid grid-cols-2 gap-5 items-center justify-between">
-      <div className="flex items-center space-x-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 gap-y-4 items-start sm:items-center justify-between py-3">
+
+      <div className="flex items-start sm:items-center space-x-3">
+
         <button
           onClick={() => setIsOn(!isOn)}
           className={`relative w-10 h-5 rounded-full transition-colors duration-300 shrink-0 ${
@@ -29,19 +31,21 @@ const NotificationItem = ({
           ></span>
         </button>
 
-        <div>
+        <div className="flex flex-col">
           <Typography variant={"smallTextSemibold"}>{label}</Typography>
           <Typography variant={"xSmallText"} className="text-charcoal-gray">
             {description}
           </Typography>
         </div>
+
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex sm:justify-end">
         <button className="flex items-center border px-3 py-1.5 rounded-full text-xs hover:bg-gray-50">
           Suggested <IoChevronDownOutline className="ml-1 text-gray-500" />
         </button>
       </div>
+
     </div>
   );
 };

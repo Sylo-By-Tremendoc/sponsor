@@ -6,8 +6,14 @@ import { Section, TitleText } from "./components";
 import Typography from "../../../components/common/Typography";
 import { convertPrice } from "../../../utils/constant";
 import type { SectionParam } from ".";
+import { PartnerCard } from "./components/PartnerCard";
+import { useCurrencyStore } from "@/store/currency-store";
 
 const TrustedPartners = ({ setShowGetStartedModal }: SectionParam) => {
+
+    const currency = useCurrencyStore((state) => state?.currency);
+
+
   const partners = [
     {
       name: "AXA Mansard",
@@ -48,22 +54,12 @@ const TrustedPartners = ({ setShowGetStartedModal }: SectionParam) => {
 
         {/* Partner Cards */}
         {partners.map((partner, index) => (
-          <motion.div
+          <PartnerCard
             key={index}
-            className="bg-white hover:bg-[#0000001A] rounded-2xl p-6 shadow-sm hover:shadow-md border border-gray-100 transition-all duration-300 hover:-translate-y-1 relative"
-            whileHover={{ scale: 1.02 }}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 + index * 0.15 }}
-          >
-            <h3 className="font-semibold text-gray-900 text-base mb-3">
-              {partner.name}
-            </h3>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              {partner.description}
-            </p>
-            <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-green-400/10 via-transparent to-transparent opacity-0 hover:opacity-100 transition duration-500 pointer-events-none"></div>
-          </motion.div>
+            name={partner.name}
+            description={partner.description}
+            index={index}
+          />
         ))}
       </motion.div>
 
@@ -88,7 +84,7 @@ const TrustedPartners = ({ setShowGetStartedModal }: SectionParam) => {
 
       <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
         <Button onClick={() => setShowGetStartedModal(true)}>
-          Get Started From {convertPrice(9.99)}/month
+          Get Started From {convertPrice(9.99, currency)}/month
         </Button>
       </motion.button>
     </Section>

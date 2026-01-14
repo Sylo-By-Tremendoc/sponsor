@@ -15,13 +15,15 @@ import {
   CommandItem,
   CommandList,
 } from "./Commands";
-import { Popover, PopoverContent, OpenPopoverBtn } from "./Popover";
+import { Popover, PopoverContent, PopoverTrigger } from "./Popover";
 import { BiCheck, BiChevronDown } from "react-icons/bi";
 import SkeletonLoader from "./SkeletonLoader";
 import clsx from "clsx";
 import { cn } from "../../utils/class-name";
 import type { UseControllerProps } from "react-hook-form";
 import { FieldErrorText, FieldHelperText, FieldLabelText } from "./FormHelper";
+import type { JSX } from "react/jsx-runtime";
+import Typography from "./Typography";
 
 type PhoneInputProps<T extends Record<string, unknown>> = Omit<
   React.ComponentProps<typeof RPNInputRHF>,
@@ -36,6 +38,8 @@ type PhoneInputProps<T extends Record<string, unknown>> = Omit<
   isLoadingFelid?: boolean;
   required?: boolean;
   rightIcon?: React.ReactNode;
+  allowedCountries?: Country[];
+  defaultCountry?: Country;
 } & UseControllerProps<T>;
 
 const PhoneInput = <T extends Record<string, unknown>>({
@@ -50,6 +54,8 @@ const PhoneInput = <T extends Record<string, unknown>>({
   wrapperClassName,
   numberInputProps,
   rightIcon,
+  allowedCountries,
+  defaultCountry,
   ...props
 }: PhoneInputProps<T>) => {
   return (
@@ -74,11 +80,18 @@ const PhoneInput = <T extends Record<string, unknown>>({
               className={cn("flex", className)}
               numberInputProps={{ error, ...numberInputProps }}
               flagComponent={FlagComponent}
-              countrySelectComponent={CountrySelect}
+              countrySelectComponent={(
+                selectProps: JSX.IntrinsicAttributes & CountrySelectProps
+              ) => (
+                <CountrySelect
+                  {...selectProps}
+                  allowedCountries={allowedCountries}
+                />
+              )}
               inputComponent={InputComponent}
               smartCaret={false}
               international
-              defaultCountry="NG"
+              defaultCountry={defaultCountry || "NG"}
               {...props}
             />
 
@@ -132,6 +145,7 @@ type CountrySelectProps = {
   disabled?: boolean;
   value: Country;
   options: CountryEntry[];
+  allowedCountries?: Country[];
   onChange: (country: Country) => void;
 };
 
@@ -139,12 +153,19 @@ const CountrySelect = ({
   disabled,
   value: selectedCountry,
   options: countryList,
+  allowedCountries,
   onChange,
 }: CountrySelectProps) => {
   const [open, setOpen] = React.useState(false);
+
+  // filter list if allowedCountries is provided
+  const filteredCountryList = allowedCountries
+    ? countryList.filter((c) => allowedCountries.includes(c.value!))
+    : countryList;
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <OpenPopoverBtn role="combobox" asChild>
+      <PopoverTrigger role="combobox" asChild>
         <button
           disabled={disabled}
           className={cn(
@@ -162,14 +183,14 @@ const CountrySelect = ({
             )}
           />
         </button>
-      </OpenPopoverBtn>
+      </PopoverTrigger>
       <PopoverContent
         className="p-0 border-mid-grey overflow-hidden"
         align="start"
       >
         <div
           className={
-            " p-px bg-white w-72 max-w-full " +
+            " p-px bg-white w-72 max-w-full max-h-60 overflow-y-auto " +
             " shadow-[0px_12px_16px_-4px_rgba(16,24,40,0.08),0px_4px_6px_-2px_rgba(16,24,40,0.03)] "
           }
         >
@@ -178,7 +199,7 @@ const CountrySelect = ({
             <CommandList>
               <CommandEmpty>No country found.</CommandEmpty>
               <CommandGroup>
-                {countryList.map(({ value, label }) =>
+                {filteredCountryList.map(({ value, label }) =>
                   value ? (
                     <CountrySelectOption
                       key={value}
@@ -212,7 +233,7 @@ const CountrySelectOption = ({
   return (
     <CommandItem
       className={cn(
-        "items-start gap-2 hover:bg-lightGrey cursor-pointer",
+        "items-center gap-2 hover:bg-lightGrey cursor-pointer",
         country === selectedCountry && "bg-green-50  !hover:bg-green-50"
       )}
       onSelect={() => onChange(country)}
@@ -222,10 +243,13 @@ const CountrySelectOption = ({
         countryName={countryName}
         className="mt-1"
       />
-      <span className="flex-1 text-sm">{countryName}</span>
-      <span className="text-sm text-foreground/50">{`+${getCountryCallingCode(
-        country
-      )}`}</span>
+      <Typography variant={"xSmallText"} className="flex-1">
+        {countryName}
+      </Typography>
+      <Typography
+        variant={"xSmallText"}
+        className="text-foreground/50"
+      >{`+${getCountryCallingCode(country)}`}</Typography>
 
       {country === selectedCountry && (
         <BiCheck
