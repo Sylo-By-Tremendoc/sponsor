@@ -22,9 +22,9 @@ const useAxiosBase = () => {
       if (status === 401 || status === 403) {
         toast.error(error.message);
 
-        // sessionStorage.removeItem("user");
-        // setAuthUser(null);
-        // navigate("/account/login");
+        localStorage.removeItem("user");
+        setAuthUser(null);
+        navigate("/account/login");
       }
 
       return Promise.reject(error);
@@ -107,9 +107,15 @@ const useAxiosBase = () => {
   const deleteRequest = async (url: string, data?: any) => {
     try {
       const response: AxiosResponse = await axiosInstance.delete(url, { data });
-      return response;
+      return response.data;
     } catch (error: any) {
-      throw new Error(error.response?.data?.value?.message || error.message);
+      const responseData = error.response?.data;
+
+      throw {
+        message: responseData?.message || error.message,
+        errors: responseData?.errors || null,
+        status: error.response?.status,
+      };
     }
   };
 

@@ -36,9 +36,6 @@ const PlanPaymentPage = () => {
 
   const navigate = useNavigate();
 
-  // const stripe = useStripe();
-  // const elements = useElements();
-
   const currency = useCurrencyStore((state) => state?.currency);
 
   const { data: singleBeneficiary } = useGetSingleBeneficiaryDetails(
@@ -339,6 +336,16 @@ const PlanPaymentPage = () => {
         </div>
       </div>
 
+      <VerifyOTPModal
+        openVerifyOTPModal={openVerifyOTPModal}
+        setOpenVerifyOTPModal={setOpenVerifyOTPModal}
+        handleStripeSetup={(secret) => {
+          setClientSecret(secret);
+          setOpenVerifyOTPModal(false);
+          setShowCardPaymentModal(true);
+        }}
+      />
+
       {clientSecret && (
         <CardPaymentModal
           isSubmitting={isSubmitting}
@@ -349,16 +356,6 @@ const PlanPaymentPage = () => {
           onSuccess={(id) => handleCreatePlanSubscription(id)}
         />
       )}
-
-      <VerifyOTPModal
-        openVerifyOTPModal={openVerifyOTPModal}
-        setOpenVerifyOTPModal={setOpenVerifyOTPModal}
-        handleStripeSetup={(secret) => {
-          setClientSecret(secret);
-          setOpenVerifyOTPModal(false);
-          setShowCardPaymentModal(true);
-        }}
-      />
 
       {singlePlanDetails?.plan && (
         <MobilePaymentSummaryDrawer

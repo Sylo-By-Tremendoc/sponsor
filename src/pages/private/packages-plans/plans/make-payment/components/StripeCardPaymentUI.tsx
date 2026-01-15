@@ -53,8 +53,6 @@ export const PaymentForm = ({
       return;
     }
 
-    console.log("SETUP_INTENT", setupIntent);
-
     if (setupIntent?.payment_method) {
       onSuccess(setupIntent.payment_method as string);
     }
@@ -92,6 +90,7 @@ export const StripeCardPaymentUI = ({
 }) => {
   return (
     <Elements
+      key={clientSecret}
       stripe={stripePromise}
       options={{
         clientSecret,

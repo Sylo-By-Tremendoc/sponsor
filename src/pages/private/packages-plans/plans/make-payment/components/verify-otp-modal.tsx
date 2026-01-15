@@ -127,14 +127,13 @@ const VerifyOTPModal = ({
       onSuccess: (res) => {
         toast.success("OTP verified successfully.");
 
-        console.log("SUCCESS_OTP", res);
-
         const clientSecret = res?.data?.client_secret;
 
         if (clientSecret) {
           handleStripeSetup(clientSecret);
         }
       },
+      
       onError: (error: Error) => {
         toast.error(
           getErrorMessage(
