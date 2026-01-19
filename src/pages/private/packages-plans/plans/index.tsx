@@ -10,6 +10,7 @@ const Plans = () => {
   return (
     <Container>
       <PlanAndPrice className="!px-0 !pt-0 !pb-9" />
+
       <DifferentMarketPricing
         className="!px-0"
         onClick={(id: string) =>

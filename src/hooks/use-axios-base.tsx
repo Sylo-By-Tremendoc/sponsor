@@ -22,8 +22,8 @@ const useAxiosBase = () => {
       if (status === 401 || status === 403) {
         toast.error(error.message);
 
-        localStorage.removeItem("user");
         setAuthUser(null);
+        localStorage.removeItem("user");
         navigate("/account/login");
       }
 
@@ -34,7 +34,14 @@ const useAxiosBase = () => {
 
   const getRequest = async (url: string, params?: object) => {
     try {
-      const response: AxiosResponse<any> = await axiosInstance.get(url, {
+      const authRequiredUrls = ["/plans"];
+
+      // Choose axios instance based on URL
+      const axiosToUse = authRequiredUrls.some((path) => url.startsWith(path))
+        ? authAxios // your authenticated axios instance
+        : axiosInstance;
+
+      const response: AxiosResponse<any> = await axiosToUse.get(url, {
         params,
       });
       return response.data;

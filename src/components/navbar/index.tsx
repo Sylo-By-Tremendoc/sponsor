@@ -3,7 +3,6 @@ import { cn } from "../../utils/class-name";
 import RightSection from "./components/RightSection";
 import { Link } from "react-router-dom";
 import Icons from "../common/Icons";
-import Typography from "../common/Typography";
 
 const Navbar = ({ className }: { className?: string }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,10 +25,10 @@ const Navbar = ({ className }: { className?: string }) => {
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-1">
+      <Link to="/" className="relative z-10 flex items-center cursor-pointer">
         <Icons iconName="logo" />
-        <Typography variant={"xSmallText"}>By Tremendoc</Typography>
-      </div>
+        <span className="text-sm font-semibold">By Tremendoc</span>
+      </Link>
 
       {/* Desktop Nav */}
       <nav className="hidden md:flex items-center space-x-8 text-xs">

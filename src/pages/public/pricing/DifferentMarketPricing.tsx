@@ -1,5 +1,5 @@
 import Typography from "@/components/common/Typography";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { DisplayAgeRangeDropdown, DisplayMarketDropdown } from "./components";
 import { cn } from "@/utils/class-name";
 import { Section } from "../home/components";
@@ -28,6 +28,9 @@ const DifferentMarketPricing = ({
 
   const { minAge, maxAge } = splitAgeBracket(ageRange);
 
+  const paymentOptions = ["MONTHLY", "YEARLY"];
+  const [paymentPlan, setPaymentPlan] = useState("MONTHLY");
+
   const { data, isLoading, isFetching, refetch, error } = useGetAllPlans({
     enabled: !!ageRange && !!location,
     page: pagination?.page,
@@ -36,20 +39,9 @@ const DifferentMarketPricing = ({
       age_range_min: minAge,
       age_range_max: maxAge,
       country_code: location,
+      billing_interval: paymentPlan.toLowerCase(),
     },
   });
-
-  const [paymentPlan, setPaymentPlan] = useState("MONTHLY");
-  const paymentOptions = ["MONTHLY", "YEARLY"];
-
-  const filteredPlans = useMemo(() => {
-    if (!data) return [];
-
-    return data?.data?.filter(
-      (plan) =>
-        plan.billing_interval?.toLowerCase() === paymentPlan.toLowerCase()
-    );
-  }, [data, paymentPlan]);
 
   if (error) return <NetworkError onClick={() => refetch()} />;
 
@@ -84,15 +76,10 @@ const DifferentMarketPricing = ({
             <PackagePlanCardLoader key={index} />
           ))}
         </div>
-      ) : filteredPlans.length ? (
+      ) : data?.data.length ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {filteredPlans.map((plan) => (
-            <PackagePlanCard
-              key={plan.id}
-              plan={plan}
-              paymentPlan={paymentPlan}
-              onClick={onClick}
-            />
+          {data?.data.map((plan) => (
+            <PackagePlanCard key={plan.id} plan={plan} onClick={onClick} />
           ))}
         </div>
       ) : (

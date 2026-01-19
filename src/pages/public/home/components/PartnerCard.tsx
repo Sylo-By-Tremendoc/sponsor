@@ -1,31 +1,46 @@
-import { motion } from "motion/react";
 
 export const PartnerCard = ({
   name,
   description,
-  index = 0,
+  logo,
 }: {
   name: string;
   description: string;
-  index?: number;
+  logo: string;
 }) => {
   return (
-    <motion.div
-      className="bg-white hover:bg-[#0000001A] rounded-2xl p-6 shadow-sm
-        hover:shadow-md border border-gray-100 transition-all duration-300
-        hover:-translate-y-1 relative"
-      whileHover={{ scale: 1.02 }}
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 + index * 0.15 }}
-      viewport={{ once: true }}
+    <div
+      className="
+        relative h-[240px] rounded-2xl overflow-hidden cursor-pointer
+        shadow-sm hover:shadow-md transition-all
+      "
     >
-      <h3 className="font-semibold text-gray-900 text-base mb-3">{name}</h3>
+      <div
+        className="
+          absolute inset-0 bg-cover bg-no-repeat bg-center
+          transition-transform duration-700
+          hover:scale-105
+        "
+        style={{
+          backgroundImage: `url(${logo})`,
+        }}
+      />
 
-      <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
+      {/* Dark gradient overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
 
-      {/* subtle gradient hover */}
-      <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-green-400/10 via-transparent to-transparent opacity-0 hover:opacity-100 transition duration-500 pointer-events-none" />
-    </motion.div>
+      {/* Content */}
+      <div className="relative z-10 h-full p-6 flex flex-col justify-end text-white">
+        <h3 className="text-lg font-semibold mb-1">{name}</h3>
+        <p className="text-sm text-white/85 leading-relaxed line-clamp-3">
+          {description}
+        </p>
+      </div>
+
+      {/* Subtle shine on hover */}
+      <div className="absolute inset-0 opacity-0 hover:opacity-100 transition duration-500 pointer-events-none">
+        <div className="absolute inset-0 bg-linear-to-br from-white/10 via-transparent to-transparent" />
+      </div>
+    </div>
   );
 };

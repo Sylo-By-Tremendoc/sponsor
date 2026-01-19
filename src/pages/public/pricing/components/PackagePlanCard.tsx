@@ -14,11 +14,9 @@ import ViewAllPlanDetailsModal from "./ViewAllPlanDetailsModal";
 
 export const PackagePlanCard = ({
   plan,
-  paymentPlan,
   onClick,
 }: {
   plan: PlansParam;
-  paymentPlan: string;
   onClick: (val: string) => void;
 }) => {
   const price = Number(plan.price);
@@ -48,7 +46,7 @@ export const PackagePlanCard = ({
           {convertPrice(price, currency)}
         </Typography>
         <Typography variant="smallText" className="text-gray-500">
-          / {convertToTitleCase(paymentPlan || plan?.billing_interval)}
+          / {convertToTitleCase(plan?.billing_interval)}
         </Typography>
       </div>
 

@@ -6,6 +6,7 @@ import {
 } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { Button } from "../common/Button";
+import Icons from "../common/Icons";
 
 const Footer = () => {
   return (
@@ -27,12 +28,14 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 border-t border-gray-700 pt-10">
           {/* Logo + Address */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-5 h-5 bg-primary rounded-full" />
-              <h1 className="text-lg font-semibold">
-                sylo <span className="text-gray-400 text-sm">By Tremendoc</span>
-              </h1>
-            </div>
+            <Link
+              to="/"
+              className="relative z-10 flex items-center cursor-pointer"
+            >
+              <Icons iconName="logo" />
+              <span className="text-sm font-semibold">By Tremendoc</span>
+            </Link>
+
             <p className="text-sm text-gray-300 leading-relaxed">
               We are dedicated to providing comprehensive healthcare solutions
               focused on your well-being.

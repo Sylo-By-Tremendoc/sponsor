@@ -12,8 +12,10 @@ import GetStartedModal from "../home/GetStartedModal";
 import DifferentMarketPricing from "./DifferentMarketPricing";
 import { useNavigate } from "react-router-dom";
 import NoLocationOrAgeRangeSelected from "./components/NoLocationOrAgeRangeSelected";
+import useAuth from "@/hooks/use-auth";
 
 const Pricing = () => {
+  const { authUser } = useAuth();
   const navigate = useNavigate();
   const location = useBeneficiaryStore((state) => state.location);
   const ageRange = useBeneficiaryStore((state) => state.ageRange);
@@ -30,6 +32,19 @@ const Pricing = () => {
     { id: "importance", label: "Importance" },
     { id: "support", label: "Support" },
   ];
+
+  const handlePlanSelection = (planId: string) => {
+    if (authUser?.token || authUser?.user) {
+      navigate(`/package-plans/plans/${planId}`);
+    } else {
+      localStorage.setItem(
+        "postAuthRedirect",
+        `/package-plans/plans/${planId}`
+      );
+
+      navigate("/account/signup");
+    }
+  };
 
   return (
     <div className="flex flex-col justify-between">
@@ -48,7 +63,7 @@ const Pricing = () => {
           <>
             <section id="different-market-pricing">
               <DifferentMarketPricing
-                onClick={(id) => navigate(`/package-plans/plans/${id}`)}
+                onClick={(id) => handlePlanSelection(id)}
               />
             </section>
             <section id="compare-plans">

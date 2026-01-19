@@ -26,7 +26,6 @@ const CreateAccount = ({ handleNext }: { handleNext: () => void }) => {
   const createAccount = useCreateAccount();
 
   const [agree, setAgree] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const {
     control,
@@ -64,23 +63,20 @@ const CreateAccount = ({ handleNext }: { handleNext: () => void }) => {
 
     createAccount?.mutate(submittedData, {
       onSuccess: () => {
-        setIsSuccess(true);
-
         navigate(`?email=${encodeURIComponent(submittedData.email)}`, {
           replace: true, // optional: avoids adding to browser history
         });
       },
       onError: (error: any) => {
         const message =
-          error?.message ||
-          "Account creation failed. Please try again.";
+          error?.message || "Account creation failed. Please try again.";
         toast.error(message);
       },
     });
   };
 
   return (
-    <div className="w-full max-w-md flex-1">
+    <div className="w-full flex-1">
       <div className="text-center mb-8">
         <Typography
           variant="xxSmallText"
@@ -216,7 +212,7 @@ const CreateAccount = ({ handleNext }: { handleNext: () => void }) => {
 
       <FullScreenLoader
         loading={createAccount?.isPending}
-        isSuccess={isSuccess}
+        isSuccess={createAccount?.isSuccess}
         onSuccess={() => handleNext()}
       />
     </div>

@@ -103,11 +103,9 @@ const PaymentSummary = ({
               <SkeletonLoader className="w-full h-3 rounded-sm" />
             </div>
           ) : (
-            <Typography
-              variant={"smallText"}
-              className="text-charcoal-gray line-clamp-3"
-            >
-              {plan?.description || ""}
+            <Typography variant="smallText" className="text-charcoal-gray line-clamp-3">
+              {plan?.description ||
+                "A thoughtfully designed healthcare plan that provides dependable coverage, quality care access, and peace of mind for you and your loved ones."}
             </Typography>
           )}
         </div>

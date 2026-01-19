@@ -9,12 +9,29 @@ import useAuth from "@/hooks/use-auth";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Typography from "@/components/common/Typography";
+import { useCurrencyStore } from "@/store/currency-store";
+import { convertPrice } from "@/utils/constant";
+import BalanceSlider from "@/components/common/BalanceSlider";
 
 const InviteBenefactor = ({ total }: { total: number }) => {
   const { authUser } = useAuth();
 
+  const currency = useCurrencyStore((state) => state?.currency);
+
   const [openInviteBenefactorModal, setOpenInviteBenefactorModal] =
     useState(false);
+
+  const schema = yup.object().shape({
+    name: yup.string().required("Name is required"),
+    amount: yup
+      .number()
+      .typeError("Amount is required")
+      .min(0, "Amount cannot be negative")
+      .required("Amount is required")
+      .test("max-amount", `Amount cannot exceed ${total}`, function (value) {
+        return value <= total;
+      }),
+  });
 
   const {
     watch,
@@ -28,7 +45,7 @@ const InviteBenefactor = ({ total }: { total: number }) => {
     mode: "onChange",
   });
 
-  const amount = watch("amount");
+  const amount = watch("amount") || 0;
 
   useEffect(() => {
     if (authUser?.user?.first_name) {
@@ -50,9 +67,18 @@ const InviteBenefactor = ({ total }: { total: number }) => {
       <div className="space-y-1">
         <Typography variant={"largeText"}>Invite Benefactor</Typography>
 
-        <Typography variant="smallText" className="text-charcoal-gray">
+        <Typography variant="smallText" className="text-charcoal-gray pb-3">
           You can invite co-benefactors to help cover the cost of this plan.
         </Typography>
+
+        <div className="flex items-center gap-1 p-3 bg-primary rounded-md">
+          <Typography variant={"smallText"}>
+            Total amount to be contributed:
+          </Typography>
+          <Typography variant={"xxlargeTextBold"}>
+            {convertPrice(total, currency)}
+          </Typography>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 items-center gap-5 ">
@@ -71,20 +97,34 @@ const InviteBenefactor = ({ total }: { total: number }) => {
           name="amount"
           render={({ field }) => (
             <NumberInput
-              label="Amount"
-              prefix="$"
+              required
+              label="Your Contribution"
+              prefix={currency?.symbol}
               placeholder="Enter amount"
               value={field.value}
               onChange={field.onChange}
               error={errors.amount?.message}
-              hint={`Remaining amount: $${remainingAmount.toFixed(2)}`}
+              hint={`Remaining amount: ${
+                currency?.symbol
+              }${remainingAmount.toFixed(2)}`}
+              info="This is the amount you, as the main benefactor, will personally contribute toward the total cost of the plan. Any remaining balance can be shared with invited co-benefactors."
             />
           )}
         />
       </div>
 
-       <div><div className="my-5 w-full border border-dashed border-mid-grey contain-none"></div></div>
+      <BalanceSlider
+        label={`Balance ${currency?.symbol}${remainingAmount.toFixed(2)}`}
+        min={0}
+        max={total}
+        value={amount > total ? total : amount}
+        onChange={(val) => setValue("amount", val, { shouldValidate: true })}
+        currency={currency?.symbol}
+      />
 
+      <div>
+        <div className="my-5 w-full border border-dashed border-mid-grey contain-none"></div>
+      </div>
       <Button
         type="button"
         variant="outline"
@@ -95,7 +135,6 @@ const InviteBenefactor = ({ total }: { total: number }) => {
         Add Benefactor
         <HiOutlinePlus />
       </Button>
-
       <InviteBenefactorModal
         openInviteBenefactorModal={openInviteBenefactorModal}
         setOpenInviteBenefactorModal={setOpenInviteBenefactorModal}
@@ -106,8 +145,3 @@ const InviteBenefactor = ({ total }: { total: number }) => {
 };
 
 export default InviteBenefactor;
-
-const schema = yup.object().shape({
-  name: yup.string().required("Name is required"),
-  amount: yup.string().required("Amount is required"),
-});

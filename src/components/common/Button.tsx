@@ -14,7 +14,7 @@ export const buttonVariants = cva(
         filled:
           "bg-primary text-white w-fit focus-visible:ring-[3px] focus-visible:ring-primary/30",
         outline:
-          "bg-transparent border border-black text-black w-fit focus-visible:ring-[3px] focus-visible:ring-primary/30",
+          "bg-white border border-black text-black w-fit focus-visible:ring-[3px] focus-visible:ring-primary/30",
         ghost: "text-black",
         "outline-danger":
           "bg-transparent border-2 border-danger text-danger w-fit focus-visible:ring-[3px] focus-visible:ring-danger/30",

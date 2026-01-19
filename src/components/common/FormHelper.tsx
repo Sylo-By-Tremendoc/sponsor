@@ -7,26 +7,34 @@ import type { ReactNode } from "react";
 
 export const FieldLabelText = ({
   label,
-  info = false,
+  info,
   required = false,
-  infoDescription,
   view,
   className,
 }: {
   label: ReactNode;
   className?: string;
   view?: boolean;
-  info?: boolean;
-  infoDescription?: string;
+  info?: string;
   required?: boolean;
 }) => (
   <div className={cn(className)}>
+    <Typography
+      as={"span"}
+      variant={view ? "xSmallText" : "xSmallTextSemibold"}
+      className={clsx("", view && "text-charcoal-gray", {
+        " after:content-['*'] after:ml-0.5 after:text-danger": required,
+      })}
+    >
+      {label}
+    </Typography>
+
     {info && (
       <Tooltip>
         <TooltipTrigger>
           <TooltipContent side="right" sideOffset={8} className="bg-white mr-">
             <Typography variant="subText" className="pl-[5px] max-w-60">
-              {infoDescription}
+              {info}
             </Typography>
           </TooltipContent>
 
@@ -37,16 +45,6 @@ export const FieldLabelText = ({
         </TooltipTrigger>
       </Tooltip>
     )}
-
-    <Typography
-      as={"span"}
-      variant={view ? "xSmallText" : "xSmallTextSemibold"}
-      className={clsx("", view && "text-charcoal-gray", {
-        " after:content-['*'] after:ml-0.5 after:text-danger": required,
-      })}
-    >
-      {label}
-    </Typography>
   </div>
 );
 

@@ -10,6 +10,7 @@ type NumberInputProps = Omit<
 > & {
   error?: string;
   label?: string;
+  info?: string;
   hint?: string;
   height?: string;
   isLoadingField?: boolean;
@@ -25,6 +26,7 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
     {
       error,
       label,
+      info,
       hint,
       className,
       height = "40px",
@@ -72,7 +74,7 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
         <label className="flex flex-col space-y-1">
           {label && (
             <div className="label-container">
-              <FieldLabelText label={label} required={rest.required} />
+              <FieldLabelText label={label} required={rest.required} info={info} />
             </div>
           )}
 

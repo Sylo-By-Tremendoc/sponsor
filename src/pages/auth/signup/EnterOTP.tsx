@@ -8,7 +8,7 @@ import FullScreenLoader from "@/components/common/Loader";
 import { toast } from "react-toastify";
 
 const EnterOTP = ({ handleNext }: { handleNext: () => void }) => {
- const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
 
   const otpLength = 6;
@@ -16,7 +16,6 @@ const EnterOTP = ({ handleNext }: { handleNext: () => void }) => {
   const [timeLeft, setTimeLeft] = useState(DURATION);
   const [canResend, setCanResend] = useState(false);
   const [isResending] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const verifySignupOTP = useVerifySignupOTP();
 
@@ -116,7 +115,6 @@ const EnterOTP = ({ handleNext }: { handleNext: () => void }) => {
     const submittedData = replaceEmptyStringsWithNull(newData);
 
     verifySignupOTP?.mutate(submittedData, {
-      onSuccess: () => setIsSuccess(true),
       onError: (error: any) => {
         const message =
           error?.response?.data?.message ||
@@ -222,8 +220,8 @@ const EnterOTP = ({ handleNext }: { handleNext: () => void }) => {
       </div>
 
       <FullScreenLoader
-        loading={verifySignupOTP?.isPending}
-        isSuccess={isSuccess}
+        loading={verifySignupOTP.isPending}
+        isSuccess={verifySignupOTP.isSuccess}
         onSuccess={() => handleNext()}
       />
     </div>

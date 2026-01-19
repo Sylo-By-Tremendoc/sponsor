@@ -16,10 +16,10 @@ export type CurrencyStore = CurrencyState & {
 export const defaultInitState: CurrencyState = {
   search: "",
   currency: {
-    id: "EUR",
-    label: "Euro",
-    symbol: "€",
-    flag: "https://flagcdn.com/w160/eu.png",
+    id: "GBP",
+    label: "British Pound",
+    symbol: "£",
+    flag: "https://flagcdn.com/w160/gb.png",
   },
 };
 
@@ -41,10 +41,10 @@ export const createCurrencyStore = (
           if (version !== 1) {
             return {
               currency: {
-                id: "EUR",
-                label: "Euro",
-                symbol: "€",
-                flag: "https://flagcdn.com/w160/eu.png",
+                id: "GBP",
+                label: "British Pound",
+                symbol: "£",
+                flag: "https://flagcdn.com/w160/gb.png",
               },
             };
           }

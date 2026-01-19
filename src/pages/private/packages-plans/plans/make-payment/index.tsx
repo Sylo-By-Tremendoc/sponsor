@@ -26,6 +26,9 @@ import { RadioButtonInput } from "@/components/common/RadioButtonInput";
 import { motion, AnimatePresence } from "framer-motion";
 import CardPaymentModal from "./components/CardPaymentModal";
 import MobilePaymentSummaryDrawer from "../component/MobilePaymentSummary";
+import PlanPurchaseSuccessModal from "./components/PlanPurchaseSuccessModal";
+import Icons from "@/components/common/Icons";
+import * as RadioGroup from "@radix-ui/react-radio-group";
 
 const PlanPaymentPage = () => {
   const { id } = useParams();
@@ -52,6 +55,8 @@ const PlanPaymentPage = () => {
   const [showSelectBeneficiaryDrawer, setShowSelectBeneficiaryDrawer] =
     useState(false);
   const [showRemoveBeneficiaryModal, setShowRemoveBeneficiaryModal] =
+    useState(false);
+  const [openPlanPurchaseSuccessModal, setOpenPlanPurchaseSuccessModal] =
     useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -109,8 +114,8 @@ const PlanPaymentPage = () => {
 
     createSubscription?.mutate(submittedData, {
       onSuccess: () => {
-        toast.success("Subscription created successfully");
-        navigate("/package-plans");
+        setShowCardPaymentModal(false);
+        setOpenPlanPurchaseSuccessModal(true);
       },
       onError: (error: any) => {
         setIsSubmitting(false);
@@ -141,20 +146,23 @@ const PlanPaymentPage = () => {
     });
   }, [singleBeneficiary]);
 
+  useEffect(() => {
+    if (clientSecret) {
+      setShowCardPaymentModal(true);
+    }
+  }, [clientSecret]);
+
   if (error) return <NetworkError onClick={() => refetch()} />;
 
   return (
     <div className="flex flex-col bg-[#F7F7F7] h-screen overflow-hidden">
       <header className="px-4 md:px-20 py-5 shadow-xs flex justify-between items-center bg-[#F7F7F7]">
         <div
-          className="flex items-center space-x-2 hover: cursor-pointer"
+          className="flex items-center gap-1 cursor-pointer"
           onClick={() => navigate("/")}
         >
-          <div className="flex items-center gap-1">
-            <span className="bg-primary w-4 h-4 rounded-full inline-block"></span>
-            <span className="text-primary font-semibold text-lg">sylo</span>
-          </div>
-          <span className="text-sm">By Tremendoc</span>
+          <Icons iconName="logo" />
+          <Typography variant={"xSmallText"}>By Tremendoc</Typography>
         </div>
 
         <RightSection />
@@ -208,10 +216,11 @@ const PlanPaymentPage = () => {
                   </div>
                 ) : (
                   <Typography
-                    variant={"smallText"}
+                    variant="smallText"
                     className="text-charcoal-gray"
                   >
-                    {singlePlanDetails?.plan?.description || ""}
+                    {singlePlanDetails?.plan?.description ||
+                      "A thoughtfully designed healthcare plan that provides dependable coverage, quality care access, and peace of mind for you and your loved ones."}
                   </Typography>
                 )}
               </div>
@@ -291,23 +300,24 @@ const PlanPaymentPage = () => {
                 </Typography>
               </div>
 
-              <div className="flex flex-col md:flex-row gap-5">
+              <RadioGroup.Root
+                value={paymentType}
+                onValueChange={(val) =>
+                  setPaymentType(val as "single" | "shared")
+                }
+                className="flex flex-col md:flex-row gap-5"
+              >
                 <RadioButtonInput
+                  name="payment"
                   value="single"
                   label="Cover payment alone"
-                  name="payment"
-                  checked={paymentType === "single"}
-                  onChange={() => setPaymentType("single")}
                 />
-
                 <RadioButtonInput
+                  name="payment"
                   value="shared"
                   label="Shared payment (Invite co-benefactors)"
-                  name="payment"
-                  checked={paymentType === "shared"}
-                  onChange={() => setPaymentType("shared")}
                 />
-              </div>
+              </RadioGroup.Root>
             </div>
 
             {/* Animated Invite Benefactor */}
@@ -342,11 +352,10 @@ const PlanPaymentPage = () => {
         handleStripeSetup={(secret) => {
           setClientSecret(secret);
           setOpenVerifyOTPModal(false);
-          setShowCardPaymentModal(true);
         }}
       />
 
-      {clientSecret && (
+      {showCardPaymentModal && clientSecret && (
         <CardPaymentModal
           isSubmitting={isSubmitting}
           clientSecret={clientSecret}
@@ -365,6 +374,11 @@ const PlanPaymentPage = () => {
           onSuccess={() => setOpenVerifyOTPModal(true)}
         />
       )}
+
+      <PlanPurchaseSuccessModal
+        openPlanPurchaseSuccessModal={openPlanPurchaseSuccessModal}
+        onViewPlan={() => navigate("/package-plans")}
+      />
 
       <RemoveBeneficiaryModal
         selectedBeneficiary={selectedBeneficiary!}

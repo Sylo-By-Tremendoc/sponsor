@@ -9,6 +9,7 @@ import { cn } from "../../utils/class-name";
 type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   error?: string;
   label?: string;
+  info?: string;
   hint?: string | any;
   height?: string;
   searchIconSize?: number;
@@ -25,6 +26,7 @@ const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
       leftIcon,
       rightIcon,
       label,
+      info,
       hint,
       className,
       type,
@@ -42,7 +44,7 @@ const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
         <label className="flex flex-col space-y-1">
           {label && (
             <div className="label-container">
-              <FieldLabelText label={label} required={rest.required} />
+              <FieldLabelText label={label} required={rest.required} info={info} />
             </div>
           )}
           {isLoadingFelid ? (

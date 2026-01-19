@@ -42,28 +42,23 @@ const FullScreenLoader = ({
   const Loader = loaderMap[type];
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // When loading stops and isSuccess is true, show the success icon
   useEffect(() => {
-    let callbackTimeout: any;
-
     if (!loading && isSuccess) {
-      // small delay before showing the success tick
       const showTimeout = setTimeout(() => {
         setShowSuccess(true);
 
-        callbackTimeout = setTimeout(() => {
-          if (onSuccess) onSuccess();
+        const callbackTimeout = setTimeout(() => {
+          onSuccess?.();
         }, 800);
+
+        return () => clearTimeout(callbackTimeout);
       }, 200);
 
-      return () => {
-        clearTimeout(showTimeout);
-        if (callbackTimeout) clearTimeout(callbackTimeout);
-      };
-    } else {
-      setShowSuccess(false);
+      return () => clearTimeout(showTimeout);
     }
-  }, [loading, isSuccess, onSuccess]);
+
+    setShowSuccess(false);
+  }, [loading, isSuccess]);
 
   // If neither loading nor success, don't render
   if (!loading && !showSuccess) return null;

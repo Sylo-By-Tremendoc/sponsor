@@ -8,38 +8,52 @@ import { convertPrice } from "../../../utils/constant";
 import type { SectionParam } from ".";
 import { PartnerCard } from "./components/PartnerCard";
 import { useCurrencyStore } from "@/store/currency-store";
+import img1 from "../../../assets/images/partners/axa-mansard.png";
+import img2 from "../../../assets/images/partners/glico.png";
+import img3 from "../../../assets/images/partners/lead-way-1.jpeg";
+import img4 from "../../../assets/images/partners/lead-way-2.png";
+import { SwiperSlide } from "swiper/react";
+import CustomSwiper from "@/components/common/Swiper";
 
 const TrustedPartners = ({ setShowGetStartedModal }: SectionParam) => {
-
-    const currency = useCurrencyStore((state) => state?.currency);
-
+  const currency = useCurrencyStore((state) => state?.currency);
 
   const partners = [
     {
       name: "AXA Mansard",
-      description: "Nigeria Leading health insurer with 2M+ members",
+      description:
+        "Nigeria’s leading health insurer with over 2 million active members, providing reliable and innovative healthcare solutions.",
+      logo: img1,
     },
     {
       name: "Leadway Assurance",
-      description: "Nigeria 50+ years experience, 1.5M+ members",
+      description:
+        "Over 50 years of trusted healthcare coverage in Nigeria, protecting 1.5 million+ members with comprehensive plans.",
+      logo: img3,
     },
     {
-      name: "STAR Health",
-      description: "India's largest standalone health insurer",
+      name: "GLICO Health",
+      description:
+        "Ghana’s premier private health insurer offering quality healthcare access to thousands of members nationwide.",
+      logo: img2,
     },
+    {
+      name: "Leadway Assurance",
+      description:
+        "Over 50 years of trusted healthcare coverage in Nigeria, protecting 1.5 million+ members with comprehensive plans.",
+      logo: img4,
+    },
+    // {
+    //   name: "STAR Health",
+    //   description:
+    //     "India’s largest standalone health insurer delivering reliable care nationwide with a focus on comprehensive coverage.",
+    //   logo: heroImg3,
+    // },
   ];
 
   return (
     <Section className="w-full flex flex-col items-center justify-center bg-white space-y-16">
-      {/* Trusted Partners */}
-      <motion.div
-        className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 bg-[#f9f9fb] rounded-3xl px-5 p-8"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        {/* Left Text */}
+      <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 bg-[#f9f9fb] rounded-3xl px-5 p-8">
         <div className="space-y-4">
           <Pill text="TRUSTED PARTNERS" />
           <TitleText className="mb-3">Working with Leading Insurers</TitleText>
@@ -52,16 +66,25 @@ const TrustedPartners = ({ setShowGetStartedModal }: SectionParam) => {
           </Typography>
         </div>
 
-        {/* Partner Cards */}
-        {partners.map((partner, index) => (
-          <PartnerCard
-            key={index}
-            name={partner.name}
-            description={partner.description}
-            index={index}
-          />
-        ))}
-      </motion.div>
+        <div className="md:col-span-3">
+          <CustomSwiper
+            breakpoints={{
+              0: { slidesPerView: 1 },
+              768: { slidesPerView: 3 },
+            }}
+          >
+            {partners.map((partner, index) => (
+              <SwiperSlide key={index}>
+                <PartnerCard
+                  logo={partner.logo}
+                  name={partner.name}
+                  description={partner.description}
+                />
+              </SwiperSlide>
+            ))}
+          </CustomSwiper>
+        </div>
+      </div>
 
       {/* Image Section */}
       <motion.div

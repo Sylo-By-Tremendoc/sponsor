@@ -10,6 +10,8 @@ import { toast } from "react-toastify";
 import { Button } from "@/components/common/Button";
 import FullScreenLoader from "@/components/common/Loader";
 import useForgotPassword from "./hooks/use-forgot-password";
+import Icons from "@/components/common/Icons";
+import heroImg2 from "../../../assets/images/hero-image-2.png";
 
 const ForgotPassword = () => {
   const forgotPassword = useForgotPassword();
@@ -40,19 +42,25 @@ const ForgotPassword = () => {
   return (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
       {/* Left Section */}
-      <div className="hidden bg-black text-white md:flex flex-col justify-between px-10 py-10 z-20">
-        <div>
-          {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-green-500 rounded-full" />
-            <h1 className="text-lg font-semibold">
-              sylo <span className="text-gray-400 text-sm">By Tremendoc</span>
-            </h1>
-          </div>
-        </div>
+      <div
+        style={{ backgroundImage: `url(${heroImg2})` }}
+        className="
+    relative hidden md:flex flex-col justify-between
+    px-10 py-10 text-white
+    bg-cover bg-center bg-no-repeat
+  "
+      >
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black/40 z-0" />
+
+        {/* Header */}
+        <Link to="/" className="relative z-10 flex items-center cursor-pointer">
+          <Icons iconName="logo" />
+          <span className="text-sm font-semibold">By Tremendoc</span>
+        </Link>
 
         {/* Marketing Text */}
-        <div>
+        <div className="relative z-10">
           <h2 className="text-3xl md:text-4xl font-semibold leading-snug">
             Send Healthcare Home, <br /> Just Like you Send Money.
           </h2>
