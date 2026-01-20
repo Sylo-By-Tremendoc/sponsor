@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import Typography from "../common/Typography";
 import Icons from "../common/Icons";
 import DisplayNavList from "./components/DisplayNavList";
 import { ShowLogoutModal } from "./components/navList";
@@ -9,11 +8,9 @@ const SideNav = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   return (
     <div className="hidden md:flex flex-col justify-between bg-white w-52 h-screen overflow-hidden">
-      <Link to="/" className="flex items-center mx-2 my-5">
-        <Icons iconName="logo" width={80} height={50} />
-        <Typography variant={"xSmallText"} className="pt-">
-          By Tremendoc
-        </Typography>
+      <Link to="/" className="flex items-center gap-1 mx-3 my-5">
+        <Icons iconName="logo" width={30} height={30} />
+        <span className="text-sm font-semibold">SyloCare</span>
       </Link>
 
       <DisplayNavList setShowLogoutModal={setShowLogoutModal} />

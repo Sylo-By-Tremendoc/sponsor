@@ -75,7 +75,7 @@ const StickyTableOfContents: React.FC<Props> = ({
   return (
     <div
       ref={containerRef}
-      className="fixed inset-x-0 bottom-5 z-60 flex flex-col items-center justify-center"
+      className="fixed inset-x-0 bottom-5 z-50 flex flex-col items-center justify-center"
     >
       {!collapsed && (
         <nav

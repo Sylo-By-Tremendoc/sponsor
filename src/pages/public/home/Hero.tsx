@@ -9,10 +9,9 @@ import Typography from "@/components/common/Typography";
 import heroImg1 from "../../../assets/images/hero-image.png";
 import heroImg2 from "../../../assets/images/hero-image-1.png";
 import heroImg3 from "../../../assets/images/hero-image-2.png";
-import heroImg4 from "../../../assets/images/why-this-matters.png";
 import { useCurrencyStore } from "@/store/currency-store";
 
-const heroImages = [heroImg1, heroImg2, heroImg3, heroImg4];
+const heroImages = [heroImg1, heroImg2, heroImg3];
 
 const Hero = ({ setShowGetStartedModal }: SectionParam) => {
   const [currentBg, setCurrentBg] = useState(0);

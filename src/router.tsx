@@ -24,6 +24,10 @@ import ResetPassword from "./pages/auth/reset-password";
 import PlanPaymentPage from "./pages/private/packages-plans/plans/make-payment";
 import SingleBeneficiaryDetails from "./pages/private/beneficiaries/single-beneficiary-details";
 import Blogs from "./pages/public/blogs";
+import AboutUs from "./pages/public/about-us";
+import HowItWorks from "./pages/public/how-it-works";
+import FAQ from "./pages/public/faq";
+import SingleBlogDetails from "./pages/public/blogs/single-blog-details";
 
 const router = createBrowserRouter(
   [
@@ -36,12 +40,28 @@ const router = createBrowserRouter(
           element: <HomePage />,
         },
         {
+          path: "/about-us",
+          element: <AboutUs />,
+        },
+        {
+          path: "/how-it-works",
+          element: <HowItWorks />,
+        },
+        {
+          path: "/faq",
+          element: <FAQ />,
+        },
+        {
           path: "/pricing",
           element: <Pricing />,
         },
         {
           path: "/blogs",
           element: <Blogs />,
+        },
+        {
+          path: "/blogs/:id",
+          element: <SingleBlogDetails />,
         },
         {
           path: "/contact-us",

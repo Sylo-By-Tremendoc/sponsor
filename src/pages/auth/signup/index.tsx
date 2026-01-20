@@ -6,7 +6,7 @@ import Success from "./Success";
 import CreateAccount from "./CreateAccount";
 import EnterOTP from "./EnterOTP";
 import Icons from "@/components/common/Icons";
-import heroImg2 from "../../../assets/images/hero-image-1.png";
+import authImg from "../../..//assets/images/auth-img.jpg";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ const Signup = () => {
   return (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
       <div
-        style={{ backgroundImage: `url(${heroImg2})` }}
+        style={{ backgroundImage: `url(${authImg})` }}
         className="
     relative hidden md:flex flex-col justify-between
     px-10 py-10 text-white
@@ -50,14 +50,17 @@ const Signup = () => {
         <div className="absolute inset-0 bg-black/40 z-0" />
 
         {/* Header */}
-        <Link to="/" className="relative z-10 flex items-center cursor-pointer">
+        <Link
+          to="/"
+          className="relative z-10 flex items-center gap-2 cursor-pointer"
+        >
           <Icons iconName="logo" />
-          <span className="text-sm font-semibold">By Tremendoc</span>
+          <span className="text-sm font-semibold">SyloCare</span>
         </Link>
 
         {/* Marketing Text */}
         <div className="relative z-10">
-          <h2 className="text-3xl md:text-4xl font-semibold leading-snug">
+          <h2 className="text-3xl md:text-4xl font-semibold leading-snug bg-gradient-to-r from-white via-white/90 to-primary bg-clip-text text-transparent">
             Send Healthcare Home, <br /> Just Like you Send Money.
           </h2>
           <p className="text-sm text-gray-300 mt-4">

@@ -1,6 +1,7 @@
 import Typography from "@/components/common/Typography";
 
 export const BlogCard = ({
+  id,
   image,
   title,
   description,
@@ -8,7 +9,9 @@ export const BlogCard = ({
   authorAvatar,
   date,
   readTime,
+  onClick,
 }: {
+  id: string;
   image: string;
   title: string;
   description: string;
@@ -16,12 +19,14 @@ export const BlogCard = ({
   authorAvatar: string;
   date: string;
   readTime: string;
+  onClick?: (val: string) => void;
 }) => {
   return (
     <article
       className="max-w-sm rounded-3xl bg-[#F6F5FA] overflow-hidden
         shadow-sm hover:shadow-md transition-all duration-300
-        hover:-translate-y-1 p-2 space-y-2"
+        hover:-translate-y-1 p-2 space-y-2 cursor-pointer"
+      onClick={() => onClick && onClick(id)}
     >
       <div className="h-40">
         <img

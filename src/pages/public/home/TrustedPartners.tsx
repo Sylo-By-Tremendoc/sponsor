@@ -5,7 +5,6 @@ import Pill from "../../../components/common/Pill";
 import { Section, TitleText } from "./components";
 import Typography from "../../../components/common/Typography";
 import { convertPrice } from "../../../utils/constant";
-import type { SectionParam } from ".";
 import { PartnerCard } from "./components/PartnerCard";
 import { useCurrencyStore } from "@/store/currency-store";
 import img1 from "../../../assets/images/partners/axa-mansard.png";
@@ -15,7 +14,13 @@ import img4 from "../../../assets/images/partners/lead-way-2.png";
 import { SwiperSlide } from "swiper/react";
 import CustomSwiper from "@/components/common/Swiper";
 
-const TrustedPartners = ({ setShowGetStartedModal }: SectionParam) => {
+const TrustedPartners = ({
+  showVideo = true,
+  setShowGetStartedModal,
+}: {
+  showVideo?: boolean;
+  setShowGetStartedModal: (val: boolean) => void;
+}) => {
   const currency = useCurrencyStore((state) => state?.currency);
 
   const partners = [
@@ -52,7 +57,7 @@ const TrustedPartners = ({ setShowGetStartedModal }: SectionParam) => {
   ];
 
   return (
-    <Section className="w-full flex flex-col items-center justify-center bg-white space-y-16">
+    <Section className="md:pb-10 w-full flex flex-col items-center justify-center bg-white space-y-16">
       <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 bg-[#f9f9fb] rounded-3xl px-5 p-8">
         <div className="space-y-4">
           <Pill text="TRUSTED PARTNERS" />
@@ -86,24 +91,25 @@ const TrustedPartners = ({ setShowGetStartedModal }: SectionParam) => {
         </div>
       </div>
 
-      {/* Image Section */}
-      <motion.div
-        className="w-full max-w-6xl rounded-3xl overflow-hidden relative"
-        initial={{ opacity: 0, scale: 0.97 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6 }}
-      >
-        <video
-          src={partnersVideo}
-          width={1200}
-          height={600}
-          className="object-cover w-full h-[400px]"
-          autoPlay
-          loop
-          muted
-          playsInline
-        />
-      </motion.div>
+      {showVideo && (
+        <motion.div
+          className="w-full max-w-6xl rounded-3xl overflow-hidden relative"
+          initial={{ opacity: 0, scale: 0.97 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          <video
+            src={partnersVideo}
+            width={1200}
+            height={600}
+            className="object-cover w-full h-[400px]"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+        </motion.div>
+      )}
 
       <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
         <Button onClick={() => setShowGetStartedModal(true)}>

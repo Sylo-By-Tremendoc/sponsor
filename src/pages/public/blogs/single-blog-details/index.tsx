@@ -2,14 +2,14 @@ import Footer from "@/components/footer";
 import Navbar from "@/components/navbar";
 import StickyTableOfContents from "@/utils/sticky-table-of-content";
 import Hero from "./Hero";
-import OurBlogs from "./OurBlogs";
-import Support from "./Support";
+import RelatedArticles from "./RelatedArticles";
+import BlogContent from "./BlogContent";
 
-const Blogs = () => {
+const SingleBlogDetails = () => {
   const sections = [
     { id: "hero", label: "Main Section" },
-    { id: "our-blogs", label: "Our Blogs" },
-    { id: "supports", label: "Supports" },
+    { id: "blog-content", label: "Blog Content" },
+    { id: "related-articles", label: "Related Articles" },
   ];
 
   return (
@@ -20,15 +20,13 @@ const Blogs = () => {
         <section id="hero">
           <Hero />
         </section>
-        <section id="our-blogs">
-          <OurBlogs />
+        <section id="blog-content">
+          <BlogContent />
         </section>
-        <section id="supports">
-          <Support />
+        <section id="related-articles">
+          <RelatedArticles />
         </section>
       </div>
-
-      {/* <BlogComingSoon /> */}
 
       <Footer />
 
@@ -37,4 +35,4 @@ const Blogs = () => {
   );
 };
 
-export default Blogs;
+export default SingleBlogDetails;

@@ -4,11 +4,12 @@ import {
   FaLinkedinIn,
   FaInstagram,
 } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../common/Button";
 import Icons from "../common/Icons";
 
 const Footer = () => {
+  const navigate = useNavigate()
   return (
     <footer className="bg-black text-white rounded-t-3xl md:rounded-b-3xl px-6 md:px-14 lg:px-20 py-12 md:mx-4 md:mb-4">
       <div className="max-w-7xl mx-auto">
@@ -20,20 +21,19 @@ const Footer = () => {
 
           <div className="flex items-center gap-5">
             <Button>Get Started</Button>
-            <Button className="bg-white text-black">Contact Us</Button>
+            <Button className="bg-white text-black" onClick={() => navigate("/contact-us")}>Contact Us</Button>
           </div>
         </div>
 
         {/* Top Section */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 border-t border-gray-700 pt-10">
-          {/* Logo + Address */}
           <div className="space-y-4">
             <Link
               to="/"
-              className="relative z-10 flex items-center cursor-pointer"
+              className="relative z-10 flex gap-2 items-center cursor-pointer"
             >
               <Icons iconName="logo" />
-              <span className="text-sm font-semibold">By Tremendoc</span>
+              <span className="text-sm font-semibold">SyloCare</span>
             </Link>
 
             <p className="text-sm text-gray-300 leading-relaxed">

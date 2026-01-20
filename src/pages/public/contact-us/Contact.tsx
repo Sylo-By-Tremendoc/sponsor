@@ -9,7 +9,7 @@ const Contact = () => {
         <Pill text="CONTACT US" />
         <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-3 md:gap-8 300 w-full">
           <div className="text-center md:text-left">
-            <TitleText className="mb-0">How can we help you today?</TitleText>
+            <TitleText className="mb-0">Tell us how we can help you today!</TitleText>
           </div>
 
           <Typography

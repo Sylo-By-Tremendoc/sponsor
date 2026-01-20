@@ -9,9 +9,9 @@ const Navbar = ({ className }: { className?: string }) => {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    // { name: "About Us", href: "/about-us" },
-    // { name: "How it works", href: "#" },
-    // { name: "FAQ", href: "/faq" },
+    { name: "About Us", href: "/about-us" },
+    { name: "How it works", href: "/how-it-works" },
+    { name: "FAQ", href: "/faq" },
     { name: "Pricing", href: "/pricing" },
     { name: "Blog", href: "/blogs" },
     { name: "Contact", href: "/contact-us" },
@@ -25,9 +25,9 @@ const Navbar = ({ className }: { className?: string }) => {
       )}
     >
       {/* Logo */}
-      <Link to="/" className="relative z-10 flex items-center cursor-pointer">
+     <Link to="/" className="relative z-10 flex items-center gap-2 cursor-pointer">
         <Icons iconName="logo" />
-        <span className="text-sm font-semibold">By Tremendoc</span>
+        <span className="text-sm font-semibold">SyloCare</span>
       </Link>
 
       {/* Desktop Nav */}
