@@ -1,6 +1,5 @@
 import router from "./router.tsx";
 import { StrictMode } from "react";
-import { Theme } from "@radix-ui/themes";
 import { createRoot } from "react-dom/client";
 import { ToastContainer } from "react-toastify";
 import { RouterProvider } from "react-router-dom";
@@ -25,25 +24,24 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Theme>
-      <QueryClientProvider client={queryClient}>
-        <AuthenticationProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
-          <RouterProvider router={router} />
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick
-            pauseOnFocusLoss
-            pauseOnHover
-            draggable
-            theme="light"
-            style={{ zIndex: 999999 }}
-          />
-        </AuthenticationProvider>
-      </QueryClientProvider>
-    </Theme>
+    <ToastContainer
+      position="top-right"
+      autoClose={3000}
+      hideProgressBar={false}
+      newestOnTop
+      closeOnClick
+      pauseOnFocusLoss
+      pauseOnHover
+      draggable
+      theme="light"
+      containerId="toast-root"
+      style={{ zIndex: 999999 }}
+    />
+    <QueryClientProvider client={queryClient}>
+      <AuthenticationProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+        <RouterProvider router={router} />
+      </AuthenticationProvider>
+    </QueryClientProvider>
   </StrictMode>
 );

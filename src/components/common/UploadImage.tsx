@@ -59,17 +59,21 @@ export default function ImageUpload({
   };
 
   useEffect(() => {
-    let url: string | null = null;
+    if (!value) return;
 
-    if (value) {
-      url = URL.createObjectURL(value);
-      setPreview(url);
-    } else {
-      setPreview(null);
+    let objectUrl: string | null = null;
+
+    if (value instanceof File) {
+      objectUrl = URL.createObjectURL(value);
+      setPreview(objectUrl);
+    } else if (typeof value === "string") {
+      setPreview(value); 
     }
 
     return () => {
-      if (url) URL.revokeObjectURL(url);
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
     };
   }, [value]);
 

@@ -2,8 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import { BiSearch } from "react-icons/bi";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
-import { FieldErrorText, FieldHelperText, FieldLabelText } from "./FormHelper";
-import SkeletonLoader from "./SkeletonLoader";
+import { FieldErrorText, FieldHelperText, FieldLabelText, FieldLoadingState } from "./FormHelper";
 import { cn } from "../../utils/class-name";
 
 type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -13,7 +12,7 @@ type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   hint?: string | any;
   height?: string;
   searchIconSize?: number;
-  isLoadingFelid?: boolean;
+  isLoadingField?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 };
@@ -32,7 +31,7 @@ const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
       type,
       searchIconSize = 20,
       height = "40px",
-      isLoadingFelid,
+      isLoadingField,
       ...rest
     },
     ref
@@ -47,8 +46,8 @@ const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
               <FieldLabelText label={label} required={rest.required} info={info} />
             </div>
           )}
-          {isLoadingFelid ? (
-            <SkeletonLoader className="w-28 h-[1.2rem] mt-1 rounded" />
+          {isLoadingField ? (
+            <FieldLoadingState />
           ) : (
             <div className={" relative flex items-center w-full"}>
               {!!leftIcon && type !== "search" && (

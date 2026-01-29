@@ -37,7 +37,7 @@ const MobilePaymentSummaryDrawer = ({
           </span>
         </div>
 
-        <Button onClick={() => setIsOpen(true)}>View Details</Button>
+        <Button onClick={() => setIsOpen(true)}>Pay Now</Button>
       </div>
 
       <Drawer open={isOpen} onOpenChange={setIsOpen}>

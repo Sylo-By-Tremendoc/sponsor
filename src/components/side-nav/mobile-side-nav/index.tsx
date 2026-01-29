@@ -1,6 +1,5 @@
 import Icons from "@/components/common/Icons";
 import { Drawer, DrawerContent } from "@/components/common/modals/Drawer";
-import Typography from "@/components/common/Typography";
 import { Link } from "react-router-dom";
 import DisplayNavList from "../components/DisplayNavList";
 
@@ -21,11 +20,12 @@ const MobileSideNav = ({
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
         <div className="py-5 h-full bg-white flex flex-col">
-          <Link to="/" className="flex items-center px-2 pb-5">
-            <Icons iconName="logo" width={80} height={30} />
-            <Typography variant={"xSmallText"} className="pt-">
-              By Tremendoc
-            </Typography>
+          <Link
+            to="/"
+            className="relative z-10  inline-flex w-fit items-center gap-2 cursor-pointer px-3"
+          >
+            <Icons iconName="logo" />
+            <span className="text-sm font-semibold">SyloCare</span>
           </Link>
 
           <DisplayNavList

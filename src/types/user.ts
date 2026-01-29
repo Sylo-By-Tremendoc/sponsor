@@ -1,4 +1,5 @@
 export type User = {
+  id: string;
   name: string;
   first_name: string;
   last_name: string;
@@ -11,5 +12,5 @@ export type User = {
   country_code: string;
   state: string;
   address: string | null;
-  profilePicture: string,
+  profilePicture: string;
 };

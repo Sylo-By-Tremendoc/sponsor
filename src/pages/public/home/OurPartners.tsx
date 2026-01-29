@@ -1,40 +1,25 @@
 import { motion } from "motion/react";
 import Pill from "../../../components/common/Pill";
 import { Section, TitleText } from "./components";
-import partnerLogo1 from "../../../assets/images/partner-logo-1.png";
-import partnerLogo2 from "../../../assets/images/partner-logo-2.png";
-import partnerLogo3 from "../../../assets/images/partner-logo-3.png";
-import partnerLogo4 from "../../../assets/images/partner-logo-4.png";
-import partnerLogo5 from "../../../assets/images/partner-logo-5.png";
-import partnerLogo6 from "../../../assets/images/partner-logo-6.png";
+import useGetSystemMedia from "@/pages/private/dashboard/hooks/use-get-system-media";
+import { useSetPagination } from "@/hooks/use-set-pagination";
 
 const OurPartners = () => {
-  const partners = [
-    {
-      name: "AXA",
-      logo: partnerLogo1,
-    },
-    {
-      name: "Bupa",
-      logo: partnerLogo2,
-    },
-    {
-      name: "Sanlam",
-      logo: partnerLogo3,
-    },
-    {
-      name: "Liberty Health",
-      logo: partnerLogo4,
-    },
-    {
-      name: "Prudential",
-      logo: partnerLogo5,
-    },
-    {
-      name: "Old Mutual",
-      logo: partnerLogo6,
-    },
-  ];
+  const pagination = useSetPagination();
+
+  const filters = {
+    type: "logo",
+  };
+
+  const { data, isLoading, isFetching } = useGetSystemMedia({
+    enabled: true,
+    page: pagination?.page,
+    per_page: pagination?.per_page,
+    filters,
+  });
+
+  const partners = data?.data ?? [];
+  const isBusy = isLoading || isFetching;
 
   return (
     <Section className="space-y-4 text-center bg-white relative">
@@ -43,31 +28,50 @@ const OurPartners = () => {
         Trusted by Health Professionals & Partners
       </TitleText>
 
-      {/* Animation wrapper */}
-      <div className="relative flex overflow-x-hidden">
-        <motion.div
-          className="flex gap-16 min-w-full"
-          animate={{ x: ["0%", "-100%"] }}
-          transition={{
-            repeat: Infinity,
-            duration: 20,
-            ease: "linear",
-          }}
-        >
-          {[...partners, ...partners].map((partner, i) => (
-            <div
-              key={i}
-              className="shrink-0 flex items-center justify-center w-40 h-20 transition-all duration-300"
-            >
-              <img
-                src={partner.logo}
-                alt={partner.name}
-                className="h-10 object-contain"
-              />
+      {isBusy && (
+        <div className="flex justify-center gap-16 overflow-hidden">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="w-40 h-20 flex items-center justify-center">
+              <div className="h-6 w-28 rounded-md bg-gray-200 animate-pulse" />
             </div>
           ))}
-        </motion.div>
-      </div>
+        </div>
+      )}
+
+      {!isBusy && partners.length === 0 && (
+        <div className="py-10 text-center">
+          <p className="text-sm text-gray-500">
+            No partner logos available at the moment.
+          </p>
+        </div>
+      )}
+
+      {!isBusy && partners.length > 0 && (
+        <div className="relative flex overflow-x-hidden">
+          <motion.div
+            className="flex gap-16 min-w-full"
+            animate={{ x: ["0%", "-100%"] }}
+            transition={{
+              repeat: Infinity,
+              duration: 20,
+              ease: "linear",
+            }}
+          >
+            {[...partners, ...partners].map((partner, i) => (
+              <div
+                key={i}
+                className="shrink-0 flex items-center justify-center w-40 h-20"
+              >
+                <img
+                  src={partner?.media?.url}
+                  alt={partner?.title ?? "Partner logo"}
+                  className="h-10 object-contain transition"
+                />
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      )}
     </Section>
   );
 };

@@ -29,6 +29,7 @@ import MobilePaymentSummaryDrawer from "../component/MobilePaymentSummary";
 import PlanPurchaseSuccessModal from "./components/PlanPurchaseSuccessModal";
 import Icons from "@/components/common/Icons";
 import * as RadioGroup from "@radix-ui/react-radio-group";
+import useCreateSharedPayment from "../hooks/use-create-shared-payment";
 
 const PlanPaymentPage = () => {
   const { id } = useParams();
@@ -36,6 +37,8 @@ const PlanPaymentPage = () => {
   const [searchParams] = useSearchParams();
 
   const beneficiaryId = searchParams.get("beneficiaryId");
+  const [sharedPaymentId, setSharedPaymentId] = useState("");
+  const [sharedContributionAmount, setSharedContributionAmount] = useState(0);
 
   const navigate = useNavigate();
 
@@ -52,6 +55,7 @@ const PlanPaymentPage = () => {
 
   const [openVerifyOTPModal, setOpenVerifyOTPModal] = useState(false);
   const [showCardPaymentModal, setShowCardPaymentModal] = useState(false);
+  const [pendingPaymentStatus, setPendingPaymentStatus] = useState(false);
   const [showSelectBeneficiaryDrawer, setShowSelectBeneficiaryDrawer] =
     useState(false);
   const [showRemoveBeneficiaryModal, setShowRemoveBeneficiaryModal] =
@@ -73,6 +77,7 @@ const PlanPaymentPage = () => {
   } = useGetSinglePlanDetails(!!id, id!);
 
   const createSubscription = useCreateSubscription();
+  const createSharedPayment = useCreateSharedPayment(sharedPaymentId);
 
   const handleOnSelect = (beneficiaryId: string) => {
     setBeneficiaries((prev: any) =>
@@ -102,18 +107,40 @@ const PlanPaymentPage = () => {
     [beneficiaries]
   );
 
+  const buildSubscriptionPayload = (paymentMethodId: string) => ({
+    plan_id: singlePlanDetails?.plan?.id ?? null,
+    beneficiary_id: addedBeneficiaries?.[0]?.id ?? null,
+    billing_interval: singlePlanDetails?.plan?.billing_interval ?? null,
+    payment_method_id: paymentMethodId ?? null,
+  });
+
+  const buildSharedPaymentPayload = (paymentMethodId: string) => ({
+    payment_method_id: paymentMethodId ?? null,
+    contribution_amount: sharedContributionAmount ?? 0,
+  });
+
   const handleCreatePlanSubscription = (paymentMethodId: string) => {
-    const newData = {
-      plan_id: singlePlanDetails?.plan?.id || "",
-      beneficiary_id: addedBeneficiaries?.[0]?.id || "",
-      billing_interval: singlePlanDetails?.plan?.billing_interval || "",
-      payment_method_id: paymentMethodId || "",
-    };
+    if (!paymentMethodId) return;
 
-    const submittedData = replaceEmptyStringsWithNull(newData);
+    const payload =
+      paymentType === "shared"
+        ? buildSharedPaymentPayload(paymentMethodId)
+        : buildSubscriptionPayload(paymentMethodId);
 
-    createSubscription?.mutate(submittedData, {
-      onSuccess: () => {
+    const submittedData = replaceEmptyStringsWithNull(payload);
+
+    const mutation =
+      paymentType === "shared" ? createSharedPayment : createSubscription;
+
+    mutation?.mutate(submittedData, {
+      onSuccess: (res) => {
+        console.log("RESPONSE", res);
+        const pending = res?.data?.status;
+
+        if (pending != "active") {
+          setPendingPaymentStatus(true);
+        }
+
         setShowCardPaymentModal(false);
         setOpenPlanPurchaseSuccessModal(true);
       },
@@ -123,6 +150,13 @@ const PlanPaymentPage = () => {
       },
     });
   };
+
+  useEffect(() => {
+    const paymentId = localStorage.getItem("sharedPaymentId");
+    if (paymentId) {
+      setSharedPaymentId(paymentId);
+    }
+  }, []);
 
   useEffect(() => {
     if (!singleBeneficiary) return;
@@ -276,64 +310,79 @@ const PlanPaymentPage = () => {
               }}
             />
           </div>
+          {singlePlanDetails?.plan?.billing_interval === "yearly" &&
+            addedBeneficiaries?.length > 0 && (
+              <>
+                <LineThrough />
 
-          <LineThrough />
+                <div className="space-y-4 pb-8">
+                  <Typography variant={"largeText"}>Payment Method</Typography>
 
-          <div className="space-y-4 pb-8">
-            <Typography variant={"largeText"}>Payment Method</Typography>
+                  <div className="space-y-2">
+                    <div className="flex justify-between gap-5">
+                      <Typography
+                        variant={"smallText"}
+                        className="text-charcoal-gray"
+                      >
+                        Do you want to cover the payment alone or invite
+                        co-benefactors?
+                      </Typography>
 
-            <div className="space-y-2">
-              <div className="flex justify-between gap-5">
-                <Typography
-                  variant={"smallText"}
-                  className="text-charcoal-gray"
-                >
-                  Do you want to cover the payment alone or invite
-                  co-benefactors?
-                </Typography>
+                      <Typography
+                        variant="smallText"
+                        className="text-primary hover:underline shrink-0"
+                      >
+                        How it works
+                      </Typography>
+                    </div>
 
-                <Typography
-                  variant="smallText"
-                  className="text-primary hover:underline shrink-0"
-                >
-                  How it works
-                </Typography>
-              </div>
+                    <RadioGroup.Root
+                      value={paymentType}
+                      onValueChange={(val) =>
+                        setPaymentType(val as "single" | "shared")
+                      }
+                      className="flex flex-col md:flex-row gap-5"
+                    >
+                      <RadioButtonInput
+                        name="payment"
+                        value="single"
+                        label="Cover payment alone"
+                      />
+                      <RadioButtonInput
+                        name="payment"
+                        value="shared"
+                        label="Shared payment (Invite co-benefactors)"
+                      />
+                    </RadioGroup.Root>
+                  </div>
 
-              <RadioGroup.Root
-                value={paymentType}
-                onValueChange={(val) =>
-                  setPaymentType(val as "single" | "shared")
-                }
-                className="flex flex-col md:flex-row gap-5"
-              >
-                <RadioButtonInput
-                  name="payment"
-                  value="single"
-                  label="Cover payment alone"
-                />
-                <RadioButtonInput
-                  name="payment"
-                  value="shared"
-                  label="Shared payment (Invite co-benefactors)"
-                />
-              </RadioGroup.Root>
-            </div>
-
-            {/* Animated Invite Benefactor */}
-            <AnimatePresence>
-              {paymentType === "shared" && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0, y: -10 }}
-                  animate={{ opacity: 1, height: "auto", y: 0 }}
-                  exit={{ opacity: 0, height: 0, y: -10 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                >
-                  <InviteBenefactor total={totalPrice} />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                  {/* Animated Invite Benefactor */}
+                  <AnimatePresence>
+                    {paymentType === "shared" && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0, y: -10 }}
+                        animate={{ opacity: 1, height: "auto", y: 0 }}
+                        exit={{ opacity: 0, height: 0, y: -10 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                      >
+                        <InviteBenefactor
+                          total={totalPrice}
+                          paymentInfo={{
+                            plan_id: singlePlanDetails?.plan?.id || "",
+                            beneficiary_id: addedBeneficiaries?.[0]?.id || "",
+                            billing_interval:
+                              singlePlanDetails?.plan?.billing_interval || "",
+                          }}
+                          setSharedContributionAmount={
+                            setSharedContributionAmount
+                          }
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </>
+            )}
         </div>
 
         <div className="hidden md:block pb-7 pt-[4.6rem] lg:col-span-1 overflow-y-auto shrink-0 max-w-[25rem]">
@@ -376,6 +425,7 @@ const PlanPaymentPage = () => {
       )}
 
       <PlanPurchaseSuccessModal
+        pendingPaymentStatus={pendingPaymentStatus}
         openPlanPurchaseSuccessModal={openPlanPurchaseSuccessModal}
         onViewPlan={() => navigate("/package-plans")}
       />

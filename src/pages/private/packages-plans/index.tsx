@@ -1,17 +1,12 @@
 import Typography from "@/components/common/Typography";
-import PaymentCard, { type PaymentCardInfo } from "./components/PaymentCard";
 import LineThrough from "@/components/common/LineThrough";
 import { CustomTable } from "@/components/common/table";
 import { useNavigate } from "react-router-dom";
 import { useSetPagination } from "@/hooks/use-set-pagination";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "@/utils/class-name";
 import type { ColumnDef } from "@tanstack/react-table";
-import { HiOutlinePlus } from "react-icons/hi";
 import { convertPrice, formatDate } from "@/utils/constant";
-
-import DeleteCardModal from "./components/DeleteCardModal";
-import AddCardModal from "./components/AddCardModal";
 import GetStartedModal from "@/pages/public/home/GetStartedModal";
 import useGetAllSubscriptionPlans from "./hooks/use-get-all-subscription-plans";
 import NetworkError from "@/pages/error/NetworkError";
@@ -27,8 +22,16 @@ import ViewSubscriptionDetailsModal from "./components/ViewSubscriptionDetailsMo
 import Icons from "@/components/common/Icons";
 import ActionsMenu from "@/components/common/ActionsMenu";
 import DeleteSubscriptionModal from "./components/DeleteSubscriptionModal";
+import useGetPaymentDetails from "./hooks/use-get-payment-details";
+import useAuth from "@/hooks/use-auth";
+import {
+  NoPaymentCardDetails,
+  PaymentCard,
+  PaymentCardLoader,
+} from "./components/PaymentCard";
 
 const PackagePlans = () => {
+  const { authUser } = useAuth();
   const navigate = useNavigate();
   const pagination = useSetPagination();
   const [filters, setFilters] = useState({});
@@ -43,15 +46,21 @@ const PackagePlans = () => {
       filters,
     });
 
+  const {
+    data: details,
+    isLoading: isLoadingDetails,
+    isFetching: isFetchingDetails,
+  } = useGetPaymentDetails(!!authUser?.user?.id, authUser?.user?.id || "");
+
+  const paymentCardDetails = useMemo(() => {
+    if (!details || details?.length === 0) return null;
+    return details[details?.length - 1];
+  }, [details]);
+
   const [selectedSubscription, setSelectedSubscription] =
     useState<SubscriptionPlan | null>(null);
 
-  const [paymentCardDetails, setPaymentCardDetails] =
-    useState<PaymentCardInfo | null>(null);
-
-  const [openAddCardDetails, setOpenAddCardDetails] = useState(false);
   const [showGetStartedModal, setShowGetStartedModal] = useState(false);
-  const [openDeleteCardModal, setOpenDeleteCardModal] = useState(false);
   const [
     openViewSubscriptionDetailsModal,
     setOpenViewSubscriptionDetailsModal,
@@ -115,7 +124,7 @@ const PackagePlans = () => {
               "font-medium capitalize",
               status === "active" && "text-green-600",
               status === "pending" && "text-amber-500",
-              status === "canceled" && "text-red-500"
+              status === "canceled" && "text-red-500",
             )}
           >
             {status}
@@ -152,7 +161,7 @@ const PackagePlans = () => {
 
   const handleTableAction = (
     action: string,
-    subscription: SubscriptionPlan
+    subscription: SubscriptionPlan,
   ) => {
     setSelectedSubscription(subscription);
 
@@ -179,31 +188,12 @@ const PackagePlans = () => {
           />
         )}
 
-        {paymentCardDetails ? (
-          <PaymentCard
-            cardDetails={paymentCardDetails}
-            onDelete={() => setOpenDeleteCardModal(true)}
-          />
+        {isLoadingDetails || isFetchingDetails ? (
+          <PaymentCardLoader />
+        ) : paymentCardDetails ? (
+          <PaymentCard cardDetails={paymentCardDetails} />
         ) : (
-          <div
-            className="flex flex-col justify-center items-center gap-1 border border-dashed rounded-lg cursor-pointer"
-            style={{
-              borderWidth: "2px",
-              borderColor: "#ccc",
-              borderStyle: "dashed",
-            }}
-            onClick={() => setOpenAddCardDetails(true)}
-          >
-            <div className="p-1 bg-primary rounded-full">
-              <HiOutlinePlus size={25} className="text-white" />
-            </div>
-            <Typography
-              variant={"smallText"}
-              className="font-medium text-charcoal-gray"
-            >
-              Add Card
-            </Typography>
-          </div>
+          <NoPaymentCardDetails />
         )}
       </div>
 
@@ -242,12 +232,6 @@ const PackagePlans = () => {
         handleContinue={() => navigate("/package-plans/plans")}
       />
 
-      <AddCardModal
-        openAddCardDetails={openAddCardDetails}
-        setOpenAddCardDetails={setOpenAddCardDetails}
-        setPaymentCardDetails={setPaymentCardDetails}
-      />
-
       {selectedSubscription && (
         <ViewSubscriptionDetailsModal
           details={selectedSubscription}
@@ -269,15 +253,6 @@ const PackagePlans = () => {
           }}
         />
       )}
-
-      <DeleteCardModal
-        openDeleteCardModal={openDeleteCardModal}
-        setOpenDeleteCardModal={setOpenDeleteCardModal}
-        handleDelete={() => {
-          setPaymentCardDetails(null);
-          setOpenDeleteCardModal(false);
-        }}
-      />
     </Container>
   );
 };

@@ -6,7 +6,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { toast } from "react-toastify";
 import ImageUpload from "@/components/common/UploadImage";
-import { DateInput } from "@/components/common/DateInput";
 import PhoneInput from "@/components/common/PhoneInput";
 import DropdownInput from "@/components/common/DropdownInput";
 import { useBeneficiaryStore } from "@/store/beneficiary-store";
@@ -50,8 +49,6 @@ const UpdateBeneficiaryModal = ({
       .email("Enter a valid email address")
       .required("Email is required"),
     phone: validatePhoneNumberWithYup({ required: true }),
-    date_of_birth: yup.string().required("Date of birth is required"),
-    country: yup.string().required("Country is required"),
     gender: yup.string().required("Gender is required"),
     relationship: yup.string().required("Relationship is required"),
     address: yup.string().required("Address is required"),
@@ -62,7 +59,6 @@ const UpdateBeneficiaryModal = ({
     control,
     setValue,
     register,
-    clearErrors,
     handleSubmit,
     formState: { errors },
     reset,
@@ -87,10 +83,8 @@ const UpdateBeneficiaryModal = ({
     if (data.phone) {
       formData.append("phone", data.phone);
     }
-    if (data.date_of_birth) {
-      formData.append("date_of_birth", data.date_of_birth);
-    }
     formData.append("gender", data.gender);
+    formData.append("relationship", data.relationship);
     formData.append("address", data.address);
 
     updateBeneficiary?.mutate(formData, {
@@ -113,9 +107,7 @@ const UpdateBeneficiaryModal = ({
       last_name: "",
       email: "",
       phone: "",
-      country: "",
       relationship: "",
-      date_of_birth: "",
       gender: "",
       address: "",
       profile_picture: null,
@@ -129,15 +121,10 @@ const UpdateBeneficiaryModal = ({
       email: beneficiary?.email || "",
       phone: beneficiary?.phone || "",
       relationship: beneficiary?.relationship || "",
-      date_of_birth: beneficiary?.date_of_birth || "",
       gender: beneficiary?.gender || "",
       address: beneficiary?.address || "",
-      profile_picture: null,
+      profile_picture: beneficiary?.profile_picture?.url || null,
     });
-
-    if (selectedCountry) {
-      setValue("country", selectedCountry.label);
-    }
   }, [selectedCountry, setValue]);
 
   return (
@@ -201,7 +188,7 @@ const UpdateBeneficiaryModal = ({
           error={errors.phone?.message}
         />
 
-        <TextInput
+        {/* <TextInput
           required
           label="Country"
           placeholder="Selected Country"
@@ -214,6 +201,7 @@ const UpdateBeneficiaryModal = ({
           required
           label="Date of Birth"
           placeholder="DD/MM/YYYY"
+          disabled
           defaultValue={
             beneficiary?.date_of_birth
               ? new Date(beneficiary?.date_of_birth).toISOString()
@@ -227,7 +215,7 @@ const UpdateBeneficiaryModal = ({
             clearErrors("date_of_birth");
           }}
           error={errors.date_of_birth?.message}
-        />
+        /> */}
 
         <Controller
           control={control}

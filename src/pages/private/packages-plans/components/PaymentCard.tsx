@@ -1,46 +1,35 @@
 import { FieldLabelText } from "@/components/common/FormHelper";
 import Icons from "@/components/common/Icons";
+import SkeletonLoader from "@/components/common/SkeletonLoader";
 import Typography from "@/components/common/Typography";
+import type { PaymentCardInfo } from "@/types/plans";
 import { cn } from "@/utils/class-name";
-import { HiOutlineTrash } from "react-icons/hi";
+import { HiOutlinePlus, HiOutlineTrash } from "react-icons/hi";
 
-export type PaymentCardInfo = {
-  id: string;
-  cardHolderName: string;
-  cardNumber: string;
-  expiryDate: string;
-  cvc: string;
-  type?: string;
-  saveCard?: boolean;
-};
-
-const PaymentCard = ({
+export const PaymentCard = ({
   cardDetails,
   onDelete,
   className,
 }: {
   cardDetails: PaymentCardInfo;
-  onDelete?: (val: any) => void;
+  onDelete?: (val: PaymentCardInfo) => void;
   className?: string;
 }) => {
-  // Show only last 3 digits
-  const maskedNumber = `XXXX XXXX XXXX ${cardDetails?.cardNumber.slice(-3)}`;
+  const maskedNumber = `XXXX XXXX XXXX ${cardDetails.last4}`;
 
   return (
     <div
       className={cn(
         "flex flex-col justify-between gap-5 p-4 border rounded-2xl min-h-[187px] bg-white border-mid-grey",
-        className
+        className,
       )}
     >
       <div className="space-y-1">
         <Typography variant={"mediumTextSemibold"}>
-          {cardDetails?.cardHolderName}
+          {cardDetails.brand.toUpperCase()} Card
         </Typography>
         <Typography variant={"xSmallText"} className="text-charcoal-gray">
-          {cardDetails?.type === "default"
-            ? "Default Payment Method"
-            : "Secondary Card"}
+          {cardDetails.is_default ? "Default Payment Method" : "Secondary Card"}
         </Typography>
       </div>
 
@@ -51,35 +40,78 @@ const PaymentCard = ({
 
       <div className="flex justify-between items-end gap-5">
         <div className="flex items-center gap-5">
-          <div>
+          <div className="flex items-center gap-2">
             <FieldLabelText view label="Expires" />
             <Typography variant={"xSmallTextBold"} className="mt-1">
-              {(() => {
-                if (!cardDetails?.expiryDate) return "";
-                const date = new Date(cardDetails?.expiryDate);
-                const month = (date.getMonth() + 1).toString().padStart(2, "0");
-                const year = date.getFullYear().toString().slice(-2);
-                return `${month}/${year}`;
-              })()}
-            </Typography>
-          </div>
-          <div>
-            <FieldLabelText view label="CVC" />
-            <Typography variant={"xSmallTextBold"} className="mt-1">
-              {cardDetails?.cvc}
+              {`${cardDetails.exp_month.toString().padStart(2, "0")}/${cardDetails.exp_year.toString().slice(-2)}`}
             </Typography>
           </div>
         </div>
 
-        <button
-          className="bg-feint-grey hover:bg-light-danger rounded-lg p-2 cursor-pointer"
-          onClick={() => onDelete?.(cardDetails)}
-        >
-          <HiOutlineTrash className="text-danger" />
-        </button>
+        {onDelete && (
+          <button
+            className="bg-feint-grey hover:bg-light-danger rounded-lg p-2 cursor-pointer"
+            onClick={() => onDelete(cardDetails)}
+          >
+            <HiOutlineTrash className="text-danger" />
+          </button>
+        )}
       </div>
     </div>
   );
 };
 
-export default PaymentCard;
+export const PaymentCardLoader = ({ className }: { className?: string }) => {
+  return (
+    <div
+      className={cn(
+        "flex flex-col justify-between gap-5 p-4 border rounded-2xl min-h-[187px] bg-white border-mid-grey animate-pulse",
+        className,
+      )}
+    >
+      <div className="space-y-1">
+        <SkeletonLoader className="h-5 w-32 bg-gray-300 rounded" />
+        <SkeletonLoader className="h-3 w-24 rounded" />
+      </div>
+
+      <div className="flex items-center gap-2">
+        <SkeletonLoader className="h-6 w-6 bg-gray-300 rounded-full" />
+        <SkeletonLoader className="h-8 w-36 bg-gray-300 rounded" />
+      </div>
+
+      <div className="flex justify-between items-end gap-5">
+        <div className="flex items-center gap-5">
+          <div>
+            <SkeletonLoader className="h-3 w-16 rounded mb-1" />
+            <SkeletonLoader className="h-4 w-12 bg-gray-300 rounded" />
+          </div>
+        </div>
+
+        <SkeletonLoader className="h-8 w-8 rounded-lg" />
+      </div>
+    </div>
+  );
+};
+
+export const NoPaymentCardDetails = () => {
+  return (
+    <div
+      className="flex flex-col justify-center items-center gap-1 border border-dashed rounded-lg cursor-pointer"
+      style={{
+        borderWidth: "2px",
+        borderColor: "#ccc",
+        borderStyle: "dashed",
+      }}
+    >
+      <div className="p-1 bg-primary rounded-full">
+        <HiOutlinePlus size={25} className="text-white" />
+      </div>
+      <Typography
+        variant={"smallText"}
+        className="font-medium text-charcoal-gray"
+      >
+        No Card Details
+      </Typography>
+    </div>
+  );
+};

@@ -135,7 +135,7 @@ const SingleBeneficiaryDetails = () => {
       {isLoading || isFetching ? (
         <BeneficiaryHeaderLoader />
       ) : (
-        <div className="flex justify-between items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-mid-grey">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-mid-grey">
           <div className="flex items-center gap-2">
             <button
               className="p-1 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"

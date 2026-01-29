@@ -41,7 +41,6 @@ const ForgotPassword = () => {
   };
   return (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
-      {/* Left Section */}
       <div
         style={{ backgroundImage: `url(${authImg})` }}
         className="
@@ -50,10 +49,8 @@ const ForgotPassword = () => {
     bg-cover bg-center bg-no-repeat
   "
       >
-        {/* Dark overlay */}
         <div className="absolute inset-0 bg-black/40 z-0" />
 
-        {/* Header */}
         <Link
           to="/"
           className="relative z-10 flex items-center gap-2 cursor-pointer"
@@ -62,7 +59,6 @@ const ForgotPassword = () => {
           <span className="text-sm font-semibold">SyloCare</span>
         </Link>
 
-        {/* Marketing Text */}
         <div className="relative z-10">
           <h2 className="text-3xl md:text-4xl font-semibold leading-snug bg-gradient-to-r from-white via-white/90 to-primary bg-clip-text text-transparent">
             Send Healthcare Home, <br /> Just Like you Send Money.
@@ -74,7 +70,6 @@ const ForgotPassword = () => {
         </div>
       </div>
 
-      {/* Right Section */}
       <div className="bg-white flex flex-col justify-center items-center px-5 md:px-8 py-10">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
@@ -90,7 +85,6 @@ const ForgotPassword = () => {
             </p>
           </div>
 
-          {/* Form */}
           <form
             className="space-y-5"
             noValidate

@@ -16,6 +16,13 @@
   --nav-height: 144px;
   --sidebar-width: 233px;
   --tablist-height: 32px;
+  max-width: 1440px;
+  margin-inline: auto;
+}
+
+#toast-root {
+  position: fixed;
+  z-index: 2147483647 !important;
 }
 
 .Toastify__toast-container {
@@ -81,7 +88,7 @@ button {
 
 .swiper-button-prev:hover,
 .swiper-button-next:hover {
-  background: #03EB0B;
+  background: #03eb0b;
   color: white;
 }
 

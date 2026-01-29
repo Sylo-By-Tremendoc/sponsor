@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import clsx from "clsx";
-import { FieldErrorText, FieldHelperText, FieldLabelText } from "./FormHelper";
-import SkeletonLoader from "./SkeletonLoader";
+import { FieldErrorText, FieldHelperText, FieldLabelText, FieldLoadingState } from "./FormHelper";
 import { cn } from "../../utils/class-name";
 
 type NumberInputProps = Omit<
@@ -79,7 +78,7 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           )}
 
           {isLoadingField ? (
-            <SkeletonLoader className="w-28 h-[1.2rem] mt-1 rounded" />
+            <FieldLoadingState />
           ) : (
             <div className="relative flex items-center w-full">
               {!!leftIcon && !prefix && (

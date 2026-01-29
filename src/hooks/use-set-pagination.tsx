@@ -1,35 +1,56 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-export const useSetPagination = () => {
+type UseSetPaginationProps = {
+  defaultPage?: number;
+  defaultPerPage?: number;
+};
+
+export const useSetPagination = ({
+  defaultPage = 1,
+  defaultPerPage = 10,
+}: UseSetPaginationProps = {}) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const _page = searchParams.get("page") || 1;
-  const _per_page = searchParams.get("per_page") || 10;
 
-  const [page, setPage] = useState(Number(_page));
-  const [pageSize, setPageSize] = useState(Number(_per_page));
+  const pageFromUrl = Number(searchParams.get("page"));
+  const perPageFromUrl = Number(searchParams.get("per_page"));
 
-  const handlePageChange = (page: number) => {
-    setPage(page);
-    setSearchParams((prevParams) => {
-      return new URLSearchParams({
-        ...Object.fromEntries(prevParams.entries()),
-        page: page.toString(),
-      });
+  const [page, setPage] = useState(
+    Number.isFinite(pageFromUrl) && pageFromUrl > 0 ? pageFromUrl : defaultPage,
+  );
+
+  const [pageSize, setPageSize] = useState(
+    Number.isFinite(perPageFromUrl) && perPageFromUrl > 0
+      ? perPageFromUrl
+      : defaultPerPage,
+  );
+
+  const handlePageChange = (nextPage: number) => {
+    setPage(nextPage);
+
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.set("page", nextPage.toString());
+      return params;
     });
   };
 
-  const handlePageSizeChange = (pageSize: number) => {
+  const handlePageSizeChange = (nextPageSize: number) => {
     setPage(1);
-    setPageSize(pageSize);
-    setSearchParams((prevParams) => {
-      return new URLSearchParams({
-        ...Object.fromEntries(prevParams.entries()),
-        per_page: pageSize.toString(),
-        page: "1",
-      });
+    setPageSize(nextPageSize);
+
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.set("per_page", nextPageSize.toString());
+      params.set("page", "1");
+      return params;
     });
   };
 
-  return { page, per_page: pageSize, handlePageChange, handlePageSizeChange };
+  return {
+    page,
+    per_page: pageSize,
+    handlePageChange,
+    handlePageSizeChange,
+  };
 };

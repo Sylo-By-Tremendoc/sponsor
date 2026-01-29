@@ -18,6 +18,8 @@ const CustomSwiper = ({
   showNavigation = true,
   breakpoints,
   className = "",
+  prevButtonClassName = "left-[-14px]",
+  nextButtonClassName = "right-[-14px]",
 }: {
   children: React.ReactNode;
   slidesPerView?: number;
@@ -28,6 +30,8 @@ const CustomSwiper = ({
   showNavigation?: boolean;
   breakpoints?: Record<number, any>;
   className?: string;
+  prevButtonClassName?: string;
+  nextButtonClassName?: string;
 }) => {
   const id = useId();
   const prevClass = `swiper-prev-${id}`;
@@ -38,19 +42,19 @@ const CustomSwiper = ({
       {showNavigation && (
         <>
           <button
-            className={`${prevClass} absolute left-[-14px] top-1/2 -translate-y-1/2 z-10
+            className={`${prevClass} absolute top-1/2 -translate-y-1/2 z-10
               w-10 h-10 rounded-full bg-white shadow-lg
               flex items-center justify-center
-              hover:bg-primary hover:text-white transition`}
+              hover:bg-primary hover:text-white transition ${prevButtonClassName}`}
           >
             <HiOutlineChevronLeft size={18} />
           </button>
 
           <button
-            className={`${nextClass} absolute right-[-14px] top-1/2 -translate-y-1/2 z-10
+            className={`${nextClass} absolute top-1/2 -translate-y-1/2 z-10
               w-10 h-10 rounded-full bg-white shadow-lg
               flex items-center justify-center
-              hover:bg-primary hover:text-white transition`}
+              hover:bg-primary hover:text-white transition ${nextButtonClassName}`}
           >
             <HiOutlineChevronRight size={18} />
           </button>

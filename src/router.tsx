@@ -28,6 +28,7 @@ import AboutUs from "./pages/public/about-us";
 import HowItWorks from "./pages/public/how-it-works";
 import FAQ from "./pages/public/faq";
 import SingleBlogDetails from "./pages/public/blogs/single-blog-details";
+import JoinSylo from "./pages/auth/join";
 
 const router = createBrowserRouter(
   [
@@ -156,6 +157,10 @@ const router = createBrowserRouter(
         {
           path: "/account/signup",
           element: <Signup />,
+        },
+        {
+          path: "/account/invitation",
+          element: <JoinSylo />,
         },
       ],
     },

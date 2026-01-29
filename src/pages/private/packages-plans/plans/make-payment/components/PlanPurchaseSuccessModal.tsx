@@ -17,37 +17,53 @@ const CELEBRATION_ICONS = [
 ];
 
 const PlanPurchaseSuccessModal = ({
+  pendingPaymentStatus,
   openPlanPurchaseSuccessModal,
   onViewPlan,
 }: {
+  pendingPaymentStatus: boolean;
   openPlanPurchaseSuccessModal: boolean;
   onViewPlan?: () => void;
 }) => {
+  const isSharedPending = pendingPaymentStatus;
+
   return (
     <CustomDialog
       openModal={openPlanPurchaseSuccessModal}
       className="md:w-[420px]"
     >
-      <FallingCelebration />
+      {!isSharedPending && <FallingCelebration />}
 
       <div className="flex flex-col items-center text-center px-4 py-6">
         <SuccessAnimation />
 
         <h2 className="text-xl font-semibold text-gray-900 mb-2">
-          Plan Purchased Successfully! 🎉
+          {isSharedPending
+            ? "Payment in Progress ⏳"
+            : "Plan Purchased Successfully! 🎉"}
         </h2>
 
         <p className="text-sm text-gray-600 leading-relaxed">
-          {/* Great choice! Your beneficiary has been successfully enrolled and is
-          now covered under the selected plan. */}
-          That worked! You just turned love into healthcare. Your beneficiary is
-          covered, and future you will thank present you.
+          {isSharedPending ? (
+            <>
+              Your contribution has been received successfully. The plan will
+              be fully activated once all invited co-benefactors complete their
+              payments. You’ll be notified as soon as that happens.
+            </>
+          ) : (
+            <>
+              That worked! You just turned love into healthcare. Your
+              beneficiary is covered, and future you will thank present you.
+            </>
+          )}
         </p>
       </div>
 
       <DialogFooter className="flex flex-col gap-2">
         <Button className="w-full" onClick={onViewPlan}>
-          View coverage details
+          {isSharedPending
+            ? "View shared payment status"
+            : "View coverage details"}
         </Button>
       </DialogFooter>
     </CustomDialog>

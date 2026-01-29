@@ -12,11 +12,34 @@ import Typography from "@/components/common/Typography";
 import { useCurrencyStore } from "@/store/currency-store";
 import { convertPrice } from "@/utils/constant";
 import BalanceSlider from "@/components/common/BalanceSlider";
+import useGetInvitedBenefactorDetails from "../../hooks/use-get-invited-benefactor-details";
 
-const InviteBenefactor = ({ total }: { total: number }) => {
+type PaymentInfo = {
+  plan_id: string;
+  beneficiary_id: string;
+  billing_interval: string;
+};
+
+const InviteBenefactor = ({
+  paymentInfo,
+  total,
+  setSharedContributionAmount,
+}: {
+  paymentInfo: PaymentInfo;
+  total: number;
+  setSharedContributionAmount: (val: number) => void;
+}) => {
   const { authUser } = useAuth();
 
   const currency = useCurrencyStore((state) => state?.currency);
+
+  const [sharedPaymentId, setSharedPaymentId] = useState("");
+
+  const {
+    data: sharedPaymentDetails,
+    isLoading,
+    isFetching,
+  } = useGetInvitedBenefactorDetails(!!sharedPaymentId, sharedPaymentId);
 
   const [openInviteBenefactorModal, setOpenInviteBenefactorModal] =
     useState(false);
@@ -31,6 +54,11 @@ const InviteBenefactor = ({ total }: { total: number }) => {
       .test("max-amount", `Amount cannot exceed ${total}`, function (value) {
         return value <= total;
       }),
+    minContribution: yup
+      .number()
+      .typeError("Minimum contribution is required")
+      .min(1, "Minimum contribution must be at least 1")
+      .required(),
   });
 
   const {
@@ -46,6 +74,32 @@ const InviteBenefactor = ({ total }: { total: number }) => {
   });
 
   const amount = watch("amount") || 0;
+  const minContribution = watch("minContribution") || 1;
+
+  const sharedContributionAmount = useMemo(() => {
+    return Number(minContribution) || 1;
+  }, [minContribution]);
+
+  useEffect(() => {
+    setSharedContributionAmount(sharedContributionAmount);
+  }, [sharedContributionAmount, setSharedContributionAmount]);
+
+  useEffect(() => {
+    const id = localStorage.getItem("sharedPaymentId");
+    if (id) {
+      setSharedPaymentId(id);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!sharedPaymentDetails) return;
+
+    setValue(
+      "minContribution",
+      Number(sharedPaymentDetails.minimum_contribution),
+      { shouldValidate: true }
+    );
+  }, [sharedPaymentDetails, setValue]);
 
   useEffect(() => {
     if (authUser?.user?.first_name) {
@@ -53,6 +107,7 @@ const InviteBenefactor = ({ total }: { total: number }) => {
         "name",
         `${authUser.user.first_name} ${authUser.user.last_name}`
       );
+      setValue("minContribution", 1);
     }
   }, [authUser, setValue]);
 
@@ -81,16 +136,19 @@ const InviteBenefactor = ({ total }: { total: number }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 items-center gap-5 ">
+      <div className="grid md:grid-cols-2 items-center gap-4">
+        {/* <div className="md:col-span-2"> */}
         <TextInput
           required
           label="You (Main Benefactor)"
           placeholder="Enter name"
           {...register("name")}
           error={errors.name?.message}
+          isLoadingField={isLoading || isFetching}
           disabled
           hint={"You are the main benefactor"}
         />
+        {/* </div> */}
 
         <Controller
           control={control}
@@ -104,6 +162,7 @@ const InviteBenefactor = ({ total }: { total: number }) => {
               value={field.value}
               onChange={field.onChange}
               error={errors.amount?.message}
+              isLoadingField={isLoading || isFetching}
               hint={`Remaining amount: ${
                 currency?.symbol
               }${remainingAmount.toFixed(2)}`}
@@ -111,6 +170,27 @@ const InviteBenefactor = ({ total }: { total: number }) => {
             />
           )}
         />
+
+        <div className="md:col-span-2">
+          <Controller
+            control={control}
+            name="minContribution"
+            render={({ field }) => (
+              <NumberInput
+                required
+                label="Minimum Co-Benefactor Contribution"
+                prefix={currency?.symbol}
+                placeholder="Enter minimum amount"
+                value={field.value}
+                onChange={field.onChange}
+                error={errors.minContribution?.message}
+                isLoadingField={isLoading || isFetching}
+                hint={`Each invited benefactor must contribute at least ${currency?.symbol}${field.value}`}
+                info="This sets the minimum amount that each invited co-benefactor must contribute toward the remaining balance."
+              />
+            )}
+          />
+        </div>
       </div>
 
       <BalanceSlider
@@ -132,10 +212,18 @@ const InviteBenefactor = ({ total }: { total: number }) => {
         onClick={() => setOpenInviteBenefactorModal(true)}
         disabled={!isValid}
       >
-        Add Benefactor
+        {sharedPaymentDetails?.id ? "Update Invite" : "Invite Benefactor"}
         <HiOutlinePlus />
       </Button>
+
       <InviteBenefactorModal
+        details={sharedPaymentDetails!}
+        paymentInfo={{
+          plan_id: paymentInfo?.plan_id || "",
+          beneficiary_id: paymentInfo?.beneficiary_id || "",
+          billing_interval: paymentInfo?.billing_interval || "",
+          minimum_contribution: minContribution,
+        }}
         openInviteBenefactorModal={openInviteBenefactorModal}
         setOpenInviteBenefactorModal={setOpenInviteBenefactorModal}
         onSuccess={() => setOpenInviteBenefactorModal(false)}

@@ -18,7 +18,13 @@ import ActionsMenu from "@/components/common/ActionsMenu";
 import Icons from "@/components/common/Icons";
 import ViewSubscriptionDetailsModal from "../packages-plans/components/ViewSubscriptionDetailsModal";
 import DeleteSubscriptionModal from "../packages-plans/components/DeleteSubscriptionModal";
-import { DashboardCarousel } from "./components/DashboardCarousel";
+import useGetSystemMedia from "./hooks/use-get-system-media";
+import {
+  BenefactorMarketingBannerCard,
+  BenefactorMarketingBannerCardLoader,
+} from "./components/BenefactorMarketingBannerCard";
+import CustomSwiper from "@/components/common/Swiper";
+import { SwiperSlide } from "swiper/react";
 
 const Dashboard = () => {
   const { authUser } = useAuth();
@@ -26,6 +32,19 @@ const Dashboard = () => {
   const [filters, setFilters] = useState({});
 
   const currency = useCurrencyStore((state) => state?.currency);
+
+  const {
+    data: marketingDisplay,
+    isLoading: isLoadingMarketingDisplay,
+    isFetching: isFetchingMarketingDisplay,
+  } = useGetSystemMedia({
+    enabled: true,
+    page: pagination?.page,
+    per_page: pagination?.per_page,
+    filters: {
+      type: "promotional",
+    },
+  });
 
   const { data, isLoading, isFetching, refetch, error } =
     useGetAllSubscriptionPlans({
@@ -64,7 +83,7 @@ const Dashboard = () => {
         count: data?.meta?.total ?? 0,
       },
     ],
-    [data?.meta?.total]
+    [data?.meta?.total],
   );
 
   const columns: ColumnDef<SubscriptionPlan>[] = [
@@ -123,7 +142,7 @@ const Dashboard = () => {
               "font-medium capitalize",
               status === "active" && "text-green-600",
               status === "pending" && "text-amber-500",
-              status === "canceled" && "text-red-500"
+              status === "canceled" && "text-red-500",
             )}
           >
             {status}
@@ -160,7 +179,7 @@ const Dashboard = () => {
 
   const handleTableAction = (
     action: string,
-    subscription: SubscriptionPlan
+    subscription: SubscriptionPlan,
   ) => {
     setSelectedSubscription(subscription);
 
@@ -170,6 +189,27 @@ const Dashboard = () => {
       setOpenDeleteSubscriptionModal(true);
     }
   };
+
+  const marketingSlides = useMemo(() => {
+    const defaultSlide = {
+      id: "default",
+      title: "Welcome to your Dashboard",
+      description:
+        "Manage beneficiaries, subscriptions, and payments all in one place.",
+      image:
+        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1800",
+    };
+
+    const apiSlides =
+      marketingDisplay?.data?.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        image: item.media?.url,
+      })) ?? [];
+
+    return [defaultSlide, ...apiSlides];
+  }, [marketingDisplay]);
 
   if (error) return <NetworkError onClick={() => refetch()} />;
 
@@ -185,8 +225,22 @@ const Dashboard = () => {
       </div>
 
       <div className="grid md:grid-cols-3 items-center gap-5">
-        <div className="hidden md:flex md:col-span-2 h-full">
-          <DashboardCarousel />
+        <div className="hidden md:block relative md:col-span-2 w-full h-full">
+          {isLoadingMarketingDisplay || isFetchingMarketingDisplay ? (
+            <BenefactorMarketingBannerCardLoader />
+          ) : (
+            <CustomSwiper
+              spaceBetween={24}
+              prevButtonClassName="left-[10px]"
+              nextButtonClassName="right-[10px]"
+            >
+              {marketingSlides?.map((bannerInfo) => (
+                <SwiperSlide key={bannerInfo.id}>
+                  <BenefactorMarketingBannerCard bannerInfo={bannerInfo} />
+                </SwiperSlide>
+              ))}
+            </CustomSwiper>
+          )}
         </div>
         <div className="flex flex-col gap-5">
           {isLoading || isFetching

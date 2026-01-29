@@ -7,7 +7,10 @@ export type BeneficiariesParams = {
   date_of_birth: string;
   email: string;
   phone: string;
-  profile_picture: string;
+  profile_picture: {
+    id: string;
+    url: string;
+  };
   relationship: string;
   address: string;
   created_at: string;

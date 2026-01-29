@@ -3,6 +3,7 @@ import { cn } from "../../utils/class-name";
 import RightSection from "./components/RightSection";
 import { Link } from "react-router-dom";
 import Icons from "../common/Icons";
+import { motion, AnimatePresence } from "motion/react";
 
 const Navbar = ({ className }: { className?: string }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,11 +22,13 @@ const Navbar = ({ className }: { className?: string }) => {
     <header
       className={cn(
         "sticky top-0 z-50 text-white py-4 px-6 md:px-16 flex justify-between items-center",
-        className
+        className,
       )}
     >
-      {/* Logo */}
-     <Link to="/" className="relative z-10 flex items-center gap-2 cursor-pointer">
+      <Link
+        to="/"
+        className="relative z-10 flex items-center gap-2 cursor-pointer"
+      >
         <Icons iconName="logo" />
         <span className="text-sm font-semibold">SyloCare</span>
       </Link>
@@ -51,36 +54,59 @@ const Navbar = ({ className }: { className?: string }) => {
         })}
       </nav>
 
-      {/* Country selector */}
       <div className="hidden md:flex items-center gap-2 text-sm">
         <RightSection />
       </div>
 
-      {/* Mobile Menu */}
       <button
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className="md:hidden flex flex-col gap-1"
+        onClick={() => setIsMenuOpen((prev) => !prev)}
+        className="md:hidden relative w-8 h-8 flex items-center justify-center"
+        aria-label="Toggle menu"
       >
-        <span className="w-5 h-0.5 bg-white"></span>
-        <span className="w-5 h-0.5 bg-white"></span>
-        <span className="w-5 h-0.5 bg-white"></span>
+        <span
+          className={`absolute h-0.5 w-6 bg-white transition-all duration-300 ${
+            isMenuOpen ? "rotate-45" : "-translate-y-2"
+          }`}
+        />
+        <span
+          className={`absolute h-0.5 w-6 bg-white transition-all duration-300 ${
+            isMenuOpen ? "opacity-0" : ""
+          }`}
+        />
+        <span
+          className={`absolute h-0.5 w-6 bg-white transition-all duration-300 ${
+            isMenuOpen ? "-rotate-45" : "translate-y-2"
+          }`}
+        />
       </button>
 
-      {isMenuOpen && (
-        <div className="absolute top-16 left-0 w-full bg-[#0D0D0D] border-t border-gray-800 md:hidden">
-          <nav className="flex flex-col items-center py-4 space-y-4">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="text-gray-300 hover:text-primary transition"
-              >
-                {link.name}
-              </a>
-            ))}
-          </nav>
-        </div>
-      )}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="absolute top-full left-0 w-full bg-[#0D0D0D] border-t border-gray-800 md:hidden z-50"
+          >
+            <nav className="flex flex-col items-center py-6 space-y-6">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.href}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="
+              text-gray-300 text-base font-medium
+              hover:text-primary transition-colors
+            "
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

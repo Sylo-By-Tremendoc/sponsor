@@ -1,4 +1,5 @@
 import Avatar from "../assets/images/user-placeholder.jpg";
+import blogImg from "../assets/images/no-blog-img.jpg";
 import type { CurrencyDropdownParams } from "@/components/navbar/components/CurrencyDropdown";
 
 const transition = {
@@ -207,6 +208,7 @@ export const getSponsorCountry = (code: string) => {
 
 export const defaultImages = {
   avatar: Avatar,
+  blog: blogImg,
 };
 
 export const buildResetValues = (filters: any[]) => {

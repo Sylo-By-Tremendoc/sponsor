@@ -34,7 +34,7 @@ const useAxiosBase = () => {
 
   const getRequest = async (url: string, params?: object) => {
     try {
-      const authRequiredUrls = ["/plans"];
+      const authRequiredUrls = ["/plans", "/blogs", "/system-media"];
 
       // Choose axios instance based on URL
       const axiosToUse = authRequiredUrls.some((path) => url.startsWith(path))

@@ -33,7 +33,7 @@ const HomePage = () => {
   const [showGetStartedModal, setShowGetStartedModal] = useState(false);
 
   return (
-    <div className="flex flex-col justify-between">
+    <div className="relative flex flex-col justify-between">
       <Navbar className="absolute top-0 left-0 right-0" />
 
       <div>
@@ -43,14 +43,14 @@ const HomePage = () => {
         <section id="why-this-matters">
           <WhyThisMatters setShowGetStartedModal={setShowGetStartedModal} />
         </section>
+        <section id="get-started">
+          <GetStarted />
+        </section>
         <section id="how-it-works">
           <HowItWorks setShowGetStartedModal={setShowGetStartedModal} />
         </section>
         <section id="trusted-partners">
           <TrustedPartners setShowGetStartedModal={setShowGetStartedModal} />
-        </section>
-        <section id="get-started">
-          <GetStarted setShowGetStartedModal={setShowGetStartedModal} />
         </section>
         <section id="our-partners">
           <OurPartners />

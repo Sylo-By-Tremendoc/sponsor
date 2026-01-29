@@ -118,7 +118,7 @@ const Beneficiaries = () => {
           description="Add your first beneficiary to easily manage ownership, permissions, and access settings."
           iconName="user-group"
           buttonText="Add Beneficiary"
-          onButtonClick={() => {}}
+          onButtonClick={() => setShowGetStartedModal(true)}
         />
       )}
 
@@ -139,6 +139,7 @@ const Beneficiaries = () => {
           setOpenUpdateBeneficiaryModal={setOpenUpdateBeneficiaryModal}
           onSuccess={() => {
             refetch();
+            setSelectedBeneficiary(null);
             setOpenUpdateBeneficiaryModal(false);
           }}
         />
@@ -151,6 +152,7 @@ const Beneficiaries = () => {
           setOpenDeleteBeneficiaryModal={setOpenDeleteBeneficiaryModal}
           handleDelete={() => {
             refetch();
+            setSelectedBeneficiary(null);
             setOpenDeleteBeneficiaryModal(false);
           }}
         />

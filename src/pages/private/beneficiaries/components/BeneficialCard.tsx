@@ -56,7 +56,7 @@ export const BeneficialCard = ({
 
         <div className="flex flex-col items-center text-center space-y-2">
           <motion.img
-            src={beneficiary?.profile_picture || defaultImages?.avatar}
+            src={beneficiary?.profile_picture?.url || defaultImages?.avatar}
             alt={`${beneficiary?.first_name}'s profile`}
             className="w-[107px] h-[107px] rounded-full border border-gray-200 object-cover"
             whileHover={{ scale: 1.05 }}

@@ -7,7 +7,7 @@ const useInviteBenefactors = () => {
 
   const inviteBenefactors = useMutation({
     mutationKey: ["INVITE_BENEFACTORS"],
-    mutationFn: (data) => postRequest("/invite-benefactors", data),
+    mutationFn: (data) => postRequest("/shared-payments", data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["INVITE_BENEFACTORS"],

@@ -9,23 +9,26 @@ import { Button } from "../common/Button";
 import Icons from "../common/Icons";
 
 const Footer = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   return (
     <footer className="bg-black text-white rounded-t-3xl md:rounded-b-3xl px-6 md:px-14 lg:px-20 py-12 md:mx-4 md:mb-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-5  mb-10 ">
           <h2 className="text-2xl md:text-3xl font-semibold text-center md:text-left">
-            Let’s Connect with Us
+            Connect with Us
           </h2>
 
           <div className="flex items-center gap-5">
-            <Button>Get Started</Button>
-            <Button className="bg-white text-black" onClick={() => navigate("/contact-us")}>Contact Us</Button>
+            <Button onClick={() => navigate("/pricing")}>Get Started</Button>
+            <Button
+              className="bg-white text-black"
+              onClick={() => navigate("/contact-us")}
+            >
+              Contact Us
+            </Button>
           </div>
         </div>
 
-        {/* Top Section */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 border-t border-gray-700 pt-10">
           <div className="space-y-4">
             <Link
@@ -40,30 +43,29 @@ const Footer = () => {
               We are dedicated to providing comprehensive healthcare solutions
               focused on your well-being.
             </p>
-            <div className="text-sm text-gray-400">
+            {/* <div className="text-sm text-gray-400">
               <p className="text-gray-500">Visit our head office</p>
               <p>
                 34, Peninsula Estate, Lekki Phase 1, <br /> Lekki, Lagos,
                 Nigeria.
               </p>
-            </div>
+            </div> */}
           </div>
 
-          {/* Quick Links */}
           <div>
             <h3 className="font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <Link to="#" className="hover:text-primary">
+                <Link to="/about-us" className="hover:text-primary">
                   About
                 </Link>
               </li>
               <li>
-                <Link to="#" className="hover:text-primary">
-                  Our Services
+                <Link to="/how-it-works" className="hover:text-primary">
+                  How it works
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link to="#" className="hover:text-primary">
                   Appointment
                 </Link>
@@ -72,26 +74,25 @@ const Footer = () => {
                 <Link to="#" className="hover:text-primary">
                   Our Doctors
                 </Link>
-              </li>
+              </li> */}
               <li>
-                <Link to="#" className="hover:text-primary">
-                  Help Center & FAQ
+                <Link to="/faq" className="hover:text-primary">
+                  FAQ
                 </Link>
               </li>
               <li>
-                <Link to="#" className="hover:text-primary">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="hover:text-primary">
+                <Link to="/blogs" className="hover:text-primary">
                   Blog & Articles
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact-us" className="hover:text-primary">
+                  Contact
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Support */}
           <div>
             <h3 className="font-semibold mb-4">Support</h3>
             <ul className="space-y-2 text-sm text-gray-400">
@@ -106,34 +107,33 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="#" className="hover:text-primary">
+                <Link to="/faq" className="hover:text-primary">
                   Support
                 </Link>
               </li>
               <li>
-                <Link to="#" className="hover:text-primary">
+                <Link to="/faq" className="hover:text-primary">
                   Help Center
                 </Link>
               </li>
               <li>
-                <Link to="#" className="hover:text-primary">
+                <Link to="/contact-us" className="hover:text-primary">
                   Contact
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link to="#" className="hover:text-primary">
                   Feature Request
                 </Link>
-              </li>
-              <li>
+              </li> */}
+              {/* <li>
                 <Link to="#" className="hover:text-primary">
                   Online Support
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 
-          {/* Newsletter */}
           <div>
             <h3 className="font-semibold mb-4">Newsletter</h3>
             <div className="space-y-4">
@@ -145,7 +145,7 @@ const Footer = () => {
               <button className="w-full bg-[#00FF00] text-black font-semibold rounded-full py-2 hover:opacity-90 transition">
                 Subscribe
               </button>
-              <div className="space-y-2 text-sm text-gray-400 mt-6">
+              {/* <div className="space-y-2 text-sm text-gray-400 mt-6">
                 <p>
                   <span className="text-gray-500">More Informations</span>{" "}
                   <br />
@@ -155,14 +155,13 @@ const Footer = () => {
                   <span className="text-gray-500">Our Email</span> <br />
                   info@tremendoc.com
                 </p>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
 
-        {/* Bottom Section */}
         <div className="border-t border-gray-700 mt-10 pt-6 flex flex-col md:flex-row justify-between md:items-center text-sm text-gray-400">
-          <p>© 2025 sylo. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} sylo. All rights reserved.</p>
 
           <div className="flex items-center gap-6 mt-4 md:mt-0">
             <Link to="#" className="hover:text-white">

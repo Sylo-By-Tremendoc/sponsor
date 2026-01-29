@@ -37,13 +37,14 @@ const Signup = () => {
   }, []);
 
   return (
-    <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
+    <div className="h-screen grid grid-cols-1 md:grid-cols-2 overflow-hidden">
       <div
         style={{ backgroundImage: `url(${authImg})` }}
         className="
     relative hidden md:flex flex-col justify-between
     px-10 py-10 text-white
     bg-cover bg-center bg-no-repeat
+    h-screen overflow-hidden
   "
       >
         {/* Dark overlay */}

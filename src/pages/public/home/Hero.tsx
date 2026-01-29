@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { Section } from "./components";
 import { beneficiaryCountries, convertPrice } from "../../../utils/constant";
 import type { SectionParam } from ".";
@@ -7,42 +7,80 @@ import Typography from "@/components/common/Typography";
 
 // Background images
 import heroImg1 from "../../../assets/images/hero-image.png";
-import heroImg2 from "../../../assets/images/hero-image-1.png";
-import heroImg3 from "../../../assets/images/hero-image-2.png";
 import { useCurrencyStore } from "@/store/currency-store";
+import { useSetPagination } from "@/hooks/use-set-pagination";
+import useGetSystemMedia from "@/pages/private/dashboard/hooks/use-get-system-media";
 
-const heroImages = [heroImg1, heroImg2, heroImg3];
+// const heroImages = [heroImg1, heroImg2, heroImg3];
 
 const Hero = ({ setShowGetStartedModal }: SectionParam) => {
   const [currentBg, setCurrentBg] = useState(0);
 
+  const pagination = useSetPagination();
+
+  const filters = {
+    type: "hero",
+  };
+
+  const { data } = useGetSystemMedia({
+    enabled: true,
+    page: pagination?.page,
+    per_page: pagination?.per_page,
+    filters,
+  });
+
   const currency = useCurrencyStore((state) => state?.currency);
 
+  const heroImages = useMemo(() => {
+    const defaultSlide = {
+      id: "default",
+      title: "Welcome to your Dashboard",
+      description:
+        "Manage beneficiaries, subscriptions, and payments all in one place.",
+      image: heroImg1,
+    };
+
+    const apiSlides =
+      data?.data?.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        image: item.media?.url,
+      })) ?? [];
+
+    return [defaultSlide, ...apiSlides];
+  }, [data]);
+
   useEffect(() => {
+    setCurrentBg(0);
+  }, [heroImages.length]);
+
+  useEffect(() => {
+    if (heroImages.length <= 1) return;
+
     const interval = setInterval(() => {
       setCurrentBg((prev) => (prev + 1) % heroImages.length);
-    }, 9000);
+    }, 6000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [heroImages.length]);
 
   return (
     <div>
       <section className="relative h-[90vh] rounded-b-[2rem] overflow-hidden text-white">
-        {heroImages.map((img, index) => (
+        <AnimatePresence>
           <motion.div
-            key={img}
+            key={heroImages[currentBg]?.id}
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${img})` }}
-            animate={{
-              opacity: index === currentBg ? 1 : 0,
+            style={{
+              backgroundImage: `url(${heroImages[currentBg]?.image})`,
             }}
-            transition={{
-              duration: 2.5,
-              ease: "easeInOut",
-            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
           />
-        ))}
+        </AnimatePresence>
 
         {/* Dark overlay */}
         <div className="absolute inset-0 bg-black/40 z-[1]" />
@@ -92,7 +130,7 @@ const Hero = ({ setShowGetStartedModal }: SectionParam) => {
             <Typography
               as="h1"
               variant="heading1Semibold"
-              className="leading-tight mb-8 bg-gradient-to-r from-white via-white/90 to-primary bg-clip-text text-transparent"
+              className="text-[40px] md:text-[48px] leading-tight mb-8 bg-gradient-to-r from-white via-white/90 to-primary bg-clip-text text-transparent"
             >
               Send Healthcare <br />
               Home, Just Like you <br />

@@ -5,14 +5,12 @@ import Pill from "../../../components/common/Pill";
 import { Section, TitleText } from "./components";
 import Typography from "../../../components/common/Typography";
 import { convertPrice } from "../../../utils/constant";
-import { PartnerCard } from "./components/PartnerCard";
+import { PartnerCard, PartnerCardLoader, PartnerEmptyState } from "./components/PartnerCard";
 import { useCurrencyStore } from "@/store/currency-store";
-import img1 from "../../../assets/images/partners/axa-mansard.png";
-import img2 from "../../../assets/images/partners/glico.png";
-import img3 from "../../../assets/images/partners/lead-way-1.jpeg";
-import img4 from "../../../assets/images/partners/lead-way-2.png";
 import { SwiperSlide } from "swiper/react";
 import CustomSwiper from "@/components/common/Swiper";
+import useGetSystemMedia from "@/pages/private/dashboard/hooks/use-get-system-media";
+import { useSetPagination } from "@/hooks/use-set-pagination";
 
 const TrustedPartners = ({
   showVideo = true,
@@ -23,38 +21,18 @@ const TrustedPartners = ({
 }) => {
   const currency = useCurrencyStore((state) => state?.currency);
 
-  const partners = [
-    {
-      name: "AXA Mansard",
-      description:
-        "Nigeria’s leading health insurer with over 2 million active members, providing reliable and innovative healthcare solutions.",
-      logo: img1,
-    },
-    {
-      name: "Leadway Assurance",
-      description:
-        "Over 50 years of trusted healthcare coverage in Nigeria, protecting 1.5 million+ members with comprehensive plans.",
-      logo: img3,
-    },
-    {
-      name: "GLICO Health",
-      description:
-        "Ghana’s premier private health insurer offering quality healthcare access to thousands of members nationwide.",
-      logo: img2,
-    },
-    {
-      name: "Leadway Assurance",
-      description:
-        "Over 50 years of trusted healthcare coverage in Nigeria, protecting 1.5 million+ members with comprehensive plans.",
-      logo: img4,
-    },
-    // {
-    //   name: "STAR Health",
-    //   description:
-    //     "India’s largest standalone health insurer delivering reliable care nationwide with a focus on comprehensive coverage.",
-    //   logo: heroImg3,
-    // },
-  ];
+  const pagination = useSetPagination();
+
+  const filters = {
+    type: "banner",
+  };
+
+  const { data, isLoading, isFetching } = useGetSystemMedia({
+    enabled: true,
+    page: pagination?.page,
+    per_page: pagination?.per_page,
+    filters,
+  });
 
   return (
     <Section className="md:pb-10 w-full flex flex-col items-center justify-center bg-white space-y-16">
@@ -72,22 +50,26 @@ const TrustedPartners = ({
         </div>
 
         <div className="md:col-span-3">
-          <CustomSwiper
-            breakpoints={{
-              0: { slidesPerView: 1 },
-              768: { slidesPerView: 3 },
-            }}
-          >
-            {partners.map((partner, index) => (
-              <SwiperSlide key={index}>
-                <PartnerCard
-                  logo={partner.logo}
-                  name={partner.name}
-                  description={partner.description}
-                />
-              </SwiperSlide>
-            ))}
-          </CustomSwiper>
+          {isLoading || isFetching ? (
+            <div className="grid md:grid-cols-3 gap-5">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <PartnerCardLoader key={index} />
+              ))}
+            </div>
+          ) : (data?.data?.length || 0) > 0 ? (
+            <CustomSwiper
+              breakpoints={{
+                0: { slidesPerView: 1 },
+                768: { slidesPerView: 3 },
+              }}
+            >
+              {data?.data.map((partner, index) => (
+                <SwiperSlide key={index}>
+                  <PartnerCard partner={partner} />
+                </SwiperSlide>
+              ))}
+            </CustomSwiper>
+          ) : <PartnerEmptyState />}
         </div>
       </div>
 

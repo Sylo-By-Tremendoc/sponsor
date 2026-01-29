@@ -115,7 +115,7 @@ export type PlanBenefit = {
   id: string;
   healthcare_provider_id: string;
   benefit_name: string;
-  coverage_amount: string; 
+  coverage_amount: string;
   coverage_type: string;
   country_code: string;
   description: string;
@@ -123,4 +123,34 @@ export type PlanBenefit = {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+};
+
+export type SharedPaymentDetails = {
+  id: string;
+  subscription_id: string;
+  plan: {
+    id: string;
+    name: string;
+    price: string;
+  };
+  plan_amount: string;
+  collected_amount: string;
+  remaining_amount: number;
+  minimum_contribution: string;
+  participants: any[];
+  status: string;
+  expires_at: string;
+  created_at: string;
+  is_renewal: boolean;
+};
+
+export type PaymentCardInfo = {
+  id: string;
+  brand: string; // e.g., "visa", "mastercard"
+  last4: string; // last 4 digits of card
+  type: string; // "card" or "bank_account"
+  is_default: boolean;
+  exp_month: number; // 1-12
+  exp_year: number; // 4-digit year
+  created: string; // ISO date string
 };

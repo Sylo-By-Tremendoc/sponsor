@@ -133,7 +133,7 @@ const VerifyOTPModal = ({
           handleStripeSetup(clientSecret);
         }
       },
-      
+
       onError: (error: Error) => {
         toast.error(
           getErrorMessage(
@@ -181,7 +181,10 @@ const VerifyOTPModal = ({
         authUser?.user?.email
       )}`}
       openModal={openVerifyOTPModal}
-      onClose={() => setOpenVerifyOTPModal(false)}
+      onClose={() => {
+        setDigits([]);
+        setOpenVerifyOTPModal(false);
+      }}
       className="md:max-w-[35%]"
     >
       <form noValidate onSubmit={handleVerifyOTP} className="space-y-3">

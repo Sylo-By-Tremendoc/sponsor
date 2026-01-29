@@ -4,6 +4,7 @@ import Typography from "./Typography";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./Tooltip";
 import Icons from "./Icons";
 import type { ReactNode } from "react";
+import SkeletonLoader from "./SkeletonLoader";
 
 export const FieldLabelText = ({
   label,
@@ -31,7 +32,7 @@ export const FieldLabelText = ({
 
     {info && (
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger className="pl-1">
           <TooltipContent side="right" sideOffset={8} className="bg-white mr-">
             <Typography variant="subText" className="pl-[5px] max-w-60">
               {info}
@@ -40,7 +41,7 @@ export const FieldLabelText = ({
 
           <Icons
             iconName={"info"}
-            className="w-4 h-4 border-2 border-primary rounded-full p-0.5 cursor-pointer mb-2"
+            className="w-4 h-4 border-2 border-primary rounded-full p-0.5 cursor-pointer"
           />
         </TooltipTrigger>
       </Tooltip>
@@ -71,4 +72,8 @@ export const FieldHelperText = ({
   >
     {hint}
   </Typography>
+);
+
+export const FieldLoadingState = ({ className }: { className?: string }) => (
+  <SkeletonLoader className={cn("w-full h-[40px] mt-1 rounded-[15px]", className)} />
 );

@@ -1,69 +1,55 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Section, TitleText } from "../../home/components";
-import { BlogCard } from "../../home/components/BlogCard";
-import blogImg from "../../../../assets/images/blog-image.png";
-import blogImg1 from "../../../../assets/images/blog-image-1.png";
-import blogImg2 from "../../../../assets/images/blog-image-2.png";
+import { BlogCard, BlogCardLoader } from "../../home/components/BlogCard";
+import { useSetPagination } from "@/hooks/use-set-pagination";
+import NetworkError from "@/pages/error/NetworkError";
+import EmptyState from "@/components/common/EmptyState";
+import useGetRelatedBlog from "../hooks/use-get-related-blog";
 
 const RelatedArticles = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  const blogPosts = [
-    {
-      id: "1",
-      image: blogImg,
-      title: "The Importance of Regular Health Check-ups",
-      description:
-        "Discover strategies to enhance your marketing return on investment effectively.",
-      author: "Ryan Thorf",
-      authorAvatar: "https://randomuser.me/api/portraits/women/1.jpg",
-      date: "May 2, 2022",
-      readTime: "4 min read",
-    },
-    {
-      id: "2",
-      image: blogImg1,
-      title: "How Diaspora Families Can Support Healthcare Back Home",
-      description:
-        "Practical ways to ensure your loved ones receive quality healthcare coverage.",
-      author: "Amaka Okoye",
-      authorAvatar: "https://randomuser.me/api/portraits/men/2.jpg",
-      date: "June 14, 2022",
-      readTime: "5 min read",
-    },
-    {
-      id: "3",
-      image: blogImg2,
-      title: "Understanding Health Insurance Plans in Africa",
-      description:
-        "A simple breakdown of coverage options, benefits, and what to look out for.",
-      author: "David Mensah",
-      authorAvatar: "https://randomuser.me/api/portraits/men/3.jpg",
-      date: "July 8, 2022",
-      readTime: "6 min read",
-    },
-  ];
+  const pagination = useSetPagination({ defaultPerPage: 3 });
+
+  const { data, isLoading, isFetching, refetch, error } = useGetRelatedBlog({
+    enabled: !!id,
+    id: id!,
+    page: pagination?.page,
+    per_page: pagination?.per_page,
+  });
+
+  console.log("DATA", data)
+
+  if (error) return <NetworkError onClick={() => refetch()} />;
 
   return (
     <Section className="md:pt-10 space-y-3">
       <TitleText className="m-0">Related Articles</TitleText>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {blogPosts.map((post) => (
-          <BlogCard
-            key={post.id}
-            id={post.id}
-            image={post.image}
-            title={post.title}
-            description={post.description}
-            author={post.author}
-            authorAvatar={post.authorAvatar}
-            date={post.date}
-            readTime={post.readTime}
-            onClick={(id) => navigate(`/blogs/${id}`)}
-          />
-        ))}
-      </div>
+      {isLoading || isFetching ? (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <BlogCardLoader key={index} />
+          ))}
+        </div>
+      ) : data?.data?.length ? (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {data?.data?.map((blog) => (
+            <BlogCard
+              key={blog.id}
+              blog={blog}
+              onClick={(id) => navigate(`/blogs/${id}`)}
+            />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title="No Related Articles"
+          description="There are no related articles available at the moment. Check back later for more insights."
+          iconName="document-text"
+        />
+      )}
     </Section>
   );
 };

@@ -38,14 +38,14 @@ export const getTopNavList = () => {
       ),
       canView: true,
     },
-    {
-      title: "Messages",
-      path: "/messages",
-      icon: (isActive: boolean) => (
-        <Icons iconName="messages" fill={isActive ? "#03eb0b" : "white"} />
-      ),
-      canView: true,
-    },
+    // {
+    //   title: "Messages",
+    //   path: "/messages",
+    //   icon: (isActive: boolean) => (
+    //     <Icons iconName="messages" fill={isActive ? "#03eb0b" : "white"} />
+    //   ),
+    //   canView: true,
+    // },
   ];
 
   return navList || [];
